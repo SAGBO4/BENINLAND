@@ -43,6 +43,20 @@ export interface DemoRole {
 
 export const DEMO_ROLES: DemoRole[] = [
   {
+    id: "ministere",
+    label: "Ministère",
+    roleCode: "ministere",
+    category: "etat",
+    email: "ministere@demo.bj",
+    npi: "FICTIF-BEN-2026-0000",
+    name: "Cabinet du Ministre (MCVDD / MEF)",
+    icon: Landmark,
+    badge: "Tour de Contrôle & Trésor 🏛️",
+    badgeVariant: "secondary",
+    targetUrl: "/espace/ministere",
+    flowDescription: "Supervision panoptique des 12 départements, recettes fiscales du Trésor Public (CUT) et audit régalien des acteurs fonciers.",
+  },
+  {
     id: "notaire",
     label: "Notaire",
     roleCode: "notaire",
@@ -205,7 +219,7 @@ export function LoginPanel() {
           </div>
           <Badge variant="secondary" className="text-[11px] gap-1 px-2 py-0.5">
             <Sparkles className="w-3 h-3 text-secondary" />
-            <ShinyText text="8 Profils Actifs" speed={3} />
+            <ShinyText text="9 Profils Actifs" speed={3} />
           </Badge>
         </div>
 
@@ -229,7 +243,7 @@ export function LoginPanel() {
                 : "bg-muted/50 text-muted-foreground hover:text-foreground"
             }`}
           >
-            Tous (8)
+            Tous (9)
           </button>
           <button
             type="button"
