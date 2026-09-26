@@ -231,7 +231,6 @@ describe("API Routes Complémentaires", () => {
 
   describe("API /api/v1/voice/tts — Synthèse Vocale 229 Langues", () => {
     it("doit refuser une requête POST sans paramètre 'text' avec code 400", async () => {
-      // @ts-expect-error test payload vide
       const request = new Request("http://localhost:3000/api/v1/voice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
