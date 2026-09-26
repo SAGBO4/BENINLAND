@@ -3,11 +3,13 @@ const path = require("path");
 const http = require("http");
 
 const DEFAULT_PORT = process.env.PORT || 3000;
-const APP_URL = process.env.APP_URL || `http://localhost:${DEFAULT_PORT}`;
+const PROD_URL = "https://beninland.vercel.app";
+const LOCAL_URL = process.env.APP_URL || `http://localhost:${DEFAULT_PORT}`;
 
 let mainWindow = null;
+let currentAppUrl = LOCAL_URL;
 
-function checkServerReady(url, maxRetries = 30, interval = 1000) {
+function checkServerReady(url, maxRetries = 10, interval = 500) {
   return new Promise((resolve, reject) => {
     let retries = 0;
     const check = () => {
@@ -37,6 +39,19 @@ function checkServerReady(url, maxRetries = 30, interval = 1000) {
   });
 }
 
+async function resolveTargetUrl() {
+  if (process.env.APP_URL) {
+    return process.env.APP_URL;
+  }
+  // Tester si le serveur local tourne
+  try {
+    const isLocal = await checkServerReady(LOCAL_URL, 2, 200);
+    if (isLocal) return LOCAL_URL;
+  } catch {}
+  return app.isPackaged ? PROD_URL : LOCAL_URL;
+}
+
+
 function createApplicationMenu(window) {
   const isMac = process.platform === "darwin";
 
@@ -48,12 +63,12 @@ function createApplicationMenu(window) {
         {
           label: "Nouvelle vérification de parcelle",
           accelerator: "CmdOrCtrl+N",
-          click: () => window.loadURL(`${APP_URL}/verification`),
+          click: () => window.loadURL(`${currentAppUrl}/verification`),
         },
         {
           label: "Carte Cadastrale Plein Écran",
           accelerator: "CmdOrCtrl+M",
-          click: () => window.loadURL(`${APP_URL}/carte`),
+          click: () => window.loadURL(`${currentAppUrl}/carte`),
         },
         { type: "separator" },
         isMac ? { role: "close" } : { role: "quit", label: "Quitter BENINLAND" },
@@ -64,19 +79,19 @@ function createApplicationMenu(window) {
       submenu: [
         {
           label: "🏛️ Accueil National",
-          click: () => window.loadURL(APP_URL),
+          click: () => window.loadURL(currentAppUrl),
         },
         {
           label: "🗺️ Carte SIG • 06 Pôles Territoriaux",
-          click: () => window.loadURL(`${APP_URL}/carte`),
+          click: () => window.loadURL(`${currentAppUrl}/carte`),
         },
         {
           label: "🔍 Vérification Publique & Opposabilité",
-          click: () => window.loadURL(`${APP_URL}/verification`),
+          click: () => window.loadURL(`${currentAppUrl}/verification`),
         },
         {
           label: "📱 Simulateur Télécom (USSD / SMS / Audio)",
-          click: () => window.loadURL(`${APP_URL}/demo/telephone`),
+          click: () => window.loadURL(`${currentAppUrl}/demo/telephone`),
         },
         { type: "separator" },
         {
@@ -85,27 +100,27 @@ function createApplicationMenu(window) {
         },
         {
           label: "👤 Espace Citoyen / Acquéreur",
-          click: () => window.loadURL(`${APP_URL}/espace/citoyen`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/citoyen`),
         },
         {
           label: "⚖️ Espace Notaire & Verrou",
-          click: () => window.loadURL(`${APP_URL}/espace/notaire`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/notaire`),
         },
         {
           label: "📐 Espace Géomètre Expert (Bornage)",
-          click: () => window.loadURL(`${APP_URL}/espace/agent`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/agent`),
         },
         {
           label: "🛡️ Espace ANDF & Conservation",
-          click: () => window.loadURL(`${APP_URL}/espace/andf`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/andf`),
         },
         {
           label: "⚖️ Espace CSAF (Non-litige)",
-          click: () => window.loadURL(`${APP_URL}/espace/csaf`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/csaf`),
         },
         {
           label: "🏛️ Ministère & CUT Trésor Public",
-          click: () => window.loadURL(`${APP_URL}/espace/ministere`),
+          click: () => window.loadURL(`${currentAppUrl}/espace/ministere`),
         },
       ],
     },
@@ -207,16 +222,10 @@ async function createWindow() {
     },
   });
 
+  currentAppUrl = await resolveTargetUrl();
   createApplicationMenu(mainWindow);
 
-  // Attendre la disponibilité du serveur local si nécessaire
-  try {
-    await checkServerReady(APP_URL, 15, 800);
-  } catch (err) {
-    console.warn("Avertissement attente serveur :", err.message);
-  }
-
-  await mainWindow.loadURL(APP_URL);
+  await mainWindow.loadURL(currentAppUrl);
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("http:") || url.startsWith("https:")) {

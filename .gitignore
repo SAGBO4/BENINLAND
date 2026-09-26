@@ -34,3 +34,6 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*
+
+# electron build output
+/desktop/

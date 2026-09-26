@@ -11,6 +11,9 @@
     "desktop": "node electron/start.js",
     "desktop:dev": "node electron/start.js",
     "desktop:open": "electron .",
+    "desktop:package": "electron-builder --linux --win",
+    "desktop:package:linux": "electron-builder --linux",
+    "desktop:package:win": "electron-builder --win",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
@@ -46,6 +49,7 @@
     "@types/react-dom": "^19.0.0",
     "drizzle-kit": "^0.30.6",
     "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"

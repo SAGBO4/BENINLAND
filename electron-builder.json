@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "bj.gouv.beninland",
+  "productName": "BENINLAND",
+  "copyright": "Copyright © 2026 République du Bénin — ANDF",
+  "directories": {
+    "output": "desktop"
+  },
+  "files": [
+    "electron/**/*",
+    "public/icon.png",
+    "public/armoiries-benin.png",
+    "package.json"
+  ],
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      },
+      {
+        "target": "tar.gz",
+        "arch": ["x64"]
+      }
+    ],
+    "category": "Office",
+    "icon": "public/icon.png",
+    "maintainer": "Agence Nationale du Domaine et du Foncier (ANDF) <contact@andf.bj>"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "public/icon.png"
+  }
+}
