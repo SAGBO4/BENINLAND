@@ -1,0 +1,12 @@
+.git
+desktop
+electron
+tests
+*.AppImage
+*.exe
+*.zip
+*.tar.gz
+*.7z
+.vercel
+node_modules
+.next
