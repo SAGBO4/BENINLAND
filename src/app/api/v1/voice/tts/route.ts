@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
 // Cache mémoire pour les requêtes audio récurrentes
-const audioCache = new Map<string, { buffer: Buffer; contentType: string }>();
+const audioCache = new Map<string, { bytes: Uint8Array; contentType: string }>();
 
 const DEFAULT_BASE_URL = "https://ronaldodev-api.hf.space";
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (audioCache.has(cacheKey)) {
       const cached = audioCache.get(cacheKey)!;
-      return new NextResponse(cached.buffer, {
+      return new NextResponse(cached.bytes as any, {
         status: 200,
         headers: {
           "Content-Type": cached.contentType,
@@ -72,15 +72,15 @@ export async function POST(req: NextRequest) {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const bytes = new Uint8Array(arrayBuffer);
     const contentType =
       response.headers.get("content-type") ||
       (language === "fon" ? "audio/wav" : "audio/mpeg");
 
     // Mise en cache mémoire
-    audioCache.set(cacheKey, { buffer, contentType });
+    audioCache.set(cacheKey, { bytes, contentType });
 
-    return new NextResponse(buffer, {
+    return new NextResponse(bytes, {
       status: 200,
       headers: {
         "Content-Type": contentType,
@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
 
   if (audioCache.has(cacheKey)) {
     const cached = audioCache.get(cacheKey)!;
-    return new NextResponse(cached.buffer, {
+    return new NextResponse(cached.bytes as any, {
       status: 200,
       headers: {
         "Content-Type": cached.contentType,
@@ -152,14 +152,14 @@ export async function GET(req: NextRequest) {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const bytes = new Uint8Array(arrayBuffer);
     const contentType =
       response.headers.get("content-type") ||
       (language === "fon" ? "audio/wav" : "audio/mpeg");
 
-    audioCache.set(cacheKey, { buffer, contentType });
+    audioCache.set(cacheKey, { bytes, contentType });
 
-    return new NextResponse(buffer, {
+    return new NextResponse(bytes, {
       status: 200,
       headers: {
         "Content-Type": contentType,

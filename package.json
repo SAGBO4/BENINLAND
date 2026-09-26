@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "Anyigba (BENINLAND) — Plateforme Nationale de Gestion et de Sécurisation du Foncier au Bénin",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
+    "desktop": "node electron/start.js",
+    "desktop:dev": "node electron/start.js",
+    "desktop:open": "electron .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
@@ -41,6 +45,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "drizzle-kit": "^0.30.6",
+    "electron": "^44.4.5",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"

@@ -5,6 +5,27 @@ import { GET as verifyDocument } from "@/app/api/v1/documents/[id]/verifier/rout
 import { GET as getSmsJournal, POST as postSms } from "@/app/api/v1/sms/route";
 import { POST as postVoiceTts, GET as getVoiceTts } from "@/app/api/v1/voice/tts/route";
 import { anyigbaRepo } from "@/repositories/index";
+import fs from "fs";
+import path from "path";
+
+// Charger les variables de test depuis .env.local si non définies dans le runner Vitest
+if (!process.env.API229_HF_TOKEN) {
+  try {
+    const envPath = path.resolve(process.cwd(), ".env.local");
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, "utf-8");
+      content.split("\n").forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("#")) {
+          const [k, ...v] = trimmed.split("=");
+          if (k && v.length) {
+            process.env[k.trim()] = v.join("=").trim().replace(/^["']|["']$/g, "");
+          }
+        }
+      });
+    }
+  } catch {}
+}
 
 describe("API Routes Complémentaires", () => {
   beforeEach(() => {
@@ -236,23 +257,35 @@ describe("API Routes Complémentaires", () => {
     });
 
     it("doit générer ou retourner un flux audio binaire pour une phrase en Fongbe", async () => {
-      const request = new Request("http://localhost:3000/api/v1/voice/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: "Anyigba elɔ ɖó Titre Foncier gbéjinɔtɔ sín ANDF gɔ́n.",
-          language: "fon",
-        }),
-      });
+      const originalFetch = global.fetch;
+      const fakeWavData = Buffer.from("RIFF" + "WAVEfmt " + "\x00".repeat(250));
+      global.fetch = async () =>
+        new Response(fakeWavData, {
+          status: 200,
+          headers: { "content-type": "audio/wav" },
+        });
 
-      const response = await postVoiceTts(request as any);
-      expect(response.status).toBe(200);
+      try {
+        const request = new Request("http://localhost:3000/api/v1/voice/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: "Anyigba elɔ ɖó Titre Foncier gbéjinɔtɔ sín ANDF gɔ́n.",
+            language: "fon",
+          }),
+        });
 
-      const contentType = response.headers.get("content-type");
-      expect(contentType).toMatch(/audio\/(wav|x-wav|mpeg|ogg)/);
+        const response = await postVoiceTts(request as any);
+        expect(response.status).toBe(200);
 
-      const buffer = await response.arrayBuffer();
-      expect(buffer.byteLength).toBeGreaterThan(100);
+        const contentType = response.headers.get("content-type");
+        expect(contentType).toMatch(/audio\/(wav|x-wav|mpeg|ogg)/);
+
+        const buffer = await response.arrayBuffer();
+        expect(buffer.byteLength).toBeGreaterThan(100);
+      } finally {
+        global.fetch = originalFetch;
+      }
     });
   });
 });
