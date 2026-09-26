@@ -1,19 +1,123 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Footer } from "@/components/layout/Footer";
-import { Landmark, ShieldCheck, Bell, Users, HeartHandshake, CheckCircle2, UserCheck, MapPin, FileText } from "lucide-react";
+import {
+  Landmark,
+  ShieldCheck,
+  Bell,
+  Users,
+  HeartHandshake,
+  CheckCircle2,
+  UserCheck,
+  MapPin,
+  FileText,
+  PlusCircle,
+  AlertTriangle,
+  Lock,
+} from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
+import { anyigbaRepo } from "@/repositories/index";
 
 export default function CitoyenPage() {
+  const { user } = useAuth();
   const [carnetSuccess, setCarnetSuccess] = useState(false);
+  const [parcelles, setParcelles] = useState<any[]>([]);
+  const [showDeclareModal, setShowDeclareModal] = useState(false);
+
+  // Formulaire de déclaration de parcelle
+  const [newCode, setNewCode] = useState("");
+  const [newCommune, setNewCommune] = useState("Ouidah");
+  const [newArrondissement, setNewArrondissement] = useState("Pahou");
+  const [newVillage, setNewVillage] = useState("Hounhanmèdji");
+  const [newSuperficie, setNewSuperficie] = useState("1000");
+  const [newStatut, setNewStatut] = useState<"COUTUMIER" | "TITRE_FONCIER" | "CPF">("COUTUMIER");
+  const [declareSuccess, setDeclareSuccess] = useState<string | null>(null);
+
+  // Ayants-droit personnalisés
+  const [heritiers, setHeritiers] = useState<any[]>([
+    { nom: "Blaise Dossou", qualite: "Héritier 1 - Quote-part 50%", statut: "Consentement Validé" },
+    { nom: "Sophie Dossou", qualite: "Héritière 2 - Quote-part 50%", statut: "Consentement Validé" },
+  ]);
+  const [newHeritierNom, setNewHeritierNom] = useState("");
+  const [newHeritierPart, setNewHeritierPart] = useState("50");
+
+  const loadParcelles = () => {
+    const all = anyigbaRepo.getAllParcelles();
+    const userNpi = user?.npi || "FICTIF-BEN-2026-0041";
+    const userParcelles = all.filter(
+      (p) => p.proprietaireNpi === userNpi || (!user && p.proprietaireNpi === "FICTIF-BEN-2026-0041")
+    );
+    // Si l'utilisateur est Germain Dossou ou s'il a des parcelles, les afficher. Sinon afficher toutes les parcelles liées au nom ou déclarées
+    if (userParcelles.length === 0 && user?.nom) {
+      const byName = all.filter((p) => p.proprietaireNom.toLowerCase().includes(user.nom.toLowerCase()));
+      setParcelles(byName.length > 0 ? byName : all.slice(0, 1));
+    } else {
+      setParcelles(userParcelles.length > 0 ? userParcelles : all.slice(0, 1));
+    }
+  };
+
+  useEffect(() => {
+    loadParcelles();
+  }, [user]);
+
+  const handleDeclareParcelle = (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = newCode.trim().toUpperCase() || `PAR-${newCommune.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const created = anyigbaRepo.createParcelle({
+      codeUnique: code,
+      commune: newCommune,
+      arrondissement: newArrondissement,
+      village: newVillage,
+      superficieM2: Number(newSuperficie),
+      statutJuridique: newStatut,
+      usage: "HABITATION",
+      enVerrouMutation: false,
+      enLitige: false,
+      proprietaireNom: `${user?.prenom || "Germain"} ${user?.nom || "Dossou"}`,
+      proprietaireNpi: user?.npi || "FICTIF-BEN-2026-0041",
+      proprietaireTel: "+229 97 45 21 00",
+      polygoneGeojson: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [2.0815, 6.365],
+            [2.083, 6.365],
+            [2.083, 6.3665],
+            [2.0815, 6.3665],
+            [2.0815, 6.365],
+          ],
+        ],
+      },
+    });
+
+    setDeclareSuccess(`Parcelle ${created.codeUnique} enregistrée avec succès au cadastre et rattachée à votre NPI.`);
+    setShowDeclareModal(false);
+    loadParcelles();
+    setTimeout(() => setDeclareSuccess(null), 5000);
+  };
+
+  const handleAddHeritier = () => {
+    if (!newHeritierNom.trim()) return;
+    setHeritiers([
+      ...heritiers,
+      {
+        nom: newHeritierNom.trim(),
+        qualite: `Ayant-droit déclaré - Quote-part ${newHeritierPart}%`,
+        statut: "Enregistré au carnet",
+      },
+    ]);
+    setNewHeritierNom("");
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
       <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
-        {/* En-tête Espace Citoyen */}
+        {/* En-tête Espace Citoyen dynamique */}
         <Card className="border-purple-500/40 shadow-xl bg-card">
           <CardHeader className="p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -27,7 +131,7 @@ export default function CitoyenPage() {
                       Espace Citoyen &amp; Patrimoine Foncier
                     </CardTitle>
                     <Badge variant="secondary" className="text-[10px] uppercase font-bold px-2.5">
-                      Germain Dossou
+                      {user ? `${user.prenom} ${user.nom}` : "Germain Dossou"}
                     </Badge>
                   </div>
                   <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -40,12 +144,22 @@ export default function CitoyenPage() {
                 <UserCheck className="w-4 h-4 text-emerald-400" />
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-medium">NPI Citoyen (ANIP)</span>
-                  <strong className="font-mono text-foreground">BEN-***-0041</strong>
+                  <strong className="font-mono text-foreground">{user?.npi || "BEN-***-0041"}</strong>
+                  <span className="block text-[10px] text-muted-foreground mt-0.5">
+                    {user?.commune ? `${user.commune} (${user.departement})` : "Ouidah (Atlantique)"}
+                  </span>
                 </div>
               </div>
             </div>
           </CardHeader>
         </Card>
+
+        {declareSuccess && (
+          <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2 animate-rise">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span className="font-semibold leading-relaxed">{declareSuccess}</span>
+          </div>
+        )}
 
         {/* Grille principale */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-xs">
@@ -53,37 +167,62 @@ export default function CitoyenPage() {
           <Card className="lg:col-span-6 border-border shadow-xl bg-card">
             <CardHeader className="p-5 sm:p-6 pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-bold text-foreground">Mes Parcelles Répertoriées</CardTitle>
-                <Badge variant="default" className="text-[10px] font-semibold">
-                  1 Terrain Déclaré
-                </Badge>
+                <div>
+                  <CardTitle className="text-base font-bold text-foreground">Mes Parcelles Répertoriées</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground mt-0.5">
+                    Parcelles rattachées à votre Numéro Personnel d&apos;Identification (NPI).
+                  </CardDescription>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setShowDeclareModal(true)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer h-8"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>Déclarer une Parcelle</span>
+                </Button>
               </div>
-              <CardDescription className="text-xs text-muted-foreground">
-                Parcelles foncières rattachées à votre Numéro Personnel d&apos;Identification (NPI) certifié par l&apos;ANIP.
-              </CardDescription>
             </CardHeader>
 
             <CardContent className="p-5 sm:p-6 pt-0 space-y-4">
-              <div className="p-4 rounded-xl bg-background/80 border border-primary/30 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-foreground text-sm sm:text-base">OUI-0421</span>
-                  <Badge variant="outline" className="text-[10px] font-semibold">
-                    Certificat Coutumier Déclaré
-                  </Badge>
+              {parcelles.map((p) => (
+                <div key={p.codeUnique} className="p-4 rounded-xl bg-background/80 border border-primary/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-foreground text-sm sm:text-base">{p.codeUnique}</span>
+                    <Badge variant={p.statutJuridique === "TITRE_FONCIER" ? "success" : "outline"} className="text-[10px] font-semibold">
+                      {p.statutJuridique === "TITRE_FONCIER" ? "Titre Foncier Immatriculé" : p.statutJuridique === "CPF" ? "Certificat CPF" : "Certificat Coutumier Déclaré"}
+                    </Badge>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Commune de {p.commune} &bull; Arr. {p.arrondissement} &bull; Village {p.village} &bull; Superficie certifiée :{" "}
+                    <strong className="text-foreground font-mono">{p.superficieM2.toLocaleString()} m²</strong>
+                  </p>
+
+                  {p.enVerrouMutation && (
+                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 shrink-0" />
+                      <span>Verrou de mutation en cours (séquestre notarié activé)</span>
+                    </div>
+                  )}
+
+                  {p.enLitige && (
+                    <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 text-[11px] flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      <span>Gel conservatoire CSAF actif sur ce bien</span>
+                    </div>
+                  )}
+
+                  <div className="pt-2 flex items-center justify-between text-[11px] border-t border-border/60">
+                    <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
+                      <Bell className="w-3.5 h-3.5 text-secondary" /> Alerte SMS anti-spoliation active
+                    </span>
+                    <span className="text-emerald-500 font-semibold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Registre d&apos;État certifié
+                    </span>
+                  </div>
                 </div>
-                <p className="text-muted-foreground text-xs leading-relaxed">
-                  Commune de Ouidah &bull; Arr. Pahou &bull; Village Hounhanmèdji &bull; Superficie certifiée :{" "}
-                  <strong className="text-foreground font-mono">1 250 m²</strong>
-                </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] border-t border-border/60">
-                  <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
-                    <Bell className="w-3.5 h-3.5 text-secondary" /> Alerte SMS anti-spoliation active
-                  </span>
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Titre familial régularisé
-                  </span>
-                </div>
-              </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -106,27 +245,55 @@ export default function CitoyenPage() {
 
             <CardContent className="p-5 sm:p-6 pt-0 space-y-4">
               {carnetSuccess ? (
-                <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center gap-2 animate-rise">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Carnet de famille actualisé et scellé au registre national avec l&apos;accord des 2 ayants-droit.</span>
+                <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 flex items-center gap-2 animate-rise">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span>Carnet de famille actualisé et scellé au registre national avec l&apos;accord des ayants-droit.</span>
                 </div>
               ) : (
                 <div className="p-4 rounded-xl bg-background/80 border border-border space-y-3.5">
                   <div className="font-semibold text-foreground text-xs">Ayants-droit Reconnus (Consentements ANIP vérifiés) :</div>
                   <ul className="space-y-2 text-[11px] text-muted-foreground">
-                    <li className="p-2 rounded-lg bg-card border border-border/60 flex items-center justify-between">
-                      <span>Blaise Dossou (Héritier 1 - Quote-part 50%)</span>
-                      <span className="text-emerald-400 font-semibold text-[10px]">Consentement Validé</span>
-                    </li>
-                    <li className="p-2 rounded-lg bg-card border border-border/60 flex items-center justify-between">
-                      <span>Sophie Dossou (Héritière 2 - Quote-part 50%)</span>
-                      <span className="text-emerald-400 font-semibold text-[10px]">Consentement Validé</span>
-                    </li>
+                    {heritiers.map((h, i) => (
+                      <li key={i} className="p-2 rounded-lg bg-card border border-border/60 flex items-center justify-between">
+                        <div>
+                          <span className="font-bold text-foreground">{h.nom}</span>
+                          <span className="text-[10px] text-muted-foreground ml-2">({h.qualite})</span>
+                        </div>
+                        <span className="text-emerald-500 font-semibold text-[10px]">{h.statut}</span>
+                      </li>
+                    ))}
                   </ul>
+
+                  {/* Ajout d'un ayant-droit */}
+                  <div className="pt-2 border-t border-border flex items-center gap-2">
+                    <Input
+                      type="text"
+                      value={newHeritierNom}
+                      onChange={(e) => setNewHeritierNom(e.target.value)}
+                      placeholder="Nom & prénom héritier..."
+                      className="h-8 text-xs bg-card"
+                    />
+                    <Input
+                      type="number"
+                      value={newHeritierPart}
+                      onChange={(e) => setNewHeritierPart(e.target.value)}
+                      placeholder="%"
+                      className="h-8 text-xs w-16 bg-card"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleAddHeritier}
+                      className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold cursor-pointer shrink-0"
+                    >
+                      Ajouter
+                    </Button>
+                  </div>
+
                   <Button
                     type="button"
                     onClick={() => setCarnetSuccess(true)}
-                    className="w-full h-10 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                    className="w-full h-10 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white cursor-pointer mt-2"
                   >
                     Sceller le Carnet Familial Numérique au Livre Foncier
                   </Button>
@@ -135,6 +302,101 @@ export default function CitoyenPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Modal de déclaration de parcelle */}
+        {showDeclareModal && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-rise text-xs">
+              <div className="flex items-center gap-2 text-purple-600">
+                <PlusCircle className="w-5 h-5" />
+                <h3 className="text-base font-bold text-foreground">Déclaration d&apos;une Nouvelle Parcelle</h3>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Rattachez une parcelle déclarée à votre identifiant citoyen certifié <strong>{user?.npi || "BEN-0041"}</strong>.
+              </p>
+
+              <form onSubmit={handleDeclareParcelle} className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold mb-1">Code ou Référence Parcelle</label>
+                  <Input
+                    type="text"
+                    value={newCode}
+                    onChange={(e) => setNewCode(e.target.value)}
+                    placeholder="Ex: OUI-0550 (laisser vide pour génération automatique)"
+                    className="h-9 text-xs font-mono uppercase bg-background"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Commune</label>
+                    <Input
+                      type="text"
+                      value={newCommune}
+                      onChange={(e) => setNewCommune(e.target.value)}
+                      className="h-9 text-xs bg-background"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Arrondissement</label>
+                    <Input
+                      type="text"
+                      value={newArrondissement}
+                      onChange={(e) => setNewArrondissement(e.target.value)}
+                      className="h-9 text-xs bg-background"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Superficie (m²)</label>
+                    <Input
+                      type="number"
+                      value={newSuperficie}
+                      onChange={(e) => setNewSuperficie(e.target.value)}
+                      className="h-9 text-xs font-mono bg-background"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Statut Juridique</label>
+                    <select
+                      value={newStatut}
+                      onChange={(e) => setNewStatut(e.target.value as any)}
+                      className="w-full h-9 rounded-md border border-border bg-background px-3 text-xs"
+                    >
+                      <option value="COUTUMIER">Droit Coutumier</option>
+                      <option value="CPF">Certificat de Propriété (CPF)</option>
+                      <option value="TITRE_FONCIER">Titre Foncier</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowDeclareModal(false)}
+                    className="text-xs cursor-pointer"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs cursor-pointer"
+                  >
+                    Valider l&apos;Enregistrement
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />

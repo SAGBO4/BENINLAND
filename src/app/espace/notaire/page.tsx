@@ -8,8 +8,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
+import { anyigbaRepo } from "@/repositories/index";
 
 export default function NotairePage() {
+  const { user } = useAuth();
   const [parcelleCode, setParcelleCode] = useState("OUI-0421");
   const [prixFcfa, setPrixFcfa] = useState("4500000");
   const [cessionnaireNom, setCessionnaireNom] = useState("Koffi Mensah");
@@ -24,17 +27,25 @@ export default function NotairePage() {
     setSuccessMsg(null);
     setErrorMsg(null);
 
+    const code = parcelleCode.trim().toUpperCase();
+    const existingParcelle = anyigbaRepo.getParcelleByCode(code);
+    const cedantNom = existingParcelle?.proprietaireNom || "Germain Dossou";
+    const cedantNpi = existingParcelle?.proprietaireNpi || "FICTIF-BEN-2026-0041";
+    const notaireName = user
+      ? `${user.prenom} ${user.nom} (${user.etablissementNom || "Étude Notariale"})`
+      : "Me Christian Agbossou (Étude Ouidah)";
+
     try {
       const res = await fetch("/api/v1/mutations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          parcelleCode: parcelleCode.trim().toUpperCase(),
-          cedantNpi: "FICTIF-BEN-2026-0041",
-          cedantNom: "Germain Dossou",
+          parcelleCode: code,
+          cedantNpi,
+          cedantNom,
           cessionnaireNpi: isFraudAttempt ? "FICTIF-BEN-2026-9999" : cessionnaireNpi,
           cessionnaireNom: isFraudAttempt ? "Acheteur Frauduleux Rejeté" : cessionnaireNom,
-          notaireId: "Me Christian Agbossou (Étude Ouidah)",
+          notaireId: notaireName,
           prixFcfa: Number(prixFcfa),
         }),
       });
@@ -93,7 +104,7 @@ export default function NotairePage() {
                     </Badge>
                   </div>
                   <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
-                    Étude notariale de Me Christian Agbossou &bull; Chambre Nationale des Notaires du Bénin (Ouidah)
+                    {user?.etablissementNom || "Étude notariale de Me Christian Agbossou"} &bull; {user ? `${user.prenom} ${user.nom}` : "Me Christian Agbossou"} ({user?.commune || "Ouidah"})
                   </CardDescription>
                 </div>
               </div>
@@ -102,7 +113,7 @@ export default function NotairePage() {
                 <UserCheck className="w-4 h-4 text-emerald-400" />
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-medium">NPI Notarial Vérifié</span>
-                  <strong className="font-mono text-foreground">BEN-NOT-2026-0088</strong>
+                  <strong className="font-mono text-foreground">{user?.npi || "FICTIF-BEN-2026-0088"}</strong>
                 </div>
               </div>
             </div>

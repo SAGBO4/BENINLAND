@@ -103,6 +103,17 @@ class AnyigbaRepository {
     return this.parcelles.find((p) => p.codeUnique.toUpperCase() === code.trim().toUpperCase());
   }
 
+  public createParcelle(data: Omit<SeedParcelle, "id"> & { id?: number }): SeedParcelle {
+    const newId = this.parcelles.length > 0 ? Math.max(...this.parcelles.map((p) => p.id)) + 1 : 1;
+    const newParcelle: SeedParcelle = {
+      ...data,
+      id: data.id || newId,
+      tokenBeninChainId: data.tokenBeninChainId || `TKN-${data.statutJuridique}-${data.codeUnique}`,
+    };
+    this.parcelles.unshift(newParcelle);
+    return newParcelle;
+  }
+
   public getAllMutations(): MutationRecord[] {
     return [...this.mutations];
   }
@@ -128,6 +139,23 @@ class AnyigbaRepository {
     notaireId: string;
     prixFcfa: number;
   }): { success: boolean; mutation?: MutationRecord; error?: string } {
+    const cedantClean = (params.cedantNpi || "").trim();
+    const cessionnaireClean = (params.cessionnaireNpi || "").trim();
+
+    if (cedantClean === cessionnaireClean) {
+      return {
+        success: false,
+        error: "AUTO_CESSION_INTERDITE: Le cédant et le cessionnaire ne peuvent pas être la même personne (NPI identique).",
+      };
+    }
+
+    if (!Number.isFinite(params.prixFcfa) || params.prixFcfa <= 0 || params.prixFcfa > 1000000000000) {
+      return {
+        success: false,
+        error: "PRIX_INVALIDE: Le montant en FCFA doit être un montant positif réaliste.",
+      };
+    }
+
     const parcelle = this.getParcelleByCode(params.parcelleCode);
     if (!parcelle) {
       return { success: false, error: "PARCELLE_INEXISTANTE: Cette parcelle n'est pas répertoriée au cadastre." };
@@ -147,13 +175,20 @@ class AnyigbaRepository {
       };
     }
 
+    if (parcelle.proprietaireNpi.trim().toUpperCase() !== cedantClean.toUpperCase()) {
+      return {
+        success: false,
+        error: "PROPRIETAIRE_NON_CONFORME: Le cédant spécifié n'est pas le titulaire légitime enregistré au cadastre pour cette parcelle.",
+      };
+    }
+
     // Pose du verrou
     parcelle.enVerrouMutation = true;
 
     const { hash } = calculateDocumentHash({
       parcelleCode: params.parcelleCode,
-      cedant: params.cedantNpi,
-      cessionnaire: params.cessionnaireNpi,
+      cedant: cedantClean,
+      cessionnaire: cessionnaireClean,
       prix: params.prixFcfa,
       date: new Date().toISOString(),
     });
@@ -191,6 +226,14 @@ class AnyigbaRepository {
   public finalizeMutationByAndf(mutationCode: string, officerName: string): { success: boolean; error?: string } {
     const mut = this.mutations.find((m) => m.codeMutation === mutationCode);
     if (!mut) return { success: false, error: "MUTATION_INTROUVABLE" };
+
+    if (mut.statut === "VALIDEE_ANDF") {
+      return { success: false, error: "MUTATION_DEJA_VALIDEE: Cette mutation a déjà été approuvée et le titre émis." };
+    }
+
+    if (mut.statut !== "INITIEE_VERROUILLEE") {
+      return { success: false, error: `STATUT_INVALIDE: Impossible de finaliser une mutation au statut ${mut.statut}.` };
+    }
 
     const parcelle = this.getParcelleByCode(mut.parcelleCode);
     if (!parcelle) return { success: false, error: "PARCELLE_INTROUVABLE" };
@@ -251,6 +294,21 @@ class AnyigbaRepository {
       dureeSecondes: number;
     }>;
   }): ConventionRecord {
+    const vendeurClean = (params.vendeurNpi || "").trim().toUpperCase();
+    const acheteurClean = (params.acheteurNpi || "").trim().toUpperCase();
+
+    if (vendeurClean === acheteurClean) {
+      throw new Error("AUTO_CESSION_INTERDITE: Le vendeur et l'acheteur ne peuvent pas avoir le même NPI.");
+    }
+
+    if (!Number.isFinite(params.surfaceM2) || params.surfaceM2 <= 0 || params.surfaceM2 > 114763000000) {
+      throw new Error("SURFACE_ABERRANTE: La superficie est invalide ou dépasse le territoire national.");
+    }
+
+    if (!Number.isFinite(params.prixFcfa) || params.prixFcfa <= 0) {
+      throw new Error("PRIX_INVALIDE: Le montant doit être un nombre strictement positif.");
+    }
+
     const { hash } = calculateDocumentHash(params);
     const conv: ConventionRecord = {
       id: `CONV-${Date.now().toString().slice(-4)}`,

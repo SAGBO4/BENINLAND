@@ -7,15 +7,25 @@ import { formatFcfa } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-context";
 
 export default function CommunePage() {
+  const { user } = useAuth();
   const [prixAchat, setPrixAchat] = useState(2000000);
   const [prixVente, setPrixVente] = useState(4500000);
   const [travaux, setTravaux] = useState(500000);
+  const [quittanceCode, setQuittanceCode] = useState<string | null>(null);
   const tauxCommunal = 0.05; // 5% de taxe de plus-value communale
 
   const plusValueBrute = Math.max(0, prixVente - prixAchat - travaux);
   const taxeCalculee = Math.round(plusValueBrute * tauxCommunal);
+
+  const handleEmitQuittance = () => {
+    const cName = user?.commune || "Ouidah";
+    const ref = `QUIT-${cName.slice(0, 3).toUpperCase()}-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    setQuittanceCode(ref);
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
@@ -31,10 +41,10 @@ export default function CommunePage() {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <CardTitle className="text-xl sm:text-2xl font-bold text-foreground">
-                      Mairie &amp; Direction des Affaires Domaniales et Environnementales
+                      Mairie &amp; Direction des Affaires Domaniales
                     </CardTitle>
                     <Badge variant="success" className="text-[10px] uppercase font-bold px-2.5">
-                      Commune de Ouidah
+                      Commune de {user?.commune || "Ouidah"}
                     </Badge>
                   </div>
                   <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -44,8 +54,13 @@ export default function CommunePage() {
               </div>
 
               <div className="text-xs bg-background/80 p-3 rounded-xl border border-border shrink-0">
-                <span className="text-[10px] text-muted-foreground block font-medium">Recettes Communales Collectées</span>
-                <strong className="text-secondary font-mono text-sm">14 250 000 FCFA</strong>
+                <span className="text-[10px] text-muted-foreground block font-medium">Chef Service Domanial</span>
+                <strong className="text-foreground">
+                  {user ? `${user.prenom} ${user.nom}` : "Sètondji Gbedji"}
+                </strong>
+                <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
+                  NPI : {user?.npi || "FICTIF-BEN-2026-0033"}
+                </span>
               </div>
             </div>
           </CardHeader>
@@ -106,6 +121,26 @@ export default function CommunePage() {
                   <span className="font-bold text-primary">Taxe Communale Reversée au Budget Local (5%) :</span>
                   <strong className="text-secondary text-base font-bold font-mono">{formatFcfa(taxeCalculee)}</strong>
                 </div>
+
+                <div className="pt-2 border-t border-border/60">
+                  <Button
+                    type="button"
+                    onClick={handleEmitQuittance}
+                    className="w-full h-9 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  >
+                    Émettre l&apos;Avis de Liquidation / Quittance Municipale
+                  </Button>
+                </div>
+
+                {quittanceCode && (
+                  <div className="p-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 animate-rise">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                    <div>
+                      <span>Quittance fiscale émise : <strong className="font-mono">{quittanceCode}</strong></span>
+                      <span className="block text-[10px] text-muted-foreground mt-0.5">Montant liquidé : {formatFcfa(taxeCalculee)} reversé au compte de la Commune de {user?.commune || "Ouidah"}.</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
