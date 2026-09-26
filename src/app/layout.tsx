@@ -1,37 +1,58 @@
 import type { Metadata, Viewport } from "next";
+import { Providers } from "@/components/layout/providers";
+import { Nav } from "@/components/layout/nav";
+import { SkipToContent } from "@/components/layout/skip-to-content";
+import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Anyigba — Cadastre Numérique & Sécurisation Foncière du Bénin",
-  description: "Plateforme nationale de gestion et de sécurisation du foncier au Bénin. Vérification instantanée, verrou anti-double-vente et actes inaltérables scellés sur BéninChain.",
-  keywords: ["Foncier Bénin", "Cadastre Bénin", "Titre Foncier", "ANDF", "CSAF", "Sécurisation Foncier", "BéninChain"],
-  authors: [{ name: "République du Bénin — ANDF & Cadastre National" }],
+  title: "BENINLAND (Anyigba) — Cadastre Numérique & Sécurisation Foncière du Bénin",
+  description:
+    "Plateforme nationale régalienne de gestion et de sécurisation du foncier en République du Bénin. Consultation cadastrale des 77 communes, verrou anti-double-vente et actes authentiques scellés.",
+  keywords: [
+    "Foncier Bénin",
+    "Cadastre Bénin",
+    "ANDF",
+    "Titre Foncier",
+    "CPF",
+    "Sécurisation Foncière",
+    "Cour Spéciale CSAF",
+    "BéninChain",
+  ],
+  authors: [{ name: "République du Bénin — Ministère du Cadre de Vie & ANDF" }],
   icons: {
     icon: "/favicon.ico",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A5C36",
+  themeColor: "#0a3764",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 };
-
-import { BottomNav } from "@/components/layout/BottomNav";
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
-}>) {
+  children: ReactNode;
+}>): ReactNode {
   return (
-    <html lang="fr" className="dark">
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground font-sans pb-16 md:pb-0">
-        {children}
-        <BottomNav />
+    <html
+      lang="fr"
+      className="light overflow-x-hidden max-w-full"
+      style={{ colorScheme: "light" }}
+      suppressHydrationWarning
+    >
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-[#0a3764]/10 selection:text-[#0a3764] overflow-x-hidden w-full max-w-full relative">
+        <Providers>
+          <div className="flex min-h-screen flex-col w-full max-w-full overflow-x-hidden">
+            <SkipToContent />
+            <Nav />
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
 }
-

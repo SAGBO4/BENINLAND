@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Landmark, ShieldCheck, Bell, Users, HeartHandshake, CheckCircle2, UserCheck, MapPin, FileText } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -12,10 +11,8 @@ export default function CitoyenPage() {
   const [carnetSuccess, setCarnetSuccess] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground bg-grid-benin">
-      <Header />
-
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
+    <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
+      <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
         {/* En-tête Espace Citoyen */}
         <Card className="border-purple-500/40 shadow-xl bg-card">
           <CardHeader className="p-5 sm:p-6">

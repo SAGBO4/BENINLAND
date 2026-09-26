@@ -207,16 +207,25 @@ describe("Frontend Unifié Anyigba (BENINLAND) — Scénarios & Flux Clés", () 
   });
 
   describe("6. Non-régression des Routes et Navigation Unifiée", () => {
-    it("doit vérifier que la page racine propose tous les onglets fonctionnels", () => {
+    it("doit vérifier que la page d'accueil souveraine intègre les modules clés et la télémétrie", () => {
       const pagePath = path.resolve(__dirname, "../src/app/page.tsx");
       const content = fs.readFileSync(pagePath, "utf-8");
 
-      expect(content).toContain('"vitrine"');
-      expect(content).toContain('"dashboard"');
-      expect(content).toContain('"carte"');
-      expect(content).toContain('"scenario"');
-      expect(content).toContain('"verification"');
-      expect(content).toContain('"simulators"');
+      // Intégration des composants républicains majeurs et du fond de parcelle
+      expect(content).toContain("parcelles-benin-hero.jpg");
+      expect(content).toContain("CadastreLeafletMap");
+      expect(content).toContain("InteractiveScenario");
+      expect(content).toContain("SERVICES_EN_LIGNE");
+      expect(content).toContain("PILIERS");
+      expect(content).toContain("ACTORS_SHORTCUTS");
+      expect(content).toContain("Footer");
+
+      // Services et piliers souverains
+      expect(content).toContain("Les 4 Piliers de la Réforme Foncière Souveraine");
+      expect(content).toContain("Délivrance de Titre Foncier / CPF");
+      expect(content).toContain("Verrou Notarial d'Opposabilité");
+      expect(content).toContain("Attestation de Non-Litige CSAF");
+      expect(content).toContain("Séquestre Trésor & Mutation CUT");
     });
 
     it("doit vérifier la présence des 9 espaces métiers spécialisés", () => {

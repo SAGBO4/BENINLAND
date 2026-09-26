@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import {
   FileCheck,
@@ -41,10 +40,8 @@ export default function VerifierActesPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground bg-grid-benin">
-      <Header />
-
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10 space-y-8 animate-rise">
+    <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
+      <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10 space-y-8 animate-rise">
         {/* En-tête officiel du Registre Cryptographique */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-card border border-border shadow-xl">
           <div className="flex items-center gap-4">
