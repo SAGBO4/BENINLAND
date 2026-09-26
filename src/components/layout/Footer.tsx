@@ -29,6 +29,7 @@ export function Footer() {
           <div className="space-y-2">
             <h4 className="text-foreground font-semibold text-xs uppercase tracking-wider">Partenaires d&apos;État</h4>
             <ul className="space-y-1.5 text-[11px]">
+              <li>Ministère du Cadre de Vie &amp; Trésor Public (DGTCP)</li>
               <li>Agence Nationale du Domaine et du Foncier (ANDF)</li>
               <li>Cour Spéciale des Affaires Foncières (CSAF)</li>
               <li>Chambre Nationale des Notaires du Bénin</li>
@@ -41,6 +42,11 @@ export function Footer() {
           <div className="space-y-2">
             <h4 className="text-foreground font-semibold text-xs uppercase tracking-wider">Services Publics</h4>
             <ul className="space-y-1.5 text-[11px]">
+              <li>
+                <Link href="/espace/ministere" className="hover:text-foreground transition text-secondary font-semibold">
+                  🏛️ Tour de Contrôle Ministérielle (Trésor CUT)
+                </Link>
+              </li>
               <li>
                 <Link href="/carte" className="hover:text-foreground transition">
                   Carte interactive du cadastre

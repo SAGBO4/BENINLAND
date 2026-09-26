@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, MapPin, Search, FileText, Smartphone, RotateCcw, Check, Sparkles } from "lucide-react";
+import { ShieldCheck, MapPin, Search, FileText, Smartphone, RotateCcw, Check, Sparkles, Landmark } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
@@ -113,6 +113,15 @@ export function Header() {
               </>
             )}
           </button>
+
+          <Link
+            href="/espace/ministere"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/15 hover:bg-secondary/25 text-secondary border border-secondary/30 text-[11px] font-semibold transition"
+            title="Accès au Tableau de Bord Ministériel (Trésor Public & Régulation)"
+          >
+            <Landmark className="w-3.5 h-3.5 text-secondary" />
+            <span>Tour Ministérielle</span>
+          </Link>
 
           <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/30 text-[11px] font-semibold">
             <Sparkles className="w-3 h-3 text-secondary" />
