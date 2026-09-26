@@ -12,18 +12,23 @@ import { Button } from "@/components/ui/button";
 export default function AdminPage() {
   const [resetting, setResetting] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleReset = async () => {
     setResetting(true);
     setResetMsg(null);
+    setErrorMsg(null);
     try {
       const res = await fetch("/api/v1/demo/reset", { method: "POST" });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setResetMsg("Base de données restaurée au jeu de données certifié (Seed 2026). L'intégrité initiale est rétablie.");
+      } else {
+        setErrorMsg(data.error || "Échec de la réinitialisation de la base.");
       }
     } catch (e) {
       console.error(e);
+      setErrorMsg("Erreur réseau ou serveur lors de la réinitialisation.");
     } finally {
       setResetting(false);
     }
@@ -75,6 +80,13 @@ export default function AdminPage() {
           <div className="p-4 rounded-xl bg-success/15 border border-success/30 text-success text-xs flex items-center gap-2 animate-rise">
             <Check className="w-4 h-4 shrink-0" />
             <span className="leading-relaxed">{resetMsg}</span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2 animate-rise">
+            <RotateCcw className="w-4 h-4 shrink-0" />
+            <span className="leading-relaxed font-semibold">{errorMsg}</span>
           </div>
         )}
 

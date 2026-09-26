@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Users, MapPin, Mic, Camera, Coins, CheckCircle2, ShieldCheck, Play, ArrowRight, Smartphone, Compass } from "lucide-react";
+import { Users, MapPin, Mic, Camera, Coins, CheckCircle2, ShieldCheck, Play, ArrowRight, Smartphone, Compass, AlertTriangle } from "lucide-react";
 import { formatFcfa } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,11 +22,13 @@ export default function AgentFoncierPage() {
   const [photosCount, setPhotosCount] = useState(4);
   const [loading, setLoading] = useState(false);
   const [createdConv, setCreatedConv] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleCreateConvention = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setCreatedConv(null);
+    setErrorMsg(null);
 
     try {
       const res = await fetch("/api/v1/conventions", {
@@ -53,9 +55,12 @@ export default function AgentFoncierPage() {
       const json = await res.json();
       if (res.ok && json.success) {
         setCreatedConv(json.data);
+      } else {
+        setErrorMsg(json.error || "Échec de l'enregistrement du procès-verbal de bornage.");
       }
     } catch (e) {
       console.error(e);
+      setErrorMsg("Erreur réseau lors de la transmission du procès-verbal.");
     } finally {
       setLoading(false);
     }
@@ -125,6 +130,14 @@ export default function AgentFoncierPage() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Alerte d'erreur */}
+        {errorMsg && (
+          <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2 animate-rise">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span className="leading-relaxed font-semibold">{errorMsg}</span>
+          </div>
         )}
 
         {/* Formulaire de saisie du Procès-Verbal de Bornage */}

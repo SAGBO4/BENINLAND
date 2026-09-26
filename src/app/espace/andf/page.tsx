@@ -13,6 +13,7 @@ export default function AndfPage() {
   const [mutations, setMutations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchMutations = async () => {
     try {
@@ -33,6 +34,7 @@ export default function AndfPage() {
   const handleValidate = async (mutationCode: string) => {
     setLoading(true);
     setSuccessMsg(null);
+    setErrorMsg(null);
     try {
       const res = await fetch(`/api/v1/mutations/${encodeURIComponent(mutationCode)}/finaliser`, {
         method: "POST",
@@ -45,9 +47,12 @@ export default function AndfPage() {
           `Mutation ${mutationCode} instruite et validée par l'ANDF. Le Certificat de Propriété Foncière (CPF) est scellé au Livre Foncier et les fonds sous séquestre sont débloqués.`
         );
         fetchMutations();
+      } else {
+        setErrorMsg(data.error || "Échec de l'instruction de la mutation par l'ANDF.");
       }
     } catch (e) {
       console.error(e);
+      setErrorMsg("Erreur réseau lors de la validation avec le registre foncier.");
     } finally {
       setLoading(false);
     }
@@ -93,6 +98,13 @@ export default function AndfPage() {
           <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2 animate-rise">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span className="leading-relaxed">{successMsg}</span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2 animate-rise">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span className="leading-relaxed font-semibold">{errorMsg}</span>
           </div>
         )}
 

@@ -6,11 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatFcfa(amount: number): string {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "XOF",
+  const formattedNumber = new Intl.NumberFormat("fr-FR", {
     maximumFractionDigits: 0,
-  }).format(amount).replace("XOF", "FCFA");
+  }).format(amount);
+  return `${formattedNumber} FCFA`;
 }
 
 export function maskIdentity(name: string): string {

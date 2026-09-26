@@ -15,13 +15,19 @@ export default function CsafPage() {
   const [demandeur, setDemandeur] = useState("Succession Gbénou");
   const [motif, setMotif] = useState("Revendication de droits successoraux coutumiers et contestation de limite parcellaire");
   const [gelSuccess, setGelSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleGel = (e: React.FormEvent) => {
     e.preventDefault();
-    const p = anyigbaRepo.getParcelleByCode(parcelleCode);
+    setErrorMsg(null);
+    setGelSuccess(false);
+    const code = parcelleCode.trim().toUpperCase();
+    const p = anyigbaRepo.getParcelleByCode(code);
     if (p) {
       p.enLitige = true;
       setGelSuccess(true);
+    } else {
+      setErrorMsg(`La référence cadastrale "${code}" est introuvable. Impossible d'inscrire le gel conservatoire.`);
     }
   };
 
@@ -68,6 +74,13 @@ export default function CsafPage() {
               Ordonnance de gel conservatoire enregistrée au cadastre national pour la parcelle {parcelleCode}.
               Toute transaction, mutation ou aliénation est immédiatement bloquée dans tout le système d&apos;État.
             </span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2 animate-rise">
+            <AlertOctagon className="w-4 h-4 shrink-0" />
+            <span className="leading-relaxed font-semibold">{errorMsg}</span>
           </div>
         )}
 
