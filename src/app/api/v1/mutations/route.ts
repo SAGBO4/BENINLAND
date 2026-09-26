@@ -19,7 +19,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ success: false, error: "Payload JSON invalide" }, { status: 400 });
+    }
+
     const parsed = MutationSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -29,12 +33,24 @@ export async function POST(request: Request) {
       );
     }
 
+    if (parsed.data.cedantNpi.trim() === parsed.data.cessionnaireNpi.trim()) {
+      return NextResponse.json(
+        { success: false, error: "AUTO_CESSION_INTERDITE: Le cédant et le cessionnaire ne peuvent pas avoir le même NPI." },
+        { status: 400 }
+      );
+    }
+
     const result = anyigbaRepo.initiateMutation(parsed.data);
 
     if (!result.success) {
+      let status = 409;
+      if (result.error?.includes("PROPRIETAIRE_NON_CONFORME")) status = 403;
+      if (result.error?.includes("PARCELLE_INEXISTANTE")) status = 404;
+      if (result.error?.includes("AUTO_CESSION_INTERDITE") || result.error?.includes("PRIX_INVALIDE")) status = 400;
+
       return NextResponse.json(
         { success: false, error: result.error },
-        { status: 409 } // 409 Conflict pour le verrou anti-double-vente !
+        { status }
       );
     }
 
