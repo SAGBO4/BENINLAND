@@ -119,26 +119,34 @@ Conformément aux directives, la page d'accueil d'Anyigba adopte une **structure
     2. Alerte cession
     3. Contacter l'agent communal
 
-### Module 3 : Verrou Anti-Double-Vente & Workflow de Mutation (`/espace/notaire`, `/espace/andf`)
-- **Problème résolu** : Un vendeur cède le même matin son terrain à deux personnes différentes chez deux officiers différents.
-- **Solution Anyigba** :
-  1. Dès qu'un notaire initie un dossier de vente pour la parcelle `P`, le système active automatiquement le champ `verrou_mutation = true`.
-  2. La parcelle change immédiatement de couleur sur la carte publique et affiche l'état 🔒 **Mutation en cours**.
-  3. Le propriétaire légitime actuel reçoit automatiquement un SMS et une notification d'ouverture de dossier.
-  4. **Tentative frauduleuse concurrente** : Si un second notaire ou un acheteur tente de déposer une transaction sur la même parcelle, l'API rejette la requête avec l'erreur bloquante :  
-     `409 CONFLICT: PARCELLE_VERROUILLEE - Une mutation est déjà en cours d'instruction sur cette parcelle.`
-  5. Une fois les droits d'enregistrement payés et les actes notariés scellés, l'agent **ANDF** valide la mutation.
-  6. Le verrou est levé, le nouveau titulaire est enregistré, et l'historique de mutation est définitivement scellé dans le grand livre.
+### Module 3 : Verrou Anti-Double-Vente & Workflow de Mutation Sécurisée (`/espace/notaire`, `/espace/andf`)
+- **Problème résolu** : Un vendeur cède le même matin son terrain à deux personnes différentes chez deux officiers différents, ou perçoit les fonds sans céder la propriété.
+- **Protocole de Vente Sécurisée & Verrouillage Cryptographique** :
+  1. **Intention de Cession & Pose du Verrou** : Dès qu'une vente est initiée (par le notaire ou par l'agent foncier), le statut de la parcelle bascule instantanément en `en_verrou_mutation = true` (état 🔒).
+  2. **Notification Propriétaire Automatique** : Le titulaire légitime reçoit immédiatement un SMS certifié (« *Alerte Anyigba : Une transaction de cession a été initiée sur votre parcelle OUI-0421. Si vous n'en êtes pas à l'origine, tapez 2 pour geler immédiatement.* »).
+  3. **Blocage Concurrence Strict (Anti-Double-Vente)** : Toute tentative simultanée ou ultérieure sur cette parcelle par un tiers (autre notaire, acheteur ou agent) est rejetée avec une interdiction système :  
+     `409 CONFLICT: PARCELLE_VERROUILLEE - Mutation en cours sous le dossier #MUT-2026-X. Aucune transaction concurrente n'est recevable.`
+  4. **Paiement Sécurisé sous Séquestre (Escrow Foncier)** :
+     - L'acheteur effectue le paiement du prix convenu via un compte séquestre étatique / notarial (supporté par **Mobile Money MTN MoMo, Moov Money** ou virement bancaire).
+     - Les fonds sont garantis et cantonnés sous séquestre (`statut_sequestre = "FONDS_BLOQUES_SEQUESTRE"`).
+     - Ni le vendeur ni l'acheteur ne peuvent détourner les fonds tant que la procédure n'a pas abouti.
+     - Une quittance numérique horodatée avec preuve SHA-256 est générée pour l'acheteur.
+  5. **Validation ANDF & Levée du Séquestre** :
+     - Après contrôle de conformité par l'officier ANDF, la mutation est validée (`valide_andf_le`).
+     - Les fonds sous séquestre sont automatiquement débloqués et versés au vendeur (déduction faite des taxes communales de plus-value).
+     - Le verrou est levé et le nouveau droit de propriété est émis au nom de l'acheteur avec son token miroir mis à jour.
+     - En cas de rejet motivé (fraude, contestation légitime), les fonds séquestrés sont **intégralement et immédiatement recrédités à l'acheteur**.
 
-### Module 4 : Convention de Vente Assistée au Village (`/espace/agent`)
+### Module 4 : Convention de Vente Assistée au Village & Paiement Sécurisé Terrain (`/espace/agent`)
 - Conçue pour les zones rurales et périurbaines où les notaires sont peu présents.
-- L'agent foncier de village se rend sur le terrain muni de l'application (fonctionnant même hors connexion) :
-  - **Tracé GPS** : Saisie des 4 bornes géographiques avec calcul de surface en temps réel.
-  - **Contrôle topologique automatique** : L'API PostGIS vérifie que le nouveau tracé ne chevauche aucune parcelle existante (`ST_Overlaps` / `ST_Intersects`).
-  - **Photos des bornes** : 4 photographies géolocalisées des bornes en béton.
-  - **Identification NPI** : Renseignement du Numéro Personnel d'Identification (NPI) du vendeur, de l'acheteur et du chef de village.
-  - **Recueil des Témoignages Vocaux** : Enregistrement des déclarations des voisins de limites (Nord, Sud, Est, Ouest) et du chef de village en langues nationales (fichiers audio horodatés et condensés en empreinte cryptographique).
-  - **Séquestre Mobile Money (MoMo)** : Simulation de mise sous séquestre des fonds de la vente jusqu'à la délivrance de l'attestation communale.
+- L'agent foncier assermenté formalise sur place une vente en toute sécurité :
+  - **Tracé GPS & Bornage** : Saisie des 4 bornes géographiques avec calcul de surface en temps réel.
+  - **Contrôle Topologique Automatique (Zéro Chevauchement)** : L'API PostGIS vérifie géométriquement (`ST_Intersects` / `ST_Overlaps`) que la parcelle n'empiète ni sur une propriété voisine, ni sur un domaine public classé.
+  - **Photos Numériques des Bornes** : 4 photographies géolocalisées des bornes en béton enregistrées et scellées.
+  - **Authentification NPI des Parties** : Contrôle du NPI du vendeur, de l'acheteur, des témoins et du chef de village.
+  - **Recueil des Témoignages Vocaux en Langues Nationales** : Déclarations audio enregistrées des riverains (Nord, Sud, Est, Ouest) et du chef de village en Fongbe, Yoruba, Goun, etc., attestant des limites et de la propriété coutumière.
+  - **Séquestre Mobile Money Villageois** : L'acheteur dépose le paiement sur le compte de séquestre Mobile Money via un parcours USSD/MoMo simulé réaliste. Les fonds sont bloqués jusqu'à la délivrance de l'attestation communale.
+  - **Chaîne de Preuve & Traçabilité Complète** : L'ensemble du dossier (coordonnées GPS, photos, audio, NPI, quittance MoMo) est compilé en un condensé cryptographique **SHA-256**, ancré sur **BéninChain** et vérifiable à tout moment.
 
 ### Module 5 : Coffre-Fort Numérique des Actes & Preuve d'Intégrité Blockchain (`/espace/notaire`, `/verification/actes`)
 - Chaque document foncier (titre de propriété, plan cadastral de géomètre, acte notarié de vente, procès-verbal de bornage) est stocké avec :
