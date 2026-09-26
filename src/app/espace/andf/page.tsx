@@ -7,8 +7,10 @@ import { formatFcfa } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AndfPage() {
+  const { user } = useAuth();
   const [mutations, setMutations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -34,11 +36,14 @@ export default function AndfPage() {
     setLoading(true);
     setSuccessMsg(null);
     setErrorMsg(null);
+    const officerName = user
+      ? `${user.prenom} ${user.nom} (${user.titre || "ANDF"})`
+      : "Mme Reine Houndété (Directrice ANDF)";
     try {
       const res = await fetch(`/api/v1/mutations/${encodeURIComponent(mutationCode)}/finaliser`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ officerName: "Mme Reine Houndété (Directrice ANDF)" }),
+        body: JSON.stringify({ officerName }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -85,7 +90,12 @@ export default function AndfPage() {
 
               <div className="text-xs bg-background/80 p-3 rounded-xl border border-border shrink-0">
                 <span className="text-[10px] text-muted-foreground block font-medium">Conservateur Général</span>
-                <strong className="text-foreground">Mme Reine Houndété (Directrice ANDF)</strong>
+                <strong className="text-foreground">
+                  {user ? `${user.prenom} ${user.nom}` : "Mme Reine Houndété (Directrice ANDF)"}
+                </strong>
+                <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
+                  NPI : {user?.npi || "FICTIF-BEN-2026-0012"}
+                </span>
               </div>
             </div>
           </CardHeader>

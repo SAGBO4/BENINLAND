@@ -8,9 +8,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AgentFoncierPage() {
-  const [commune, setCommune] = useState("Ouidah");
+  const { user } = useAuth();
+  const [commune, setCommune] = useState(user?.commune || "Ouidah");
   const [village, setVillage] = useState("Pahou");
   const [vendeurNom, setVendeurNom] = useState("Germain Dossou");
   const [vendeurNpi, setVendeurNpi] = useState("FICTIF-BEN-2026-0041");
@@ -29,13 +31,18 @@ export default function AgentFoncierPage() {
     setCreatedConv(null);
     setErrorMsg(null);
 
+    const effectiveAgentNpi = user?.npi || "FICTIF-BEN-2026-0045";
+    const effectiveAgentNom = user
+      ? `${user.prenom} ${user.nom} (${user.titre || "Agent Géomètre"})`
+      : "Mamadou Bio (Agent Foncier)";
+
     try {
       const res = await fetch("/api/v1/conventions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          agentNpi: "FICTIF-BEN-2026-0045",
-          agentNom: "Mamadou Bio (Agent Foncier)",
+          agentNpi: effectiveAgentNpi,
+          agentNom: effectiveAgentNom,
           vendeurNpi,
           vendeurNom,
           acheteurNpi,
@@ -93,7 +100,12 @@ export default function AgentFoncierPage() {
 
               <div className="text-xs bg-background/80 p-3 rounded-xl border border-border shrink-0">
                 <span className="text-[10px] text-muted-foreground block font-medium">Agent Assermenté</span>
-                <strong className="text-foreground">Mamadou Bio (Arrondissement de Pahou)</strong>
+                <strong className="text-foreground">
+                  {user ? `${user.prenom} ${user.nom}` : "Mamadou Bio"} ({user?.commune || "Ouidah"})
+                </strong>
+                <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
+                  NPI : {user?.npi || "FICTIF-BEN-2026-0045"}
+                </span>
               </div>
             </div>
           </CardHeader>

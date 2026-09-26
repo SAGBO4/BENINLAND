@@ -19,11 +19,17 @@ import {
   Layers,
   ArrowRight,
   ShieldAlert,
+  UserCheck,
+  UserX,
+  Ban,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatFcfa } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import Link from "next/link";
 
 export default function MinisterePage() {
   const [selectedDepartement, setSelectedDepartement] = useState("Atlantique");
@@ -93,6 +99,12 @@ export default function MinisterePage() {
     }, 500);
   };
 
+  const { controllerMandate, toggleControllerMandate, getRegisteredAccounts } = useAuth();
+  const registeredAccounts = getRegisteredAccounts();
+  const pendingAccountsCount = registeredAccounts.filter((a) => a.statutValidation === "EN_ATTENTE_VALIDATION").length;
+  const validAccountsCount = registeredAccounts.filter((a) => a.statutValidation === "VALIDE").length;
+  const rejectedAccountsCount = registeredAccounts.filter((a) => a.statutValidation === "REJETE").length;
+
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
       <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
@@ -127,6 +139,121 @@ export default function MinisterePage() {
               </div>
             </div>
           </CardHeader>
+        </Card>
+
+        {/* SECTION HAUTE TUTELLE : SUPERVISION DIRECTE DU CONTRÔLEUR DES HABILITATIONS */}
+        <Card className="border-primary/40 bg-card/95 shadow-lg overflow-hidden">
+          <CardHeader className="p-5 sm:p-6 pb-3 border-b border-border bg-muted/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base sm:text-lg font-bold">
+                      Tutelle Ministérielle &amp; Contrôle des Habilitations (IGAF)
+                    </CardTitle>
+                    <Badge
+                      variant={controllerMandate.active ? "default" : "destructive"}
+                      className="text-[10px] uppercase font-bold"
+                    >
+                      {controllerMandate.active ? "Mandat Délégué Actif" : "Mandat Suspendu"}
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs mt-0.5">
+                    Le Ministère délègue et supervise l&apos;autorité d&apos;attribution des rôles réglementaires confiée au Contrôleur Général.
+                  </CardDescription>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={controllerMandate.active ? "destructive" : "default"}
+                  onClick={() => toggleControllerMandate(!controllerMandate.active)}
+                  className="text-xs font-bold h-8 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Ban className="w-3.5 h-3.5" />
+                  <span>
+                    {controllerMandate.active ? "Suspendre le Contrôleur" : "Rétablir le Mandat"}
+                  </span>
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  asChild
+                  className="text-xs font-bold h-8 cursor-pointer"
+                >
+                  <Link href="/espace/controleur" className="flex items-center gap-1">
+                    <span>Console Contrôleur</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl border border-border bg-background space-y-1.5">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Contrôleur Nommé par Décret
+                </span>
+                <div className="text-sm font-bold text-foreground">
+                  {controllerMandate.prenom} {controllerMandate.nom}
+                </div>
+                <div className="font-mono text-[11px] text-primary">{controllerMandate.npi}</div>
+                <p className="text-[10px] text-muted-foreground italic pt-1 border-t border-border mt-1">
+                  {controllerMandate.decretReference}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-border bg-background space-y-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Statistiques des Habilitations Contrôlées
+                </span>
+                <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                  <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <div className="text-base font-black text-amber-600 dark:text-amber-400 font-mono">
+                      {pendingAccountsCount}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground font-semibold">En attente</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <div className="text-base font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                      {validAccountsCount}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground font-semibold">Validés</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20">
+                    <div className="text-base font-black text-rose-600 dark:text-rose-400 font-mono">
+                      {rejectedAccountsCount}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground font-semibold">Rejetés</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-border bg-background space-y-1.5 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Pouvoir Républicain de Révocation &amp; d&apos;Audit
+                  </span>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                    Le Ministre dispose d&apos;un droit de réformation immédiat sur toute attribution de qualité (notariat, géomètre, banque, etc.) prononcée par l&apos;IGAF.
+                  </p>
+                </div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>Registre cryptographique synchronisé avec la présidence</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
         </Card>
 
         {/* SECTION TRÉSOR PUBLIC DU BÉNIN : FLUX FINANCIERS RÉGALIENS (DGTCP / CUT) */}

@@ -31,11 +31,13 @@ const smsJournal: SimulatedSmsRecord[] = [
 ];
 
 export function sendSimulatedSms(telephone: string, message: string): SimulatedSmsRecord {
+  const safeTel = typeof telephone === "string" ? telephone : "+229 00 00 00 00";
+  const safeMsg = typeof message === "string" ? message : "";
   const record: SimulatedSmsRecord = {
     id: `SMS-${Date.now().toString().slice(-4)}`,
-    telephone,
+    telephone: safeTel,
     direction: "OUTBOUND",
-    message,
+    message: safeMsg,
     date: new Date().toISOString(),
   };
   smsJournal.push(record);
@@ -50,15 +52,17 @@ export function getSimulatedSmsJournal(): SimulatedSmsRecord[] {
  * Traite une commande SMS entrante (ex: "VERIF OUI-0421").
  */
 export function processInboundSms(telephone: string, text: string): string {
-  const parts = text.trim().split(/\s+/);
-  const command = parts[0]?.toUpperCase();
-  const arg = parts[1]?.toUpperCase();
+  const safeTel = typeof telephone === "string" ? telephone : "+229 00 00 00 00";
+  const safeText = typeof text === "string" ? text : "";
+  const parts = safeText.trim().split(/\s+/).filter(Boolean);
+  const command = parts[0]?.toUpperCase() || "";
+  const arg = parts[1]?.toUpperCase() || "";
 
   smsJournal.push({
     id: `SMS-${Date.now().toString().slice(-4)}`,
-    telephone,
+    telephone: safeTel,
     direction: "INBOUND",
-    message: text,
+    message: safeText,
     date: new Date().toISOString(),
   });
 

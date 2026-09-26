@@ -19,6 +19,9 @@ import {
   Landmark,
   ShieldCheck,
   User,
+  UserPlus,
+  LogIn,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { FadeIn, ScaleUnblur } from "@/components/ui/motion-primitives";
@@ -124,11 +127,23 @@ const ACTOR_CARDS: ActorCard[] = [
     color: "from-purple-700 to-indigo-900",
     badge: "Garanties & Hypothèque",
   },
+  {
+    role: "CONTROLEUR",
+    title: "Contrôleur National des Habilitations (IGAF)",
+    category: "Gouvernance & Régulation",
+    description: "Instruction déontologique des demandes d'accès, validation régalienne des officiers publics et contrôle de conformité sous tutelle ministérielle.",
+    facility: "Inspection Générale des Affaires Foncières • MCVDD",
+    cadreReglementaire: "Mandaté par Décret Ministériel MCVDD / MEF",
+    icon: ShieldCheck,
+    color: "from-blue-700 to-slate-900",
+    badge: "Contrôle & Habilitations",
+  },
 ];
 
 export default function LoginPage(): ReactNode {
-  const { loginWithCredentials } = useAuth();
+  const { loginWithCredentials, registerAccount, lastLoginError, clearLoginError } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<"connexion" | "inscription">("connexion");
   const [step, setStep] = useState<"select" | "form">("select");
   const [selectedRole, setSelectedRole] = useState<UserRole>("NOTAIRE");
   const [npi, setNpi] = useState("");
@@ -136,6 +151,19 @@ export default function LoginPage(): ReactNode {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDirectory, setShowDirectory] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [regSuccessMsg, setRegSuccessMsg] = useState<string | null>(null);
+
+  // Formulaire d'inscription réelle
+  const [regNom, setRegNom] = useState("");
+  const [regPrenom, setRegPrenom] = useState("");
+  const [regNpi, setRegNpi] = useState("");
+  const [regRole, setRegRole] = useState<UserRole>("CITOYEN");
+  const [regTitre, setRegTitre] = useState("");
+  const [regEtablissement, setRegEtablissement] = useState("");
+  const [regCommune, setRegCommune] = useState("Cotonou");
+  const [regDepartement, setRegDepartement] = useState("Littoral");
+  const [regPassword, setRegPassword] = useState("");
+  const [regIsSubmitting, setRegIsSubmitting] = useState(false);
 
   // Vérifier si un rôle est passé en paramètre URL
   useEffect(() => {
@@ -149,6 +177,8 @@ export default function LoginPage(): ReactNode {
   }, []);
 
   const handleSelectActor = (role: UserRole) => {
+    clearLoginError();
+    setRegSuccessMsg(null);
     const user = DEMO_USERS[role] || DEMO_USERS.NOTAIRE;
     setSelectedRole(role);
     setNpi(user.npi);
@@ -157,6 +187,7 @@ export default function LoginPage(): ReactNode {
   };
 
   const handleResetToOfficial = () => {
+    clearLoginError();
     const user = DEMO_USERS[selectedRole] || DEMO_USERS.NOTAIRE;
     setNpi(user.npi);
     setPassword(user.password || "benin2026");
@@ -164,6 +195,7 @@ export default function LoginPage(): ReactNode {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    clearLoginError();
     setIsSubmitting(true);
     setTimeout(() => {
       loginWithCredentials(
@@ -173,6 +205,36 @@ export default function LoginPage(): ReactNode {
       );
       setIsSubmitting(false);
     }, 350);
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    clearLoginError();
+    setRegSuccessMsg(null);
+    setRegIsSubmitting(true);
+    setTimeout(() => {
+      const template = DEMO_USERS[regRole];
+      const newSession = {
+        npi: regNpi.trim() || `ANIP-BEN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        nom: regNom.trim() || "Utilisateur",
+        prenom: regPrenom.trim() || "Nouveau",
+        role: regRole,
+        roleLabel: template.roleLabel,
+        titre: regTitre.trim() || template.titre,
+        etablissementNom: regEtablissement.trim() || template.etablissementNom,
+        commune: regCommune.trim() || "Cotonou",
+        departement: regDepartement.trim() || "Littoral",
+        badge: template.badge,
+        password: regPassword.trim() || "benin2026",
+      };
+      const res = registerAccount(newSession);
+      setRegIsSubmitting(false);
+      if (res.requiresValidation) {
+        setRegSuccessMsg(
+          `Demande d'enrôlement enregistrée avec succès sous le NPI ${newSession.npi}. Selon la hiérarchie du système étatique, votre accès en tant que "${newSession.role}" est actuellement soumis à l'instruction et à la validation du Contrôleur National des Habilitations (IGAF sous tutelle du Ministère).`
+        );
+      }
+    }, 400);
   };
 
   const handleCopy = (text: string, key: string) => {
@@ -187,8 +249,217 @@ export default function LoginPage(): ReactNode {
 
   return (
     <main className="min-h-screen bg-[#f6f8fb] text-slate-900 pt-8 pb-20 px-4 sm:px-8 lg:px-12 flex flex-col justify-center">
-      {/* ÉTAPE 1 : CHOISIR À QUEL ACTEUR ON APPARTIENT */}
-      {step === "select" && (
+      {/* Sélecteur d'onglet : Connexion vs Inscription Réelle */}
+      <div className="flex justify-center mb-8">
+        <div className="inline-flex rounded-xl bg-slate-200/80 p-1.5 border border-slate-300 shadow-inner">
+          <button
+            type="button"
+            onClick={() => setActiveTab("connexion")}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "connexion"
+                ? "bg-white text-[#0a3764] shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Guichet d&apos;Accès Réglementaire</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("inscription")}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "inscription"
+                ? "bg-[#0a3764] text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <UserPlus className="h-4 w-4" />
+            <span>Créer un Nouveau Compte</span>
+          </button>
+        </div>
+      </div>
+
+      {/* VUE 1 : CRÉER UN NOUVEAU COMPTE RÉEL */}
+      {activeTab === "inscription" && (
+        <ScaleUnblur className="max-w-2xl mx-auto w-full">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-7 sm:p-10 shadow-xl flex flex-col gap-6">
+            <div className="border-b border-slate-100 pb-5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-800 mb-3">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span>Enrôlement Foncier National • Loi 2013-01 & 2017-20</span>
+              </div>
+              <h2 className="text-2xl font-black text-slate-900">
+                Créer un Nouveau Compte Foncier
+              </h2>
+              <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                Renseignez vos identifiants réels ou professionnels pour ouvrir un compte certifié et accéder immédiatement à votre espace de travail.
+              </p>
+            </div>
+
+            {regSuccessMsg && (
+              <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 text-xs flex items-start gap-2.5 animate-rise">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-sm">Demande d&apos;Enrôlement Transmise à l&apos;IGAF</div>
+                  <p className="mt-1 leading-relaxed text-slate-700">{regSuccessMsg}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("connexion");
+                      setRegSuccessMsg(null);
+                    }}
+                    className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0a3764] text-white font-bold text-xs hover:bg-[#082a4d] cursor-pointer"
+                  >
+                    <span>Consulter le guichet d&apos;accès</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-5">
+              {/* Choix du rôle réglementaire */}
+              <div>
+                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                  Corps Professionnel ou Statut Usager *
+                </label>
+                <select
+                  value={regRole}
+                  onChange={(e) => setRegRole(e.target.value as UserRole)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                  required
+                >
+                  <option value="CITOYEN">Citoyen / Propriétaire foncier (Espace Citoyen)</option>
+                  <option value="NOTAIRE">Notaire Instrumentaire (Chambre Nationale des Notaires)</option>
+                  <option value="AGENT">Agent Cadastral / Géomètre de Zone (Bornage GPS)</option>
+                  <option value="COMMUNE">Mairie / Direction de l&apos;Urbanisme (Affaires Domaniales)</option>
+                  <option value="BANQUE">Établissement Bancaire / Prêteur (Garanties &amp; Hypothèques)</option>
+                  <option value="CSAF">Cour Spéciale des Affaires Foncières (Contentieux Domanial)</option>
+                  <option value="ANDF">Agence Nationale du Domaine et du Foncier (ANDF)</option>
+                  <option value="CONTROLEUR">Inspecteur Contrôleur National (IGAF &bull; Tutelle Ministérielle)</option>
+                  <option value="MINISTERE">Ministère du Cadre de Vie &amp; des Finances (Régulation)</option>
+                </select>
+              </div>
+
+              {/* Nom & Prénom */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                    Nom de famille *
+                  </label>
+                  <input
+                    type="text"
+                    value={regNom}
+                    onChange={(e) => setRegNom(e.target.value)}
+                    placeholder="Ex: HOUNDÉGNON"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                    Prénom(s) *
+                  </label>
+                  <input
+                    type="text"
+                    value={regPrenom}
+                    onChange={(e) => setRegPrenom(e.target.value)}
+                    placeholder="Ex: Christian"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* NPI ANIP & Téléphone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                    Numéro Personnel d&apos;Identification (NPI) *
+                  </label>
+                  <input
+                    type="text"
+                    value={regNpi}
+                    onChange={(e) => setRegNpi(e.target.value)}
+                    placeholder="Ex: 2026-NPI-0089 ou ANIP..."
+                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-mono text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                    required
+                  />
+                  <span className="text-[10px] text-slate-500 mt-1 block">Votre numéro ANIP certifié</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                    Commune &amp; Département *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      value={regCommune}
+                      onChange={(e) => setRegCommune(e.target.value)}
+                      placeholder="Commune"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:outline-none"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={regDepartement}
+                      onChange={(e) => setRegDepartement(e.target.value)}
+                      placeholder="Département"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Titre / Structure */}
+              <div>
+                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                  Structure / Établissement / Titre professionnel
+                </label>
+                <input
+                  type="text"
+                  value={regEtablissement}
+                  onChange={(e) => setRegEtablissement(e.target.value)}
+                  placeholder="Ex: Étude Notariale, Mandataire familial, Société..."
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                />
+              </div>
+
+              {/* Mot de passe */}
+              <div>
+                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                  Mot de passe de sécurité *
+                </label>
+                <input
+                  type="password"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="Définissez un mot de passe"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={regIsSubmitting}
+                className="w-full mt-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-3.5 text-sm font-bold text-white shadow-md shadow-emerald-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>
+                  {regIsSubmitting
+                    ? "Création et initialisation du compte..."
+                    : "Créer mon compte et ouvrir ma session"}
+                </span>
+              </button>
+            </form>
+          </div>
+        </ScaleUnblur>
+      )}
+
+      {/* VUE 2 : GUICHET D'ACCÈS RÉGLEMENTAIRE (CONNEXION RAPIDE OU PAR IDENTIFIANTS) */}
+      {activeTab === "connexion" && step === "select" && (
         <FadeIn className="w-full max-w-7xl mx-auto flex flex-col items-center">
           {/* En-tête Institutionnel Spacieux */}
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
@@ -205,6 +476,16 @@ export default function LoginPage(): ReactNode {
               Sélectionnez votre corps professionnel ou votre statut d&apos;usager pour accéder à votre console de travail habilitée par l&apos;ANDF et le Ministère du Cadre de Vie.
             </p>
           </div>
+
+          {lastLoginError && (
+            <div className="w-full max-w-2xl mb-8 p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs flex items-start gap-3 animate-rise">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-bold text-sm block">Contrôle d&apos;Accès &amp; Validation IGAF</strong>
+                <p className="mt-1 leading-relaxed">{lastLoginError}</p>
+              </div>
+            </div>
+          )}
 
           {/* Grille Spacieuse des 8 Rôles Réglementaires (Large max-w-7xl) */}
           <ScaleUnblur className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
@@ -366,7 +647,7 @@ export default function LoginPage(): ReactNode {
       )}
 
       {/* ÉTAPE 2 : FORMULAIRE DE CONNEXION AVEC IDENTIFIANTS DE L'ACTEUR CHOISI */}
-      {step === "form" && (
+      {activeTab === "connexion" && step === "form" && (
         <ScaleUnblur className="max-w-xl mx-auto w-full">
           {/* Bouton retour vers le choix de l'acteur */}
           <button
@@ -381,6 +662,16 @@ export default function LoginPage(): ReactNode {
             onSubmit={handleSubmit}
             className="rounded-2xl border border-slate-200/90 bg-white p-7 sm:p-10 shadow-xl flex flex-col gap-6"
           >
+            {lastLoginError && (
+              <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs flex items-start gap-2.5 animate-rise">
+                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="font-bold text-sm block">Accès Non Autorisé / Non Validé</strong>
+                  <p className="mt-1 leading-relaxed">{lastLoginError}</p>
+                </div>
+              </div>
+            )}
+
             {/* Bannière du Profil Choisi */}
             <div className="flex items-start gap-4 p-4 rounded-xl border border-slate-200/90 bg-[#f6f8fb]">
               <div

@@ -160,6 +160,13 @@ const METIERS_GROUP: NavGroup = {
       icon: Landmark,
       badge: "Hypothèques",
     },
+    {
+      label: "Contrôle & Habilitations (IGAF)",
+      desc: "Instruction des demandes d'habilitation, validation des officiers et déontologie",
+      href: "/espace/controleur",
+      icon: ShieldCheck,
+      badge: "Tutelle MCVDD",
+    },
   ],
 };
 
@@ -172,6 +179,7 @@ const DEMO_ROLES: { role: UserRole; label: string; org: string }[] = [
   { role: "COMMUNE", label: "Sètondji Gbedji", org: "Mairie de Ouidah" },
   { role: "CITOYEN", label: "Germain Dossou", org: "Famille Propriétaire" },
   { role: "BANQUE", label: "Arnaud Kpatoukpa", org: "Banque Nationale" },
+  { role: "CONTROLEUR", label: "Insp. Patrice Hounnou", org: "Contrôleur IGAF" },
 ];
 
 export function Nav(): ReactNode {

@@ -13,7 +13,8 @@ export async function POST(
     const result = anyigbaRepo.finalizeMutationByAndf(id, officerName);
 
     if (!result.success) {
-      return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+      const status = (result.error?.includes("DEJA_VALIDEE") || result.error?.includes("STATUT_INVALIDE")) ? 409 : 400;
+      return NextResponse.json({ success: false, error: result.error }, { status });
     }
 
     return NextResponse.json({
