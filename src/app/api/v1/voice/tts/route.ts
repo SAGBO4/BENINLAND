@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-// Cache mémoire pour les requêtes audio récurrentes
+// Cache mémoire borné (FIFO) pour prévenir les attaques DoS / fuite mémoire (OOM)
+const MAX_AUDIO_CACHE_SIZE = 100;
 const audioCache = new Map<string, { bytes: Uint8Array; contentType: string }>();
+
+function setInAudioCache(key: string, value: { bytes: Uint8Array; contentType: string }) {
+  if (audioCache.size >= MAX_AUDIO_CACHE_SIZE) {
+    const oldestKey = audioCache.keys().next().value;
+    if (oldestKey) audioCache.delete(oldestKey);
+  }
+  audioCache.set(key, value);
+}
 
 const DEFAULT_BASE_URL = "https://ronaldodev-api.hf.space";
 
@@ -19,9 +28,9 @@ export async function POST(req: NextRequest) {
     const text = typeof body?.text === "string" ? body.text.trim() : "";
     const rawLang = typeof body?.language === "string" ? body.language : "fon";
 
-    if (!text) {
+    if (!text || text.length > 500) {
       return NextResponse.json(
-        { success: false, error: "Le paramètre 'text' est requis." },
+        { success: false, error: "Le paramètre 'text' est requis et doit être inférieur à 500 caractères." },
         { status: 400 }
       );
     }
@@ -77,8 +86,8 @@ export async function POST(req: NextRequest) {
       response.headers.get("content-type") ||
       (language === "fon" ? "audio/wav" : "audio/mpeg");
 
-    // Mise en cache mémoire
-    audioCache.set(cacheKey, { bytes, contentType });
+    // Mise en cache mémoire bornée
+    setInAudioCache(cacheKey, { bytes, contentType });
 
     return new NextResponse(bytes, {
       status: 200,
@@ -101,18 +110,18 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const text = searchParams.get("text") || "";
+  const text = (searchParams.get("text") || "").trim();
   const rawLang = searchParams.get("language") || searchParams.get("lang") || "fon";
 
-  if (!text.trim()) {
+  if (!text || text.length > 500) {
     return NextResponse.json(
-      { success: false, error: "Le paramètre query 'text' est requis." },
+      { success: false, error: "Le paramètre query 'text' est requis et doit être inférieur à 500 caractères." },
       { status: 400 }
     );
   }
 
   const language = normalizeLanguage(rawLang);
-  const cacheKey = `${language}:${crypto.createHash("md5").update(text.trim()).digest("hex")}`;
+  const cacheKey = `${language}:${crypto.createHash("md5").update(text).digest("hex")}`;
 
   if (audioCache.has(cacheKey)) {
     const cached = audioCache.get(cacheKey)!;
@@ -139,7 +148,7 @@ export async function GET(req: NextRequest) {
         "X-API-Key": apiKey,
       },
       body: JSON.stringify({
-        text: text.trim(),
+        text,
         language,
       }),
     });
@@ -157,7 +166,7 @@ export async function GET(req: NextRequest) {
       response.headers.get("content-type") ||
       (language === "fon" ? "audio/wav" : "audio/mpeg");
 
-    audioCache.set(cacheKey, { bytes, contentType });
+    setInAudioCache(cacheKey, { bytes, contentType });
 
     return new NextResponse(bytes, {
       status: 200,

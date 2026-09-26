@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { anyigbaRepo } from "@/repositories/index";
+import { maskIdentity, maskTelephone } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,9 +14,20 @@ export async function GET(request: Request) {
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, data: parcelle });
+    const sanitized = {
+      ...parcelle,
+      proprietaireNom: maskIdentity(parcelle.proprietaireNom),
+      proprietaireTel: maskTelephone(parcelle.proprietaireTel),
+    };
+    return NextResponse.json({ success: true, data: sanitized });
   }
 
   const parcelles = anyigbaRepo.getAllParcelles();
-  return NextResponse.json({ success: true, count: parcelles.length, data: parcelles });
+  const sanitized = parcelles.map((p) => ({
+    ...p,
+    proprietaireNom: maskIdentity(p.proprietaireNom),
+    proprietaireTel: maskTelephone(p.proprietaireTel),
+  }));
+
+  return NextResponse.json({ success: true, count: sanitized.length, data: sanitized });
 }
