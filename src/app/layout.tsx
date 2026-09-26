@@ -18,6 +18,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+import { BottomNav } from "@/components/layout/BottomNav";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,9 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className="dark">
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground font-sans">
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground font-sans pb-16 md:pb-0">
         {children}
+        <BottomNav />
       </body>
     </html>
   );
 }
+
