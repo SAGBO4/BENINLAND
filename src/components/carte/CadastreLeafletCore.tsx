@@ -5,6 +5,7 @@ import L from "leaflet";
 import { SeedParcelle } from "@/db/seed/data";
 import { formatFcfa } from "@/lib/utils";
 import { getParcelleStyle, ParcelleStyleRule } from "./cadastreStyles";
+import { getPoleForCommune } from "@/lib/poles-benin";
 
 export { getParcelleStyle };
 export type { ParcelleStyleRule };
@@ -13,7 +14,9 @@ interface CadastreLeafletCoreProps {
   parcelles: SeedParcelle[];
   selectedParcelle: SeedParcelle | null;
   onSelectParcelle: (parcelle: SeedParcelle) => void;
-  tileType: "carto" | "satellite";
+  tileType: "osm" | "satellite" | "carto";
+  focusCoords?: [number, number];
+  focusZoom?: number;
 }
 
 export default function CadastreLeafletCore({
@@ -21,6 +24,8 @@ export default function CadastreLeafletCore({
   selectedParcelle,
   onSelectParcelle,
   tileType,
+  focusCoords,
+  focusZoom,
 }: CadastreLeafletCoreProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -32,10 +37,10 @@ export default function CadastreLeafletCore({
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
 
-    // Définition de l'instance Leaflet
+    // Définition de l'instance Leaflet centrée sur la République du Bénin WGS84
     const map = L.map(mapContainerRef.current, {
-      center: [6.40, 2.22],
-      zoom: 11,
+      center: [7.50, 2.30], // Centre géographique de la République du Bénin
+      zoom: 8,
       zoomControl: false,
     });
 
@@ -49,7 +54,17 @@ export default function CadastreLeafletCore({
     };
   }, []);
 
-  // Gestion du fond de carte (Tuiles Carto Positron ou Satellite Esri)
+  // Déplacement fluide quand focusCoords ou focusZoom change
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !focusCoords) return;
+    map.flyTo(focusCoords, focusZoom ?? 11, {
+      duration: 1.2,
+      easeLinearity: 0.25,
+    });
+  }, [focusCoords, focusZoom]);
+
+  // Gestion du fond de carte (OpenStreetMap officiel, Satellite Esri, ou Carto)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -59,12 +74,15 @@ export default function CadastreLeafletCore({
       tileLayerRef.current = null;
     }
 
-    let url = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-    let attribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap';
+    let url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    let attribution = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributeurs &bull; République du Bénin';
 
     if (tileType === "satellite") {
       url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
       attribution = "&copy; Esri &mdash; Orthophotographie Satellite Souveraine";
+    } else if (tileType === "carto") {
+      url = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+      attribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap';
     }
 
     const newLayer = L.tileLayer(url, {
@@ -104,11 +122,12 @@ export default function CadastreLeafletCore({
         dashArray: style.dashArray,
       }).addTo(map);
 
-      // Infobulle permanente d'identification cadastrale
+      // Infobulle permanente d'identification cadastrale avec Pôle Territorial
+      const pole = getPoleForCommune(parcelle.commune);
       const tooltipContent = `
         <div style="font-family: inherit; font-size: 11px; padding: 2px 4px;">
-          <div style="font-weight: 800; font-family: monospace;">${parcelle.codeUnique}</div>
-          <div style="color: #64748b; font-size: 10px;">${parcelle.commune} &bull; ${formatFcfa(parcelle.superficieM2).replace("FCFA", "")} m²</div>
+          <div style="font-weight: 800; font-family: monospace; color: #fff;">${parcelle.codeUnique}</div>
+          <div style="color: #94a3b8; font-size: 10px;">${parcelle.commune} &bull; <span style="color: #f0a945; font-weight: 700;">${pole.nomCourt}</span></div>
         </div>
       `;
 

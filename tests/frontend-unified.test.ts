@@ -108,9 +108,9 @@ describe("Frontend Unifié Anyigba (BENINLAND) — Scénarios & Flux Clés", () 
   });
 
   describe("2. Carte Cadastrale Leaflet & 7 Polygones Géographiques", () => {
-    it("doit contenir exactement les 7 parcelles certifiées avec géométries GeoJSON valides", () => {
+    it("doit contenir les parcelles certifiées couvrant les 6 pôles territoriaux avec géométries GeoJSON valides", () => {
       const parcelles = anyigbaRepo.getAllParcelles();
-      expect(parcelles.length).toBe(7);
+      expect(parcelles.length).toBeGreaterThanOrEqual(7);
 
       for (const p of parcelles) {
         expect(p.codeUnique).toBeDefined();

@@ -405,7 +405,7 @@ export default function HomePage(): ReactNode {
                 className="w-full sm:w-auto inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white/90 hover:bg-white px-6 py-3 text-xs sm:text-sm font-bold text-slate-800 shadow-xs transition-all hover:border-[#0a3764]/50 text-center"
               >
                 <MapPin className="h-4 w-4 text-[#008751] shrink-0" />
-                <span>Consulter le SIG 77 Communes</span>
+                <span>Consulter le SIG (06 Pôles • OSM)</span>
               </Link>
             </div>
 
@@ -537,13 +537,13 @@ export default function HomePage(): ReactNode {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
             <div className="flex flex-col p-5 sm:p-6 rounded-2xl bg-[#f6f8fb] border border-slate-200/90 hover:border-[#0a3764]/30 transition-colors">
               <span className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0a3764] tracking-tight font-mono">
-                77
+                06 / 77
               </span>
               <span className="text-xs uppercase font-bold text-slate-900 mt-2.5">
-                Communes Raccordées
+                06 Pôles • 77 Communes
               </span>
               <span className="text-xs text-slate-600 mt-1 leading-relaxed">
-                12 départements interconnectés au référentiel cadastral national géoréférencé WGS84.
+                06 Pôles Territoriaux interconnectés au cadastre national géoréférencé WGS84 sous OpenStreetMap.
               </span>
             </div>
 
@@ -593,13 +593,13 @@ export default function HomePage(): ReactNode {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-[#0a3764]/10 px-3.5 py-1 text-xs font-bold text-[#0a3764] mb-2 border border-[#0a3764]/20">
                 <MapPin className="h-3.5 w-3.5" />
-                <span>Système d&apos;Information Géographique (SIG) National</span>
+                <span>Système d&apos;Information Géographique (SIG) National • OpenStreetMap</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Cartographie Cadastrale &amp; Bornes Réelles des 77 Communes
+                Cartographie Cadastrale OpenStreetMap • 06 Pôles &amp; 77 Communes
               </h2>
               <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-3xl">
-                Visualisez les polygones réels, les coordonnées GPS certifiées, les statuts juridiques (Titre Foncier, CPF, Domaine Public, Coutumier) et le panneau d&apos;inspection d&apos;opposabilité.
+                Moteur cartographique OpenStreetMap souverain intégrant les 06 Pôles de Développement Territorial (Grand-Nokoué, Sud-Ouest, Sud-Est, Centre, Nord-Ouest, Nord-Est), les coordonnées GPS certifiées, les régimes fonciers (Titre Foncier, CPF, Domaine Public, Coutumier) et le panneau d&apos;inspection d&apos;opposabilité.
               </p>
             </div>
 

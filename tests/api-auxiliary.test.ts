@@ -3,6 +3,7 @@ import { GET as getConventions, POST as postConvention } from "@/app/api/v1/conv
 import { GET as getParcelles } from "@/app/api/v1/parcelles/route";
 import { GET as verifyDocument } from "@/app/api/v1/documents/[id]/verifier/route";
 import { GET as getSmsJournal, POST as postSms } from "@/app/api/v1/sms/route";
+import { POST as postVoiceTts, GET as getVoiceTts } from "@/app/api/v1/voice/tts/route";
 import { anyigbaRepo } from "@/repositories/index";
 
 describe("API Routes Complémentaires", () => {
@@ -71,15 +72,15 @@ describe("API Routes Complémentaires", () => {
   });
 
   describe("API /api/v1/parcelles", () => {
-    it("doit retourner l'ensemble des 7 parcelles du cadastre béninois", async () => {
+    it("doit retourner l'ensemble des parcelles du cadastre béninois réparties sur les pôles", async () => {
       const request = new Request("http://localhost:3000/api/v1/parcelles");
       const response = await getParcelles(request);
       expect(response.status).toBe(200);
 
       const json = await response.json();
       expect(json.success).toBe(true);
-      expect(json.count).toBe(7);
-      expect(json.data.length).toBe(7);
+      expect(json.count).toBeGreaterThanOrEqual(7);
+      expect(json.data.length).toBeGreaterThanOrEqual(7);
     });
 
     it("doit filtrer par code parcelle exact via query param ?code=OUI-0421", async () => {
@@ -206,4 +207,53 @@ describe("API Routes Complémentaires", () => {
       expect(json.response).toContain("VERIF <Code>");
     });
   });
+
+  describe("API /api/v1/voice/tts — Synthèse Vocale 229 Langues", () => {
+    it("doit refuser une requête POST sans paramètre 'text' avec code 400", async () => {
+      // @ts-expect-error test payload vide
+      const request = new Request("http://localhost:3000/api/v1/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+
+      const response = await postVoiceTts(request as any);
+      expect(response.status).toBe(400);
+
+      const json = await response.json();
+      expect(json.success).toBe(false);
+      expect(json.error).toContain("text");
+    });
+
+    it("doit refuser une requête GET sans paramètre 'text' avec code 400", async () => {
+      const request = new Request("http://localhost:3000/api/v1/voice/tts");
+      const response = await getVoiceTts(request as any);
+      expect(response.status).toBe(400);
+
+      const json = await response.json();
+      expect(json.success).toBe(false);
+      expect(json.error).toContain("text");
+    });
+
+    it("doit générer ou retourner un flux audio binaire pour une phrase en Fongbe", async () => {
+      const request = new Request("http://localhost:3000/api/v1/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: "Anyigba elɔ ɖó Titre Foncier gbéjinɔtɔ sín ANDF gɔ́n.",
+          language: "fon",
+        }),
+      });
+
+      const response = await postVoiceTts(request as any);
+      expect(response.status).toBe(200);
+
+      const contentType = response.headers.get("content-type");
+      expect(contentType).toMatch(/audio\/(wav|x-wav|mpeg|ogg)/);
+
+      const buffer = await response.arrayBuffer();
+      expect(buffer.byteLength).toBeGreaterThan(100);
+    });
+  });
 });
+

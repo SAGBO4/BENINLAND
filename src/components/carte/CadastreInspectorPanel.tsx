@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { SeedParcelle } from "@/db/seed/data";
 import { formatFcfa } from "@/lib/utils";
 import { AudioPhrasePlayer } from "@/components/audio/AudioPhrasePlayer";
+import { getPoleForCommune } from "@/lib/poles-benin";
 import {
   ShieldCheck,
   Lock,
@@ -20,6 +21,7 @@ import {
   Check,
   X,
   AlertTriangle,
+  Compass,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -140,14 +142,34 @@ export function CadastreInspectorPanel({ parcelle, onClose }: CadastreInspectorP
             {parcelle.codeUnique}
           </div>
 
-          <div className="text-xs text-muted-foreground leading-relaxed pt-1 border-t border-border/60">
-            <div className="font-semibold text-foreground">
-              Département : {parcelle.commune === "Ouidah" || parcelle.commune === "Abomey-Calavi" || parcelle.commune === "Allada" || parcelle.commune === "Kpomassè" ? "Atlantique" : "Littoral"}
-            </div>
-            <div>
-              Commune de {parcelle.commune} &bull; Arrondissement de {parcelle.arrondissement} &bull; Village {parcelle.village}
-            </div>
-          </div>
+          {(() => {
+            const pole = getPoleForCommune(parcelle.commune);
+            return (
+              <div className="text-xs text-muted-foreground leading-relaxed pt-2 border-t border-border/60 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-primary" />
+                    <span>Commune de {parcelle.commune}</span>
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${pole.badgeBg} ${pole.badgeFg}`}>
+                    {pole.nomCourt} ({pole.code})
+                  </span>
+                </div>
+
+                <div className="text-[11px] text-muted-foreground">
+                  Arrondissement de {parcelle.arrondissement} &bull; Village {parcelle.village}
+                </div>
+
+                <div className="p-2 rounded bg-muted/30 border border-border/50 text-[10px] text-muted-foreground flex items-start gap-1.5">
+                  <Compass className="w-3 h-3 text-secondary shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-foreground">{pole.nom} : </span>
+                    <span>{pole.description}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Volet 2 : Statut Juridique & Conservation */}

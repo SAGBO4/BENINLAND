@@ -2,6 +2,7 @@ export interface SeedParcelle {
   id: number;
   codeUnique: string;
   commune: string;
+  poleTerritorial?: string;
   arrondissement: string;
   village: string;
   superficieM2: number;
@@ -215,5 +216,121 @@ export const INITIAL_PARCELLES: SeedParcelle[] = [
       ],
     },
     tokenBeninChainId: "TKN-COUTUMIER-KPO-077",
+  },
+  {
+    id: 8,
+    codeUnique: "POB-0112",
+    commune: "Pobè",
+    poleTerritorial: "Pôle Sud-Est",
+    arrondissement: "Pobè Centre",
+    village: "Igana",
+    superficieM2: 7800,
+    statutJuridique: "TITRE_FONCIER",
+    usage: "AGRICOLE",
+    enVerrouMutation: false,
+    enLitige: false,
+    proprietaireNom: "Plantations Palmeraie d'Igana",
+    proprietaireNpi: "FICTIF-BEN-2026-0612",
+    proprietaireTel: "+229 97 22 44 88",
+    polygoneGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [2.662, 6.975],
+          [2.671, 6.975],
+          [2.671, 6.984],
+          [2.662, 6.984],
+          [2.662, 6.975],
+        ],
+      ],
+    },
+    tokenBeninChainId: "TKN-FONCIER-POB-112",
+  },
+  {
+    id: 9,
+    codeUnique: "BOH-0450",
+    commune: "Bohicon",
+    poleTerritorial: "Pôle Centre",
+    arrondissement: "Bohicon II",
+    village: "Kpocon",
+    superficieM2: 1800,
+    statutJuridique: "CPF",
+    usage: "COMMERCIAL",
+    enVerrouMutation: false,
+    enLitige: false,
+    proprietaireNom: "Entrepôts Logistiques du Zou",
+    proprietaireNpi: "FICTIF-BEN-2026-0344",
+    proprietaireTel: "+229 95 33 22 11",
+    polygoneGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [2.058, 7.172],
+          [2.064, 7.172],
+          [2.064, 7.178],
+          [2.058, 7.178],
+          [2.058, 7.172],
+        ],
+      ],
+    },
+    tokenBeninChainId: "TKN-CPF-BOH-450",
+  },
+  {
+    id: 10,
+    codeUnique: "NAT-0088",
+    commune: "Natitingou",
+    poleTerritorial: "Pôle Nord-Ouest",
+    arrondissement: "Natitingou III",
+    village: "Kotapoungou",
+    superficieM2: 3500,
+    statutJuridique: "COUTUMIER",
+    usage: "HABITATION",
+    enVerrouMutation: false,
+    enLitige: false,
+    proprietaireNom: "Collectivité N'Dah & Frères",
+    proprietaireNpi: "FICTIF-BEN-2026-0810",
+    proprietaireTel: "+229 96 77 88 99",
+    polygoneGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [1.372, 10.302],
+          [1.379, 10.302],
+          [1.379, 10.308],
+          [1.372, 10.308],
+          [1.372, 10.302],
+        ],
+      ],
+    },
+    tokenBeninChainId: "TKN-COUTUMIER-NAT-088",
+  },
+  {
+    id: 11,
+    codeUnique: "PAR-0920",
+    commune: "Parakou",
+    poleTerritorial: "Pôle Nord-Est",
+    arrondissement: "1er Arrondissement",
+    village: "Titirou",
+    superficieM2: 4200,
+    statutJuridique: "TITRE_FONCIER",
+    usage: "COMMERCIAL",
+    enVerrouMutation: false,
+    enLitige: false,
+    proprietaireNom: "Comptoir Cotonnier du Septentrion",
+    proprietaireNpi: "FICTIF-BEN-2026-0920",
+    proprietaireTel: "+229 23 61 00 22",
+    polygoneGeojson: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [2.605, 9.335],
+          [2.614, 9.335],
+          [2.614, 9.344],
+          [2.605, 9.344],
+          [2.605, 9.335],
+        ],
+      ],
+    },
+    tokenBeninChainId: "TKN-FONCIER-PAR-920",
   },
 ];

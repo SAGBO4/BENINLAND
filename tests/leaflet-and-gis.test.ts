@@ -143,4 +143,49 @@ describe("Leaflet Cartographie & Algorithmes SIG", () => {
       expect(checkBoundingBoxOverlap(poly1, polyDisjoint)).toBe(false);
     });
   });
+
+  describe("06 Pôles de Développement Territorial & OpenStreetMap (OSM)", () => {
+    it("doit contenir exactement les 06 pôles territoriaux officiels du Bénin", async () => {
+      const { POLES_BENIN } = await import("@/lib/poles-benin");
+      expect(POLES_BENIN.length).toBe(6);
+
+      const poleIds = POLES_BENIN.map((p) => p.id);
+      expect(poleIds).toContain("grand-nokoue");
+      expect(poleIds).toContain("sud-ouest");
+      expect(poleIds).toContain("sud-est");
+      expect(poleIds).toContain("centre");
+      expect(poleIds).toContain("nord-ouest");
+      expect(poleIds).toContain("nord-est");
+    });
+
+    it("doit couvrir l'intégralité des 77 communes de la République du Bénin sans doublon", async () => {
+      const { POLES_BENIN } = await import("@/lib/poles-benin");
+      const allCommunes = POLES_BENIN.flatMap((p) => p.communes);
+      expect(allCommunes.length).toBe(77);
+
+      const uniqueCommunes = new Set(allCommunes.map((c) => c.toLowerCase()));
+      expect(uniqueCommunes.size).toBe(77);
+    });
+
+    it("doit associer fidèlement chaque commune clé à son pôle territorial respectif", async () => {
+      const { getPoleForCommune } = await import("@/lib/poles-benin");
+      expect(getPoleForCommune("Cotonou").id).toBe("grand-nokoue");
+      expect(getPoleForCommune("Abomey-Calavi").id).toBe("grand-nokoue");
+      expect(getPoleForCommune("Lokossa").id).toBe("sud-ouest");
+      expect(getPoleForCommune("Allada").id).toBe("sud-ouest");
+      expect(getPoleForCommune("Pobè").id).toBe("sud-est");
+      expect(getPoleForCommune("Bohicon").id).toBe("centre");
+      expect(getPoleForCommune("Abomey").id).toBe("centre");
+      expect(getPoleForCommune("Natitingou").id).toBe("nord-ouest");
+      expect(getPoleForCommune("Parakou").id).toBe("nord-est");
+    });
+
+    it("doit vérifier que la couche OpenStreetMap officielle est configurée par défaut dans CadastreLeafletCore", () => {
+      const corePath = path.resolve(__dirname, "../src/components/carte/CadastreLeafletCore.tsx");
+      const content = fs.readFileSync(corePath, "utf-8");
+      expect(content).toContain("tile.openstreetmap.org");
+      expect(content).toContain("OpenStreetMap");
+    });
+  });
 });
+
