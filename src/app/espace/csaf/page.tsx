@@ -9,17 +9,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import { useAuth } from "@/lib/auth-context";
+
 export default function CsafPage() {
+  const { user } = useAuth();
   const [parcelleCode, setParcelleCode] = useState("LIT-ALL-005");
   const [demandeur, setDemandeur] = useState("Succession Gbénou");
   const [motif, setMotif] = useState("Revendication de droits successoraux coutumiers et contestation de limite parcellaire");
   const [gelSuccess, setGelSuccess] = useState(false);
+  const [leveGelSuccess, setLeveGelSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleGel = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setGelSuccess(false);
+    setLeveGelSuccess(false);
     const code = parcelleCode.trim().toUpperCase();
     const p = anyigbaRepo.getParcelleByCode(code);
     if (p) {
@@ -27,6 +32,20 @@ export default function CsafPage() {
       setGelSuccess(true);
     } else {
       setErrorMsg(`La référence cadastrale "${code}" est introuvable. Impossible d'inscrire le gel conservatoire.`);
+    }
+  };
+
+  const handleLeverGel = () => {
+    setErrorMsg(null);
+    setGelSuccess(false);
+    setLeveGelSuccess(false);
+    const code = parcelleCode.trim().toUpperCase();
+    const p = anyigbaRepo.getParcelleByCode(code);
+    if (p) {
+      p.enLitige = false;
+      setLeveGelSuccess(true);
+    } else {
+      setErrorMsg(`La référence cadastrale "${code}" est introuvable.`);
     }
   };
 
@@ -58,11 +77,25 @@ export default function CsafPage() {
 
               <div className="text-xs bg-background/80 p-3 rounded-xl border border-border shrink-0">
                 <span className="text-[10px] text-muted-foreground block font-medium">Magistrat de Chambre</span>
-                <strong className="text-foreground">Juge Sossa (Chambre Spéciale du Foncier)</strong>
+                <strong className="text-foreground">
+                  {user ? `${user.prenom} ${user.nom}` : "Juge Antoine Sossa"}
+                </strong>
+                <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
+                  NPI : {user?.npi || "FICTIF-BEN-2026-0099"}
+                </span>
               </div>
             </div>
           </CardHeader>
         </Card>
+
+        {leveGelSuccess && (
+          <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 animate-rise">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span className="leading-relaxed font-semibold">
+              Jugement de mainlevée rendu. Le gel conservatoire sur la parcelle {parcelleCode} est levé au cadastre national.
+            </span>
+          </div>
+        )}
 
         {gelSuccess && (
           <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2 animate-rise">
@@ -129,14 +162,25 @@ export default function CsafPage() {
                   />
                 </div>
 
-                <Button
-                  type="submit"
-                  variant="destructive"
-                  className="w-full h-11 font-bold text-xs gap-2 cursor-pointer"
-                >
-                  <ShieldAlert className="w-4 h-4" />
-                  <span>Signer l&apos;Ordonnance &amp; Activer le Gel Conservatoire</span>
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <Button
+                    type="submit"
+                    variant="destructive"
+                    className="flex-1 h-11 font-bold text-xs gap-2 cursor-pointer"
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                    <span>Signer le Gel Conservatoire</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleLeverGel}
+                    className="h-11 font-bold text-xs gap-2 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Rendre Mainlevée du Gel</span>
+                  </Button>
+                </div>
               </form>
             </CardContent>
           </Card>
