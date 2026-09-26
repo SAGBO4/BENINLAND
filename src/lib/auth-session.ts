@@ -1,3 +1,5 @@
+export type AccountStatus = "VALIDE" | "EN_ATTENTE_VALIDATION" | "REJETE" | "SUSPENDU";
+
 export type UserRole =
   | "MINISTERE"
   | "ANDF"
@@ -6,7 +8,8 @@ export type UserRole =
   | "AGENT"
   | "COMMUNE"
   | "CITOYEN"
-  | "BANQUE";
+  | "BANQUE"
+  | "CONTROLEUR";
 
 export interface UserSession {
   npi: string;
@@ -21,6 +24,12 @@ export interface UserSession {
   avatarUrl?: string;
   badge?: string;
   password?: string;
+  statutValidation?: AccountStatus;
+  dateDemande?: string;
+  dateValidation?: string;
+  validePar?: string;
+  motifRefus?: string;
+  nommeParMinistere?: boolean;
 }
 
 export const DEMO_USERS: Record<UserRole, UserSession> = {
@@ -135,6 +144,23 @@ export const DEMO_USERS: Record<UserRole, UserSession> = {
     badge: "Garanties & Hypothèque",
     avatarUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=150",
     password: "bnb2026",
+    statutValidation: "VALIDE",
+  },
+  CONTROLEUR: {
+    npi: "FICTIF-BEN-2026-0007",
+    nom: "HOUNNOU",
+    prenom: "Inspecteur Patrice",
+    role: "CONTROLEUR",
+    roleLabel: "Inspection Générale des Affaires Foncières (IGAF)",
+    titre: "Contrôleur National des Habilitations & Déontologie Foncière",
+    etablissementNom: "IGAF • Sous tutelle directe du Ministère du Cadre de Vie",
+    commune: "Cotonou",
+    departement: "Littoral",
+    badge: "Contrôle & Validation Habilitations",
+    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150",
+    password: "ctrl2026",
+    statutValidation: "VALIDE",
+    nommeParMinistere: true,
   },
 };
 
@@ -147,4 +173,5 @@ export const ROLE_DASHBOARDS: Record<UserRole, string> = {
   COMMUNE: "/espace/commune",
   CITOYEN: "/espace/citoyen",
   BANQUE: "/espace/banque",
+  CONTROLEUR: "/espace/controleur",
 };
