@@ -31,7 +31,7 @@ describe("API /api/v1/demo/reset — Réinitialisation Déterministe", () => {
     expect(acteAlter?.estFalsifie).toBe(true);
 
     // 3. Appel de la route API de reset
-    const response = await postReset();
+    const response = await postReset(new Request("http://localhost:3000/api/v1/demo/reset", { method: "POST" }));
     expect(response.status).toBe(200);
 
     const json = await response.json();
