@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Thème Souverain & République du Bénin - Mode Sombre Institutionnel & Confort */
+  --background: oklch(0.13 0.018 256);
+  --foreground: oklch(0.97 0.005 256);
+
+  --card: oklch(0.17 0.02 256);
+  --card-foreground: oklch(0.97 0.005 256);
+
+  --popover: oklch(0.17 0.02 256);
+  --popover-foreground: oklch(0.97 0.005 256);
+
+  /* Primaire : Vert Forêt Foncier National Bénin (#0A5C36) */
+  --primary: oklch(0.48 0.16 150);
+  --primary-foreground: oklch(0.99 0.002 150);
+
+  /* Secondaire : Jaune Or Solaire Royal Bénin (#F2B822) */
+  --secondary: oklch(0.82 0.16 85);
+  --secondary-foreground: oklch(0.14 0.03 85);
+
+  /* Accent : Rouge Terre Cuite Foncier & Alertes Litiges (#C73E1D) */
+  --accent: oklch(0.55 0.20 30);
+  --accent-foreground: oklch(0.99 0.005 30);
+
+  /* Bleu Outremer Institutionnel (Titres & Notaires) */
+  --info: oklch(0.55 0.20 250);
+  --info-foreground: oklch(0.99 0.002 250);
+
+  --muted: oklch(0.22 0.016 256);
+  --muted-foreground: oklch(0.72 0.012 256);
+
+  --success: oklch(0.62 0.18 145);
+  --success-foreground: oklch(0.12 0.02 145);
+
+  --warning: oklch(0.80 0.17 80);
+  --warning-foreground: oklch(0.14 0.02 80);
+
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0.01 25);
+
+  --border: oklch(0.24 0.016 256);
+  --input: oklch(0.24 0.016 256);
+  --ring: oklch(0.48 0.16 150);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Animations soignées & micro-interactions */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s ease-in-out infinite;
+}
+
+/* Grille fond républicain avec motif géométrique subtil */
+.bg-grid-benin {
+  background-image: radial-gradient(rgba(10, 92, 54, 0.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Effets de lueur et verre dépoli */
+.glass-panel {
+  background: rgba(23, 31, 48, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-primary {
+  box-shadow: 0 0 25px -5px rgba(10, 92, 54, 0.4);
+}
+
+.glow-gold {
+  box-shadow: 0 0 25px -5px rgba(242, 184, 34, 0.35);
+}
