@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,46 +12,46 @@
   --radius-xl: 1rem;
 
   /* Thème Souverain & République du Bénin - Mode Sombre Institutionnel & Confort */
-  --background: oklch(0.13 0.018 256);
-  --foreground: oklch(0.97 0.005 256);
+  --background: oklch(0.12 0.02 250);
+  --foreground: oklch(0.97 0.005 250);
 
-  --card: oklch(0.17 0.02 256);
-  --card-foreground: oklch(0.97 0.005 256);
+  --card: oklch(0.16 0.025 250);
+  --card-foreground: oklch(0.97 0.005 250);
 
-  --popover: oklch(0.17 0.02 256);
-  --popover-foreground: oklch(0.97 0.005 256);
+  --popover: oklch(0.16 0.025 250);
+  --popover-foreground: oklch(0.97 0.005 250);
 
   /* Primaire : Vert Forêt Foncier National Bénin (#0A5C36) */
-  --primary: oklch(0.48 0.16 150);
+  --primary: oklch(0.42 0.14 150);
   --primary-foreground: oklch(0.99 0.002 150);
 
-  /* Secondaire : Jaune Or Solaire Royal Bénin (#F2B822) */
-  --secondary: oklch(0.82 0.16 85);
-  --secondary-foreground: oklch(0.14 0.03 85);
+  /* Secondaire : Jaune Or Solaire Royal Bénin (#D99B00) */
+  --secondary: oklch(0.72 0.17 80);
+  --secondary-foreground: oklch(0.14 0.03 80);
 
-  /* Accent : Rouge Terre Cuite Foncier & Alertes Litiges (#C73E1D) */
-  --accent: oklch(0.55 0.20 30);
+  /* Accent : Rouge Terre Cuite Foncier & Alertes Litiges (#B83214) */
+  --accent: oklch(0.48 0.20 30);
   --accent-foreground: oklch(0.99 0.005 30);
 
-  /* Bleu Outremer Institutionnel (Titres & Notaires) */
-  --info: oklch(0.55 0.20 250);
-  --info-foreground: oklch(0.99 0.002 250);
+  /* Bleu Outremer Institutionnel (Titres & Notaires #1D4ED8) */
+  --info: oklch(0.48 0.21 258);
+  --info-foreground: oklch(0.99 0.002 258);
 
-  --muted: oklch(0.22 0.016 256);
-  --muted-foreground: oklch(0.72 0.012 256);
+  --muted: oklch(0.22 0.016 250);
+  --muted-foreground: oklch(0.74 0.012 250);
 
-  --success: oklch(0.62 0.18 145);
-  --success-foreground: oklch(0.12 0.02 145);
+  --success: oklch(0.58 0.16 150);
+  --success-foreground: oklch(0.99 0.002 150);
 
-  --warning: oklch(0.80 0.17 80);
+  --warning: oklch(0.72 0.17 80);
   --warning-foreground: oklch(0.14 0.02 80);
 
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.01 25);
+  --destructive: oklch(0.48 0.20 30);
+  --destructive-foreground: oklch(0.99 0.01 30);
 
-  --border: oklch(0.24 0.016 256);
-  --input: oklch(0.24 0.016 256);
-  --ring: oklch(0.48 0.16 150);
+  --border: oklch(0.24 0.02 250);
+  --input: oklch(0.24 0.02 250);
+  --ring: oklch(0.42 0.14 150);
 }
 
 @theme inline {
@@ -104,7 +105,7 @@
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -117,12 +118,12 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.75;
   }
 }
 
 .animate-rise {
-  animation: rise-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rise-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-pulse-subtle {
@@ -131,53 +132,33 @@
 
 /* Grille fond républicain avec motif géométrique subtil */
 .bg-grid-benin {
-  background-image: radial-gradient(rgba(10, 92, 54, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(10, 92, 54, 0.12) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* Effets de lueur et verre dépoli */
+/* Effets verre dépoli régalien sobre */
 .glass-panel {
-  background: rgba(23, 31, 48, 0.75);
+  background: rgba(19, 27, 42, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glow-primary {
-  box-shadow: 0 0 25px -5px rgba(10, 92, 54, 0.4);
+/* Leaflet dark theme corrections */
+.leaflet-container {
+  background-color: #0d141e !important;
+  font-family: inherit !important;
 }
 
-.glow-gold {
-  box-shadow: 0 0 25px -5px rgba(242, 184, 34, 0.35);
+.leaflet-popup-content-wrapper {
+  background: #131b2a !important;
+  color: #f8fafc !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
-@keyframes shiny {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.animate-shiny {
-  animation: shiny 4s linear infinite;
-}
-
-@keyframes gradient-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient-flow {
-  background-size: 200% 200%;
-  animation: gradient-flow 6s ease infinite;
+.leaflet-popup-tip {
+  background: #131b2a !important;
 }
 

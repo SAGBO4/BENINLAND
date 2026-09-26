@@ -3,8 +3,21 @@
 import React, { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { FileCheck, ShieldAlert, CheckCircle2, AlertTriangle, Lock, RefreshCw, Sparkles } from "lucide-react";
+import {
+  FileCheck,
+  ShieldAlert,
+  CheckCircle2,
+  AlertTriangle,
+  Lock,
+  RefreshCw,
+  FileText,
+  ShieldCheck,
+  Fingerprint,
+} from "lucide-react";
 import { anyigbaRepo } from "@/repositories/index";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function VerifierActesPage() {
   const [actes, setActes] = useState<any[]>(anyigbaRepo.getAllActes());
@@ -18,7 +31,7 @@ export default function VerifierActesPage() {
       setTamperResult(res);
       setActes(anyigbaRepo.getAllActes());
       setLoading(false);
-    }, 400);
+    }, 350);
   };
 
   const handleReset = () => {
@@ -28,129 +41,157 @@ export default function VerifierActesPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground bg-grid-benin">
       <Header />
 
-      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-card border border-primary/30 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-              <FileCheck className="w-6 h-6 text-primary" />
+      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10 space-y-8 animate-rise">
+        {/* En-tête officiel du Registre Cryptographique */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-card border border-border shadow-xl">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
+              <Fingerprint className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-foreground">Coffre-Fort Numérique des Actes Foncier</h1>
-                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold border border-primary/30 uppercase">
-                  SHA-256 &amp; BéninChain
-                </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+                  Registre Public des Actes et Empreintes Cryptographiques
+                </h1>
+                <Badge variant="outline" className="text-[10px] font-mono uppercase text-primary border-primary/30">
+                  Horodatage SHA-256 &bull; ASIN
+                </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Vérification mathématique de l&apos;intégrité des Titres Fonciers, plans de géomètre et actes notariés
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Vérification mathématique de l&apos;intégrité documentaire des Titres Fonciers, procès-verbaux de bornage et actes de mutation notariés.
               </p>
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={handleReset}
-            className="px-3 py-1.5 rounded-lg bg-background border border-border hover:bg-muted text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-semibold shrink-0 cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Réinitialiser les Preuves</span>
-          </button>
+            <span>Rétablir l&apos;État Certifié</span>
+          </Button>
         </div>
 
-        {/* Démonstrateur de falsification */}
+        {/* Panneau de notification lors d'une altération simulée */}
         {tamperResult && (
-          <div className="p-6 rounded-2xl bg-destructive/15 border border-destructive/40 text-foreground space-y-3 animate-rise">
+          <div className="p-6 rounded-2xl bg-destructive/10 border border-destructive/30 text-foreground space-y-3 animate-rise">
             <div className="flex items-center gap-2 text-destructive font-bold text-sm">
-              <ShieldAlert className="w-5 h-5" />
-              <span>❌ ALERTE FALSIFICATION DÉTECTÉE PAR LE GRAND LIVRE SOUVERAIN</span>
+              <ShieldAlert className="w-5 h-5 shrink-0" />
+              <span>Rupture d&apos;Intégrité Documentaire Constatée (Défaut de Concordance Cryptographique)</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Une modification non autorisée a été simulée sur le document. Le système a recalculé l&apos;empreinte SHA-256
-              et constaté qu&apos;elle ne concorde plus avec la preuve ancrée dans la blockchain.
+              Une modification non autorisée de l&apos;acte a été détectée. Le recalcul de l&apos;empreinte SHA-256 diverge de
+              l&apos;empreinte originale scellée au registre public national. Le document est immédiatement rejeté comme non authentique.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-              <div className="p-3 rounded-lg bg-background border border-success/40">
-                <span className="text-[10px] text-success block">Empreinte Légitime Enregistrée :</span>
-                <span className="text-[11px] text-success font-bold truncate block">{tamperResult.hashOriginal}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono pt-1">
+              <div className="p-3.5 rounded-xl bg-background border border-success/40 space-y-1">
+                <span className="text-[10px] text-success block font-bold">Empreinte Légitime Enregistrée au Livre Foncier :</span>
+                <span className="text-[11px] text-success font-bold break-all block">{tamperResult.hashOriginal}</span>
               </div>
-              <div className="p-3 rounded-lg bg-background border border-destructive/40">
-                <span className="text-[10px] text-destructive block">Empreinte Altérée Constatée :</span>
-                <span className="text-[11px] text-destructive font-bold truncate block">{tamperResult.hashFalsifie}</span>
+              <div className="p-3.5 rounded-xl bg-background border border-destructive/40 space-y-1">
+                <span className="text-[10px] text-destructive block font-bold">Empreinte Altérée Constatée au Recalcul :</span>
+                <span className="text-[11px] text-destructive font-bold break-all block">{tamperResult.hashFalsifie}</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Liste des actes du coffre-fort */}
-        <div className="p-6 rounded-2xl bg-card border border-border shadow-xl space-y-4 text-xs">
-          <h2 className="text-base font-bold text-foreground">Titres et Actes Officiellement Scellés</h2>
+        {/* Tableau des actes et titres scellés */}
+        <Card className="border-border shadow-xl">
+          <CardHeader className="p-5 sm:p-6 pb-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <CardTitle className="text-base font-bold text-foreground">
+                  Titres Fonciers et Actes Authentiques Enregistrés
+                </CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">
+                  Liste des actes officiels disposant d&apos;un certificat d&apos;ancrage et d&apos;horodatage conforme.
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="font-mono text-[11px]">
+                {actes.length} {actes.length > 1 ? "actes scellés" : "acte scellé"}
+              </Badge>
+            </div>
+          </CardHeader>
 
-          <div className="space-y-4">
+          <CardContent className="p-5 sm:p-6 pt-0 space-y-4">
             {actes.map((acte) => (
               <div
                 key={acte.id}
-                className={`p-5 rounded-2xl border transition space-y-3 ${
+                className={`p-5 rounded-xl border transition space-y-3.5 text-xs ${
                   acte.estFalsifie
                     ? "bg-destructive/10 border-destructive/50"
                     : "bg-background/80 border-border hover:border-primary/40"
                 }`}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-border/80">
+                  <div className="flex items-center gap-3">
                     <span className="font-mono font-bold text-sm text-foreground">{acte.referenceActe}</span>
-                    <span className="text-muted-foreground ml-2">Parcelle : {acte.parcelleCode}</span>
+                    <Badge variant="outline" className="text-[10px] font-mono">
+                      Parcelle : {acte.parcelleCode}
+                    </Badge>
                   </div>
 
-                  <span
-                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                      acte.estFalsifie
-                        ? "bg-destructive/20 text-destructive border-destructive/30"
-                        : "bg-success/20 text-success border border-success/30"
-                    }`}
-                  >
-                    {acte.estFalsifie ? "FALSIFICATION DÉTECTÉE ❌" : "PREUVE BLOCKCHAIN CONFORME ✓"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div className="p-2.5 rounded-lg bg-card border border-border">
-                    <span className="text-[10px] text-muted-foreground block">Signataire Autorisé</span>
-                    <strong className="text-foreground">{acte.signataire}</strong>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-card border border-border font-mono">
-                    <span className="text-[10px] text-muted-foreground block">Ancrage Bitcoin (OpenTimestamps)</span>
-                    <span className="text-secondary truncate block">{acte.otsProof}</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-card border border-border font-mono">
-                    <span className="text-[10px] text-muted-foreground block">Tx BéninChain</span>
-                    <span className="text-primary truncate block">{acte.txBlockchainId}</span>
+                  <div>
+                    {acte.estFalsifie ? (
+                      <Badge variant="destructive" className="gap-1.5 py-1 px-3 text-[11px] font-bold">
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        <span>Défaut d&apos;Intégrité Détecté</span>
+                      </Badge>
+                    ) : (
+                      <Badge variant="success" className="gap-1.5 py-1 px-3 text-[11px] font-bold">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Empreinte Conforme &amp; Scellée</span>
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/60">
-                  <div className="text-[10px] text-muted-foreground font-mono truncate max-w-md">
-                    Hash SHA-256 : {acte.hashSha256}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded-lg bg-card border border-border">
+                    <span className="text-[10px] text-muted-foreground block font-medium">Officier / Signataire Autorisé</span>
+                    <strong className="text-foreground text-xs mt-0.5 block">{acte.signataire}</strong>
+                  </div>
+                  <div className="p-3 rounded-lg bg-card border border-border font-mono">
+                    <span className="text-[10px] text-muted-foreground block font-medium">Ancrage OpenTimestamps</span>
+                    <span className="text-secondary truncate block text-xs mt-0.5">{acte.otsProof}</span>
+                  </div>
+                  <div className="p-3 rounded-lg bg-card border border-border font-mono">
+                    <span className="text-[10px] text-muted-foreground block font-medium">Identifiant de Transaction</span>
+                    <span className="text-primary truncate block text-xs mt-0.5">{acte.txBlockchainId}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-border/60">
+                  <div className="text-[11px] text-muted-foreground font-mono truncate max-w-xl">
+                    <span className="text-foreground font-semibold">Empreinte SHA-256 : </span>
+                    <span className="text-muted-foreground">{acte.hashSha256}</span>
                   </div>
 
                   {!acte.estFalsifie && (
-                    <button
+                    <Button
                       type="button"
+                      variant="destructive"
+                      size="sm"
                       onClick={() => handleSimulateTamper(acte.referenceActe)}
                       disabled={loading}
-                      className="px-3 py-1.5 rounded-lg bg-destructive/15 hover:bg-destructive/25 text-destructive font-bold text-[11px] border border-destructive/30 transition cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
+                      className="text-xs font-semibold gap-1.5 shrink-0 cursor-pointer self-start sm:self-auto"
                     >
                       <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Simuler une Falsification de cet Acte</span>
-                    </button>
+                      <span>Tester l&apos;Inaltérabilité (Simulation d&apos;Altération)</span>
+                    </Button>
                   )}
                 </div>
               </div>
             ))}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
 
       <Footer />

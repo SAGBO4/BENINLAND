@@ -15,13 +15,14 @@ import {
   Smartphone,
   CheckCircle,
   ExternalLink,
-  Sparkles,
+  Scale,
+  Landmark,
+  Building2,
+  Users,
+  Briefcase,
+  FileText,
 } from "lucide-react";
-import { SpotlightCard } from "@/components/reactbits/SpotlightCard";
-import { ShinyText } from "@/components/reactbits/ShinyText";
-import { GradientText } from "@/components/reactbits/GradientText";
-import { CountUp } from "@/components/reactbits/CountUp";
-import { DecryptedText } from "@/components/reactbits/DecryptedText";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -30,250 +31,299 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-background text-foreground bg-grid-benin">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12 sm:space-y-16">
+      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10 space-y-12 sm:space-y-16">
         {/* HERO SECTION ASYMÉTRIQUE : CITOYEN & VÉRIFICATION À GAUCHE | CONNEXION & FLUX À DROITE */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* CÔTÉ GAUCHE (7 colonnes sur 12) : Priorité Mobile-First Citoyen */}
+          {/* CÔTÉ GAUCHE (7 colonnes sur 12) : Diagnostic & Services Citoyens */}
           <div className="lg:col-span-7 space-y-6 sm:space-y-8 animate-rise">
-            {/* Badge de souveraineté officiel */}
+            {/* Ruban Institutionnel Officiel */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
               <span>République du Bénin</span>
               <span className="text-muted-foreground">•</span>
-              <ShinyText text="Cadastre National Souverain" speed={3.5} />
+              <span>Registre National du Foncier</span>
             </div>
 
-            {/* Titre & Proposition de valeur limpide */}
+            {/* Titre Institutionnel & Déclaration d'Autorité */}
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.12]">
-                Sécurisation du Foncier,{" "}
-                <GradientText
-                  colors={["#0A5C36", "#10B981", "#F2B822", "#0A5C36"]}
-                  animationSpeed={5}
-                >
-                  Zéro Double Vente
-                </GradientText>{" "}
-                au Bénin.
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.15] text-foreground">
+                Sécurisation des Mutations &amp; Verrou d&apos;Opposabilité Immédiat.
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
-                Anyigba rend l&apos;information foncière béninoise{" "}
-                <strong className="text-foreground font-semibold">visible en 30 secondes</strong>,{" "}
-                protège les transactions sous{" "}
-                <strong className="text-foreground font-semibold">séquestre Mobile Money</strong> et garantit des{" "}
-                titres <strong className="text-foreground font-semibold">infalsifiables par cryptographie</strong>.
+                Plateforme souveraine d&apos;immatriculation et d&apos;assainissement foncier sous le timbre de l&apos;État béninois.
+                Consultation publique instantanée, blocage légal de toute tentative de double vente et actes authentiques scellés.
               </p>
             </div>
 
-            {/* Outil de diagnostic citoyen express (Priorité Mobile) */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-card/90 border border-primary/30 shadow-xl backdrop-blur-md space-y-3 relative overflow-hidden">
+            {/* Outil de diagnostic citoyen officiel */}
+            <div className="p-6 rounded-2xl bg-card border border-border shadow-xl space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Vérification Publique Instantanée</span>
+                  <span>Consultation Publique Libre</span>
                 </div>
-                <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                  Sans Identifiants
+                <Badge variant="outline" className="text-[10px] text-muted-foreground font-semibold">
+                  Accès Citoyen Ouvert
                 </Badge>
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                Citoyen ou acheteur ? Entrez le numéro de parcelle pour contrôler son détenteur officiel, l&apos;absence de litige et sa disponibilité.
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Tout citoyen ou acquéreur peut vérifier la régularité juridique d&apos;une parcelle avant tout versement d&apos;acompte :
+                identité du détenteur légal, état d&apos;instruction ANDF et absence d&apos;ordonnance de gel CSAF.
               </p>
 
               <VerificationSearch />
             </div>
 
-            {/* Grille de KPIs Nationaux avec animations CountUp */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-4 rounded-xl bg-card/70 border border-border/80 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+            {/* Indicateurs Clés Nationaux */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-4 rounded-xl bg-card border border-border space-y-1">
+                <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
                   <MapPin className="w-3.5 h-3.5 text-primary" />
-                  <span>Parcelles</span>
+                  <span>Parcelles Immatriculées</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-foreground">
-                  <CountUp to={18420} duration={1.8} />
+                <div className="text-xl sm:text-2xl font-black text-foreground font-mono">
+                  18 420
                 </div>
-                <div className="text-[10px] text-emerald-400 font-medium flex items-center gap-0.5">
+                <div className="text-[10px] text-emerald-400 font-semibold flex items-center gap-0.5">
                   <TrendingUp className="w-2.5 h-2.5" /> +14% ce mois
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-card/70 border border-border/80 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Doubles Ventes</span>
+              <div className="p-4 rounded-xl bg-card border border-border space-y-1">
+                <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                  <Lock className="w-3.5 h-3.5 text-secondary" />
+                  <span>Mutations Sécurisées</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-amber-400">
-                  <CountUp to={100} duration={1.2} suffix="%" />
+                <div className="text-xl sm:text-2xl font-black text-secondary font-mono">
+                  100 %
                 </div>
-                <div className="text-[10px] text-muted-foreground">Bloquées par verrou</div>
+                <div className="text-[10px] text-muted-foreground">Sous verrou légal</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-card/70 border border-border/80 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                  <Coins className="w-3.5 h-3.5 text-secondary" />
-                  <span>Fonds Séquestrés</span>
+              <div className="p-4 rounded-xl bg-card border border-border space-y-1">
+                <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                  <Coins className="w-3.5 h-3.5 text-primary" />
+                  <span>Fonds Sous Séquestre</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-secondary">
-                  <CountUp to={384} duration={2} suffix=" M" />
+                <div className="text-lg sm:text-xl font-black text-foreground font-mono">
+                  384 000 000
                 </div>
-                <div className="text-[10px] text-muted-foreground">FCFA protégés</div>
+                <div className="text-[10px] text-muted-foreground">FCFA protégés (CUT/DGTCP)</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-card/70 border border-border/80 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+              <div className="p-4 rounded-xl bg-card border border-border space-y-1">
+                <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
                   <Smartphone className="w-3.5 h-3.5 text-blue-400" />
-                  <span>SMS / USSD</span>
+                  <span>Requêtes Télécoms</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-blue-400">
-                  <CountUp to={92100} duration={2.2} suffix="+" />
+                <div className="text-xl sm:text-2xl font-black text-blue-400 font-mono">
+                  92 100 +
                 </div>
-                <div className="text-[10px] text-muted-foreground">Feature phones</div>
+                <div className="text-[10px] text-muted-foreground">Canaux USSD &amp; SMS 132</div>
               </div>
             </div>
           </div>
 
-          {/* CÔTÉ DROIT (5 colonnes sur 12) : MODULE DE CONNEXION MULTI-RÔLES AVEC FLUX ASSOCIÉ */}
+          {/* CÔTÉ DROIT (5 colonnes sur 12) : Module de Connexion Multi-Profils */}
           <div className="lg:col-span-5 sticky top-20 animate-rise">
             <LoginPanel />
           </div>
         </section>
 
-        {/* SECTION DES 4 VERROUS TECHNOLOGIQUES AVEC SPOTLIGHTCARD */}
-        <section className="space-y-6 pt-4 border-t border-border/60">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <Badge variant="secondary" className="px-3 py-1 text-xs uppercase tracking-wider">
-              Architecture &amp; Sécurité Nationale
+        {/* 4 PASSERELLES DÉDIÉES PAR PROFIL */}
+        <section className="space-y-6 pt-4 border-t border-border/80">
+          <div className="text-center max-w-3xl mx-auto space-y-2">
+            <Badge variant="outline" className="px-3 py-1 text-xs uppercase tracking-wider font-semibold">
+              Portail Foncier Interopérable
             </Badge>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
-              Les 4 Verrous Technologiques d&apos;Anyigba
+              Passerelles Professionnelles et Citoyennes
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Une chaîne de confiance complète pour éliminer la fraude foncière au Bénin.
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Des interfaces adaptées aux compétences et missions régies par le Code Foncier et Domanial béninois.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <SpotlightCard
-              spotlightColor="rgba(10, 92, 54, 0.35)"
-              className="space-y-3 hover:border-primary/60"
-            >
+            <Card className="p-5 space-y-3 border-border hover:border-primary/50 transition">
               <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
-                <Lock className="w-5 h-5" />
+                <Users className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm text-foreground">Verrou Cryptographique Anti-Double-Vente</h3>
+              <h3 className="font-bold text-sm text-foreground">Citoyen &amp; Famille</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Dès l&apos;ouverture d&apos;un acte chez le notaire, la parcelle est verrouillée instantanément. Toute
-                tentative concurrente est rejetée avec un refus d&apos;État (409 Conflict).
+                Consultation libre de parcelle, carnet foncier familial pour anticiper les successions, et attestation vocale multilingue.
               </p>
-            </SpotlightCard>
+              <Link href="/espace/citoyen" className="inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline pt-1">
+                <span>Espace Citoyen</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Card>
 
-            <SpotlightCard
-              spotlightColor="rgba(242, 184, 34, 0.3)"
-              className="space-y-3 hover:border-secondary/60"
-            >
-              <div className="w-10 h-10 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center font-bold">
-                <Coins className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm text-foreground">Séquestre Mobile Money Garanti</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                L&apos;acheteur dépose le paiement sous séquestre MTN MoMo / Moov Money. Les fonds ne sont libérés au
-                vendeur qu&apos;après le visa ANDF et l&apos;émission du titre officiel.
-              </p>
-            </SpotlightCard>
-
-            <SpotlightCard
-              spotlightColor="rgba(59, 130, 246, 0.3)"
-              className="space-y-3 hover:border-blue-500/60"
-            >
+            <Card className="p-5 space-y-3 border-border hover:border-primary/50 transition">
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
-                <FileCheck2 className="w-5 h-5" />
+                <Briefcase className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm text-foreground">Convention Assistée au Village</h3>
+              <h3 className="font-bold text-sm text-foreground">Professionnels du Droit</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Levé GPS des bornes en direct, contrôle de zéro-chevauchement PostGIS et recueil vocal des consentements
-                en langues nationales (Fongbe, Yoruba, Bariba).
+                Chambre Nationale des Notaires et Géomètres-Experts : pose du verrou d&apos;opposabilité, rédaction d&apos;actes et bornage.
               </p>
-            </SpotlightCard>
+              <Link href="/espace/notaire" className="inline-flex items-center gap-1 text-xs text-blue-400 font-semibold hover:underline pt-1">
+                <span>Espace Notarial</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Card>
 
-            <SpotlightCard
-              spotlightColor="rgba(168, 85, 247, 0.3)"
-              className="space-y-3 hover:border-purple-500/60"
-            >
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-                <ShieldCheck className="w-5 h-5" />
+            <Card className="p-5 space-y-3 border-border hover:border-primary/50 transition">
+              <div className="w-10 h-10 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center font-bold">
+                <Landmark className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm text-foreground">Preuve Inaltérable BéninChain</h3>
+              <h3 className="font-bold text-sm text-foreground">Administration Publique</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Chaque titre possède son empreinte SHA-256 ancrée sur Bitcoin via OpenTimestamps :{" "}
-                <DecryptedText
-                  text="SHA-256 e3b0c44298fc1c14"
-                  speed={35}
-                  className="font-mono text-[10px] text-primary"
-                />
-                .
+                Direction Générale, ANDF, Trésor Public (DGTCP), Cour Spéciale des Affaires Foncières (CSAF) et Mairies.
               </p>
-            </SpotlightCard>
+              <Link href="/espace/ministere" className="inline-flex items-center gap-1 text-xs text-secondary font-semibold hover:underline pt-1">
+                <span>Régulation Ministérielle</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Card>
+
+            <Card className="p-5 space-y-3 border-border hover:border-primary/50 transition">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-foreground">Institutions Financières</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Banques commerciales et institutions de microfinance : vérification de la liberté d&apos;hypothèque et inscription de sûretés.
+              </p>
+              <Link href="/espace/banque" className="inline-flex items-center gap-1 text-xs text-emerald-400 font-semibold hover:underline pt-1">
+                <span>Portail Bancaire</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Card>
           </div>
         </section>
 
-        {/* SECTION DU SCÉNARIO OFFICIEL DE DÉMONSTRATION (Ouidah - Famille Dossou) */}
-        <section className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-card via-card to-background border border-primary/30 shadow-2xl space-y-6">
+        {/* 4 VERROUS TECHNOLOGIQUES ET LÉGAUX */}
+        <section className="space-y-6 pt-4 border-t border-border/80">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <Badge variant="secondary" className="px-3 py-1 text-xs uppercase tracking-wider font-semibold">
+              Architecture &amp; Cadre Légal
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+              Les 4 Piliers de Sécurisation Foncière
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Une chaîne de confiance institutionnelle rigoureusement adossée au Code Foncier et Domanial.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <Card className="p-5 space-y-3 border-border">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
+                <Lock className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-foreground">Verrou d&apos;Opposabilité Immédiate</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Dès l&apos;ouverture du dossier de mutation chez le notaire, la parcelle est verrouillée au registre national.
+                Toute tentative concurrente est automatiquement rejetée par un refus d&apos;État (409 Conflict).
+              </p>
+            </Card>
+
+            <Card className="p-5 space-y-3 border-border">
+              <div className="w-10 h-10 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center font-bold">
+                <Coins className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-foreground">Séquestre Financier Réglementaire</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                L&apos;acquéreur consigne les fonds sur un compte séquestre auprès du Trésor Public (TrésorPay) ou d&apos;opérateurs agréés.
+                La libération des fonds n&apos;intervient qu&apos;après le visa ANDF et l&apos;inscription définitive au Livre Foncier.
+              </p>
+            </Card>
+
+            <Card className="p-5 space-y-3 border-border">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+                <FileCheck2 className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-foreground">Bornage Contradictoire &amp; Constat</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Levé GPS certifié des 4 bornes par géomètre assermenté, vérification de zéro-chevauchement topologique PostGIS
+                et recueil des accords vocaux des témoins en langues nationales (Fongbe, Yoruba, Bariba).
+              </p>
+            </Card>
+
+            <Card className="p-5 space-y-3 border-border">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-foreground">Horodatage Cryptographique SHA-256</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Chaque titre foncier, plan parcellaire et quittance fait l&apos;objet d&apos;une empreinte numérique SHA-256
+                scellée publiquement (OpenTimestamps / ASIN) :
+              </p>
+              <div className="font-mono text-[10px] text-primary p-2 rounded bg-background/80 border border-border">
+                SHA-256 : e3b0c44298fc1c14...
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        {/* SECTION DU SCÉNARIO OFFICIEL DE DÉMONSTRATION (Pahou / Ouidah - Famille Dossou) */}
+        <section className="p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-xl space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <Badge variant="secondary" className="gap-1 font-bold text-[10px] uppercase">
-                <Sparkles className="w-3 h-3 text-secondary" />
-                Scénario Démo Fil Conducteur
+              <Badge variant="secondary" className="font-bold text-[10px] uppercase">
+                Territoire Pilote de Démonstration
               </Badge>
               <h3 className="text-xl sm:text-2xl font-black text-foreground mt-1.5">
                 La Famille Dossou à Ouidah (Parcelle OUI-0421)
               </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Suivez la vente complète : de la convention villageoise à Pahou jusqu&apos;à la délivrance du titre certifié.
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Parcours complet d&apos;une transaction foncière : du procès-verbal de bornage à Pahou jusqu&apos;à la délivrance du titre certifié.
               </p>
             </div>
-            <Button asChild size="default" className="font-bold text-xs gap-1.5">
+            <Button asChild size="default" className="font-bold text-xs gap-1.5 cursor-pointer">
               <Link href="/carte">
-                <span>Voir sur la Carte</span>
+                <span>Consulter sur la Carte SIG</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </Link>
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <div className="p-4 rounded-xl bg-background/70 border border-border/80 space-y-2">
+            <div className="p-4 rounded-xl bg-background/90 border border-border space-y-2">
               <div className="flex items-center gap-2 font-bold text-foreground">
                 <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-black">
                   1
                 </span>
-                <span>Convention au Village &amp; Audio</span>
+                <span>Procès-Verbal de Bornage Contradictoire</span>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                L&apos;agent foncier se rend à Pahou, relève les 4 bornes et recueille les accords vocaux en Fongbe du
-                chef de village et des voisins.
+                L&apos;agent foncier se rend à Pahou (Village Hounhanmèdji), relève les 4 bornes géodésiques et enregistre
+                les consentements vocaux en Fongbe du chef de village et des riverains.
               </p>
-              <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
-                <CheckCircle className="w-3 h-3 text-emerald-400" /> Bornes GPS &amp; Voix validées
+              <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold pt-1">
+                <CheckCircle className="w-3 h-3 text-emerald-400" /> Bornes PostGIS &amp; Consentements validés
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-background/70 border border-border/80 space-y-2">
+            <div className="p-4 rounded-xl bg-background/90 border border-border space-y-2">
               <div className="flex items-center gap-2 font-bold text-foreground">
                 <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-black">
                   2
                 </span>
-                <span>Verrou Notarial &amp; Séquestre</span>
+                <span>Verrou Notarial &amp; Consignation Financière</span>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Me Agbossou initie la cession pour M. Koffi Mensah. La parcelle passe en 🔒 sur la carte. Le second
-                acheteur concurrent est immédiatement refoulé.
+                Me Christian Agbossou ouvre le contrat de mutation pour M. Koffi Mensah. La parcelle est placée sous
+                verrou d&apos;opposabilité immédiat au cadastre national, écartant toute vente concurrente.
               </p>
-              <div className="text-[10px] text-amber-400 flex items-center gap-1 font-semibold">
-                <Lock className="w-3 h-3 text-amber-400" /> Verrou anti-double-vente actif
+              <div className="text-[10px] text-amber-400 flex items-center gap-1 font-semibold pt-1">
+                <Lock className="w-3 h-3 text-amber-400" /> Verrou d&apos;opposabilité immédiate actif
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-background/70 border border-border/80 space-y-2">
+            <div className="p-4 rounded-xl bg-background/90 border border-border space-y-2">
               <div className="flex items-center gap-2 font-bold text-foreground">
                 <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-black">
                   3
@@ -281,11 +331,11 @@ export default function HomePage() {
                 <span>Visa ANDF &amp; Titre CPF Scellé</span>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Mme Houndété valide l&apos;acte. Le nouveau propriétaire est inscrit, les fonds sont libérés au vendeur,
-                et l&apos;acte est ancré sur BéninChain.
+                La directrice de l&apos;ANDF valide l&apos;acte au cadastre. Le nouveau propriétaire est inscrit au registre,
+                les fonds consignés sont versés au vendeur et l&apos;acte est scellé par empreinte SHA-256.
               </p>
-              <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
-                <CheckCircle className="w-3 h-3 text-emerald-400" /> Preuve cryptographique inaltérable
+              <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold pt-1">
+                <CheckCircle className="w-3 h-3 text-emerald-400" /> Certificat délivré &amp; Empreinte scellée
               </div>
             </div>
           </div>

@@ -13,7 +13,6 @@ import {
   Scale,
   Landmark,
   Settings,
-  Sparkles,
   KeyRound,
   ShieldCheck,
   Briefcase,
@@ -23,8 +22,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShinyText } from "@/components/reactbits/ShinyText";
 
 export interface DemoRole {
   id: string;
@@ -49,12 +46,12 @@ export const DEMO_ROLES: DemoRole[] = [
     category: "etat",
     email: "ministere@demo.bj",
     npi: "FICTIF-BEN-2026-0000",
-    name: "Cabinet du Ministre (MCVDD / MEF)",
+    name: "Direction Générale & Régulation (MCVDD / MEF)",
     icon: Landmark,
-    badge: "Tour de Contrôle & Trésor 🏛️",
+    badge: "Régulation & Trésor (CUT)",
     badgeVariant: "secondary",
     targetUrl: "/espace/ministere",
-    flowDescription: "Supervision panoptique des 12 départements, recettes fiscales du Trésor Public (CUT) et audit régalien des acteurs fonciers.",
+    flowDescription: "Supervision des 12 départements, suivi des recettes du Trésor Public (CUT) et audit régalien des acteurs fonciers.",
   },
   {
     id: "notaire",
@@ -65,10 +62,10 @@ export const DEMO_ROLES: DemoRole[] = [
     npi: "FICTIF-BEN-2026-0088",
     name: "Me Christian Agbossou",
     icon: FileSpreadsheet,
-    badge: "Mutation & Verrou 🔒",
+    badge: "Mutation & Verrou Légal",
     badgeVariant: "default",
     targetUrl: "/espace/notaire",
-    flowDescription: "Ouverture d'acte de cession, pose du verrou anti-double-vente et séquestre MoMo.",
+    flowDescription: "Ouverture d'acte de mutation, verrou d'opposabilité immédiate et consignation sous séquestre réglementaire.",
   },
   {
     id: "andf",
@@ -77,12 +74,12 @@ export const DEMO_ROLES: DemoRole[] = [
     category: "etat",
     email: "andf@demo.bj",
     npi: "FICTIF-BEN-2026-0012",
-    name: "Mme Reine Houndété",
-    icon: ShieldAlert,
-    badge: "Validation Titre CPF",
+    name: "Mme Reine Houndété (Directrice)",
+    icon: ShieldCheck,
+    badge: "Délivrance Titre CPF",
     badgeVariant: "info",
     targetUrl: "/espace/andf",
-    flowDescription: "Instruction républicaine, contrôle cadastral et délivrance du Certificat de Propriété.",
+    flowDescription: "Instruction républicaine, contrôle cadastral et délivrance du Certificat de Propriété Foncière.",
   },
   {
     id: "csaf",
@@ -96,7 +93,7 @@ export const DEMO_ROLES: DemoRole[] = [
     badge: "Gel Conservatoire",
     badgeVariant: "destructive",
     targetUrl: "/espace/csaf",
-    flowDescription: "Saisine pour litige foncier, ordonnance de blocage d'urgence et gel immédiat.",
+    flowDescription: "Saisine pour litige foncier, ordonnance de blocage d'urgence et gel immédiat au cadastre.",
   },
   {
     id: "agent",
@@ -107,10 +104,10 @@ export const DEMO_ROLES: DemoRole[] = [
     npi: "FICTIF-BEN-2026-0045",
     name: "Mamadou Bio (Agent de Zone)",
     icon: Users,
-    badge: "Convention Villageoise",
+    badge: "Bornage Contradictoire",
     badgeVariant: "warning",
     targetUrl: "/espace/agent",
-    flowDescription: "Levé GPS des 4 bornes, recueil des accords vocaux en Fongbe/Yoruba et signature.",
+    flowDescription: "Relevé GPS des 4 bornes, recueil des accords vocaux en Fongbe/Yoruba et procès-verbal d'usage.",
   },
   {
     id: "commune",
@@ -124,7 +121,7 @@ export const DEMO_ROLES: DemoRole[] = [
     badge: "Urbanisme & Taxes",
     badgeVariant: "success",
     targetUrl: "/espace/commune",
-    flowDescription: "Constat des constructions, calcul de la plus-value communale et adressage.",
+    flowDescription: "Constat des limites, calcul de la taxe communale sur la plus-value et adressage parcellaire.",
   },
   {
     id: "citoyen",
@@ -138,7 +135,7 @@ export const DEMO_ROLES: DemoRole[] = [
     badge: "Patrimoine Familial",
     badgeVariant: "secondary",
     targetUrl: "/espace/citoyen",
-    flowDescription: "Carnet de famille foncier, suivi de la vente OUI-0421 et réception des fonds MoMo.",
+    flowDescription: "Carnet de famille foncier, suivi de la vente OUI-0421 et notification de virement du Trésor.",
   },
   {
     id: "banque",
@@ -147,12 +144,12 @@ export const DEMO_ROLES: DemoRole[] = [
     category: "finance",
     email: "banque@demo.bj",
     npi: "FICTIF-BEN-2026-0700",
-    name: "Banque Nationale Bénin",
+    name: "Banque Nationale du Bénin",
     icon: Landmark,
-    badge: "Hypothèque & Sécurité",
+    badge: "Garanties & Hypothèque",
     badgeVariant: "info",
     targetUrl: "/espace/banque",
-    flowDescription: "Authentification du titre foncier et inscription de garantie hypothécaire.",
+    flowDescription: "Contrôle d'authenticité du titre foncier et inscription électronique de la sûreté réelle.",
   },
   {
     id: "admin",
@@ -207,33 +204,29 @@ export function LoginPanel() {
   const Icon = selectedRole.icon;
 
   return (
-    <Card className="border-primary/30 shadow-2xl relative overflow-hidden backdrop-blur-xl bg-card/95">
-      {/* Halo or discret en arrière-plan */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
-
+    <Card className="border-border shadow-2xl relative overflow-hidden bg-card">
       <CardHeader className="p-5 pb-3 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-secondary">
             <KeyRound className="w-4 h-4 text-secondary" />
-            <span>Portail National Sécurisé</span>
+            <span>Portail des Acteurs Foncier</span>
           </div>
-          <Badge variant="secondary" className="text-[11px] gap-1 px-2 py-0.5">
-            <Sparkles className="w-3 h-3 text-secondary" />
-            <ShinyText text="9 Profils Actifs" speed={3} />
+          <Badge variant="outline" className="text-[11px] px-2 py-0.5 font-medium">
+            9 Profils Métiers
           </Badge>
         </div>
 
         <div>
-          <CardTitle className="text-lg sm:text-xl font-bold">
-            Connexion &amp; Flux Associés
+          <CardTitle className="text-lg sm:text-xl font-bold text-foreground">
+            Accès Professionnel &amp; Démonstration
           </CardTitle>
-          <CardDescription className="text-xs">
+          <CardDescription className="text-xs text-muted-foreground">
             Sélectionnez un acteur ci-dessous pour tester son interface et son rôle légal dans le foncier béninois.
           </CardDescription>
         </div>
 
-        {/* Filtres de catégories rapides pour aérer l'interface */}
-        <div className="flex items-center gap-1.5 pt-1 overflow-x-auto pb-1 no-scrollbar">
+        {/* Filtres de catégories d'acteurs */}
+        <div className="flex items-center gap-1.5 pt-1 overflow-x-auto pb-1">
           <button
             type="button"
             onClick={() => setActiveCategory("all")}
@@ -267,7 +260,7 @@ export function LoginPanel() {
             }`}
           >
             <Briefcase className="w-3 h-3" />
-            <span>Village &amp; Mairie</span>
+            <span>Mairies &amp; Agents</span>
           </button>
           <button
             type="button"
@@ -285,7 +278,7 @@ export function LoginPanel() {
       </CardHeader>
 
       <CardContent className="p-5 pt-0 space-y-4">
-        {/* Grille sélecteur de rôles avec taille responsive équilibrée */}
+        {/* Grille des profils professionnels */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {filteredRoles.map((r) => {
             const isSelected = selectedRole.id === r.id;
@@ -297,8 +290,8 @@ export function LoginPanel() {
                 onClick={() => handleSelectRole(r)}
                 className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25 scale-[1.02]"
-                    : "bg-background/70 hover:bg-background border-border/80 text-muted-foreground hover:text-foreground"
+                    ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25"
+                    : "bg-background/80 hover:bg-background border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <RoleIcon className={`w-4 h-4 mb-1 ${isSelected ? "text-primary-foreground" : "text-primary"}`} />
@@ -308,8 +301,8 @@ export function LoginPanel() {
           })}
         </div>
 
-        {/* Fiche de présentation du rôle et de son flux légal */}
-        <div className="p-3.5 rounded-xl bg-background/80 border border-border/80 space-y-2">
+        {/* Fiche descriptive du rôle sélectionné */}
+        <div className="p-3.5 rounded-xl bg-background/90 border border-border space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
@@ -324,39 +317,39 @@ export function LoginPanel() {
                 </div>
               </div>
             </div>
-            <Badge variant={selectedRole.badgeVariant} className="text-[10px] shrink-0">
+            <Badge variant={selectedRole.badgeVariant} className="text-[10px] shrink-0 font-semibold">
               {selectedRole.badge}
             </Badge>
           </div>
 
-          <div className="text-xs text-muted-foreground leading-relaxed pt-2 border-t border-border/40">
-            <span className="font-semibold text-foreground">Flux opérationnel : </span>
+          <div className="text-xs text-muted-foreground leading-relaxed pt-2 border-t border-border/60">
+            <span className="font-semibold text-foreground">Mission légale : </span>
             {selectedRole.flowDescription}
           </div>
         </div>
 
-        {/* Formulaire & boutons d'action rapide */}
+        {/* Formulaire & Déclencheurs de session */}
         <form onSubmit={handleLogin} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-muted-foreground">Email :</label>
+              <label className="text-[11px] font-medium text-muted-foreground">Identifiant officiel :</label>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-8 text-xs"
+                className="h-8 text-xs bg-background"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-muted-foreground">Mot de passe :</label>
+              <label className="text-[11px] font-medium text-muted-foreground">Code d&apos;accès :</label>
               <div className="relative">
                 <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-8 text-xs pr-7 font-mono"
+                  className="h-8 text-xs pr-7 font-mono bg-background"
                 />
                 <Lock className="w-3 h-3 text-muted-foreground absolute right-2.5 top-2.5" />
               </div>
@@ -366,13 +359,13 @@ export function LoginPanel() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-11 text-sm font-bold flex items-center justify-center gap-2 group"
+            className="w-full h-11 text-sm font-bold flex items-center justify-center gap-2 group cursor-pointer"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <span>Accéder au Flux {selectedRole.label}</span>
+                <span>Accéder à l&apos;Espace {selectedRole.label}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
               </>
             )}
@@ -383,10 +376,10 @@ export function LoginPanel() {
             variant="secondary"
             onClick={() => handleLogin()}
             disabled={loading}
-            className="w-full h-9 text-xs"
+            className="w-full h-9 text-xs cursor-pointer font-semibold"
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Connexion Démo 1-Clic</span>
+            <span>Connexion Démo Immédiate (1-Clic)</span>
           </Button>
         </form>
       </CardContent>
