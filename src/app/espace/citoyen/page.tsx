@@ -15,6 +15,10 @@ import {
   PlusCircle,
   AlertTriangle,
   Lock,
+  Eye,
+  Scale,
+  FolderLock,
+  Compass,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,12 +26,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth-context";
 import { anyigbaRepo } from "@/repositories/index";
+import {
+  getSituationDetailleeParcelle,
+  getDocumentsOfficielsCitoyen,
+  CitoyenDocument,
+  SituationParcelleDiagnostic,
+} from "@/components/citoyen/citoyen-data";
+import { ParcelleSituationModal } from "@/components/citoyen/ParcelleSituationModal";
+import { DocumentViewerModal } from "@/components/citoyen/DocumentViewerModal";
+import { DocumentsCoffrefort } from "@/components/citoyen/DocumentsCoffrefort";
 
 export default function CitoyenPage() {
   const { user } = useAuth();
   const [carnetSuccess, setCarnetSuccess] = useState(false);
   const [parcelles, setParcelles] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<CitoyenDocument[]>([]);
   const [showDeclareModal, setShowDeclareModal] = useState(false);
+
+  // Modales d'interaction
+  const [selectedParcelleForSituation, setSelectedParcelleForSituation] =
+    useState<SituationParcelleDiagnostic | null>(null);
+  const [selectedDocumentForViewer, setSelectedDocumentForViewer] = useState<CitoyenDocument | null>(null);
 
   // Formulaire de déclaration de parcelle
   const [newCode, setNewCode] = useState("");
@@ -52,13 +71,21 @@ export default function CitoyenPage() {
     const userParcelles = all.filter(
       (p) => p.proprietaireNpi === userNpi || (!user && p.proprietaireNpi === "FICTIF-BEN-2026-0041")
     );
-    // Si l'utilisateur est Germain Dossou ou s'il a des parcelles, les afficher. Sinon afficher toutes les parcelles liées au nom ou déclarées
-    if (userParcelles.length === 0 && user?.nom) {
+
+    let resolvedParcelles = userParcelles;
+    if (resolvedParcelles.length === 0 && user?.nom) {
       const byName = all.filter((p) => p.proprietaireNom.toLowerCase().includes(user.nom.toLowerCase()));
-      setParcelles(byName.length > 0 ? byName : all.slice(0, 1));
-    } else {
-      setParcelles(userParcelles.length > 0 ? userParcelles : all.slice(0, 1));
+      resolvedParcelles = byName.length > 0 ? byName : all.slice(0, 1);
+    } else if (resolvedParcelles.length === 0) {
+      resolvedParcelles = all.slice(0, 1);
     }
+
+    setParcelles(resolvedParcelles);
+
+    // Chargement immédiat des actes officiels rattachés aux parcelles
+    const codes = resolvedParcelles.map((p) => p.codeUnique);
+    const docs = getDocumentsOfficielsCitoyen(userNpi, codes);
+    setDocuments(docs);
   };
 
   useEffect(() => {
@@ -67,7 +94,10 @@ export default function CitoyenPage() {
 
   const handleDeclareParcelle = (e: React.FormEvent) => {
     e.preventDefault();
-    const code = newCode.trim().toUpperCase() || `PAR-${newCommune.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const code =
+      newCode.trim().toUpperCase() ||
+      `PAR-${newCommune.slice(0, 3).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
     const created = anyigbaRepo.createParcelle({
       codeUnique: code,
       commune: newCommune,
@@ -114,9 +144,31 @@ export default function CitoyenPage() {
     setNewHeritierNom("");
   };
 
+  const handleOpenSituation = (codeUnique: string) => {
+    const diag = getSituationDetailleeParcelle(codeUnique);
+    if (diag) {
+      setSelectedParcelleForSituation(diag);
+    }
+  };
+
+  const handleSelectDocumentByRef = (ref: string) => {
+    const doc = documents.find(
+      (d) =>
+        d.referenceOfficielle.toUpperCase() === ref.toUpperCase() ||
+        (d.quittanceTresorRef && d.quittanceTresorRef.toUpperCase() === ref.toUpperCase())
+    );
+    if (doc) {
+      setSelectedParcelleForSituation(null);
+      setSelectedDocumentForViewer(doc);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
-      <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
+      <main
+        id="main-content"
+        className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise"
+      >
         {/* En-tête Espace Citoyen dynamique */}
         <Card className="border-purple-500/40 shadow-xl bg-card">
           <CardHeader className="p-5 sm:p-6">
@@ -135,7 +187,8 @@ export default function CitoyenPage() {
                     </Badge>
                   </div>
                   <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
-                    Consultation des parcelles enregistrées au cadastre national, alertes SMS contre la spoliation et carnet de famille foncier
+                    Consultation des parcelles enregistrées au cadastre national, diagnostic juridique certifié en direct,
+                    coffre-fort numérique des actes officiels et carnet de famille foncier
                   </CardDescription>
                 </div>
               </div>
@@ -144,7 +197,7 @@ export default function CitoyenPage() {
                 <UserCheck className="w-4 h-4 text-emerald-400" />
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-medium">NPI Citoyen (ANIP)</span>
-                  <strong className="font-mono text-foreground">{user?.npi || "BEN-***-0041"}</strong>
+                  <strong className="font-mono text-foreground">{user?.npi || "FICTIF-BEN-2026-0041"}</strong>
                   <span className="block text-[10px] text-muted-foreground mt-0.5">
                     {user?.commune ? `${user.commune} (${user.departement})` : "Ouidah (Atlantique)"}
                   </span>
@@ -161,7 +214,7 @@ export default function CitoyenPage() {
           </div>
         )}
 
-        {/* Grille principale */}
+        {/* Grille principale : Parcelles & Carnet de famille */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-xs">
           {/* Parcelles détenues (6 colonnes sur 12) */}
           <Card className="lg:col-span-6 border-border shadow-xl bg-card">
@@ -190,30 +243,60 @@ export default function CitoyenPage() {
                 <div key={p.codeUnique} className="p-4 rounded-xl bg-background/80 border border-primary/30 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-foreground text-sm sm:text-base">{p.codeUnique}</span>
-                    <Badge variant={p.statutJuridique === "TITRE_FONCIER" ? "success" : "outline"} className="text-[10px] font-semibold">
-                      {p.statutJuridique === "TITRE_FONCIER" ? "Titre Foncier Immatriculé" : p.statutJuridique === "CPF" ? "Certificat CPF" : "Certificat Coutumier Déclaré"}
+                    <Badge
+                      variant={p.statutJuridique === "TITRE_FONCIER" ? "success" : "outline"}
+                      className="text-[10px] font-semibold"
+                    >
+                      {p.statutJuridique === "TITRE_FONCIER"
+                        ? "Titre Foncier Immatriculé"
+                        : p.statutJuridique === "CPF"
+                        ? "Certificat CPF"
+                        : "Certificat Coutumier Déclaré"}
                     </Badge>
                   </div>
+
                   <p className="text-muted-foreground text-xs leading-relaxed">
                     Commune de {p.commune} &bull; Arr. {p.arrondissement} &bull; Village {p.village} &bull; Superficie certifiée :{" "}
                     <strong className="text-foreground font-mono">{p.superficieM2.toLocaleString()} m²</strong>
                   </p>
 
                   {p.enVerrouMutation && (
-                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] flex items-center gap-1.5">
+                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-[11px] flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5 shrink-0" />
                       <span>Verrou de mutation en cours (séquestre notarié activé)</span>
                     </div>
                   )}
 
                   {p.enLitige && (
-                    <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 text-[11px] flex items-center gap-1.5">
+                    <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[11px] flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                       <span>Gel conservatoire CSAF actif sur ce bien</span>
                     </div>
                   )}
 
-                  <div className="pt-2 flex items-center justify-between text-[11px] border-t border-border/60">
+                  {/* Bouton interactif de situation complète */}
+                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-border/60">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleOpenSituation(p.codeUnique)}
+                      className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Consulter la situation complète</span>
+                    </Button>
+
+                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                        <CheckCircle2 className="w-3 h-3" /> Zéro Litige CSAF
+                      </span>
+                      <span className="flex items-center gap-1 text-purple-400 font-semibold">
+                        <Compass className="w-3 h-3" /> 4 Bornes GPS
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between text-[11px] border-t border-border/40">
                     <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
                       <Bell className="w-3.5 h-3.5 text-secondary" /> Alerte SMS anti-spoliation active
                     </span>
@@ -239,7 +322,8 @@ export default function CitoyenPage() {
                 </Badge>
               </div>
               <CardDescription className="text-xs text-muted-foreground">
-                Consignez de votre vivant l&apos;accord de vos héritiers légitimes pour prévenir tout contentieux successoral devant la CSAF.
+                Consignez de votre vivant l&apos;accord de vos héritiers légitimes pour prévenir tout contentieux successoral
+                devant la CSAF.
               </CardDescription>
             </CardHeader>
 
@@ -302,6 +386,25 @@ export default function CitoyenPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* SECTION COFFRE-FORT NUMÉRIQUE : DOCUMENTS FONCIERS & ACTES OFFICIELS */}
+        <DocumentsCoffrefort
+          documents={documents}
+          onSelectDocument={(doc) => setSelectedDocumentForViewer(doc)}
+        />
+
+        {/* Modal de situation détaillée de parcelle */}
+        <ParcelleSituationModal
+          diagnostic={selectedParcelleForSituation}
+          onClose={() => setSelectedParcelleForSituation(null)}
+          onSelectDocument={handleSelectDocumentByRef}
+        />
+
+        {/* Modal de visualisation immersive d'acte officiel */}
+        <DocumentViewerModal
+          document={selectedDocumentForViewer}
+          onClose={() => setSelectedDocumentForViewer(null)}
+        />
 
         {/* Modal de déclaration de parcelle */}
         {showDeclareModal && (

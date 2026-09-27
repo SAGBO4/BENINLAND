@@ -182,36 +182,30 @@ export default function LoginPage(): ReactNode {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Navigation retour simple */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 mb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Retour à l&apos;accueil Anyigba</span>
-        </Link>
-      </div>
-
-      {/* Header institutionnel compact */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center px-4">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#0a3764] text-white shadow-md shadow-[#0a3764]/20 mb-3">
-          <Shield className="h-6 w-6 text-emerald-400" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-8 sm:py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        {/* Navigation retour ergonomique alignée avec le formulaire */}
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#0a3764] transition-colors py-1.5 px-3 rounded-lg hover:bg-slate-200/70 w-fit group"
+          >
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Retour à l&apos;accueil Anyigba</span>
+          </Link>
         </div>
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#0a3764]/20 bg-[#0a3764]/5 px-3 py-1 text-[11px] font-bold text-[#0a3764] mb-2">
-          <span>Portail National d&apos;Authentification Habilitée</span>
-        </div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-          Guichet d&apos;Accès Réglementaire
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          ANYIGBA • Système National de Sécurisation Foncière &bull; République du Bénin
-        </p>
-      </div>
 
-      {/* Boîte Principale d'Authentification Normale */}
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        {/* Header institutionnel épuré */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Connexion à votre Espace Foncier
+          </h1>
+          <p className="text-xs text-slate-500 mt-1.5">
+            ANYIGBA • Système National de Sécurisation Foncière &bull; République du Bénin
+          </p>
+        </div>
+
+        {/* Boîte Principale d'Authentification Normale */}
         <div className="bg-white py-8 px-6 sm:px-10 shadow-xl rounded-2xl border border-slate-200/90">
           {/* Onglets Normaux : Connexion / Inscription */}
           <div className="flex border-b border-slate-200 mb-6">
@@ -264,7 +258,7 @@ export default function LoginPage(): ReactNode {
 
               {/* Champ Identifiant ou NPI */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="login-identifier" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Identifiant ou NPI ANIP
                 </label>
                 <div className="relative rounded-xl shadow-xs">
@@ -272,6 +266,7 @@ export default function LoginPage(): ReactNode {
                     <User className="h-4 w-4" />
                   </div>
                   <input
+                    id="login-identifier"
                     type="text"
                     required
                     value={identifier}
@@ -288,7 +283,7 @@ export default function LoginPage(): ReactNode {
               {/* Champ Mot de passe */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label htmlFor="login-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Mot de passe
                   </label>
                   <button
@@ -305,6 +300,7 @@ export default function LoginPage(): ReactNode {
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
+                    id="login-password"
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
@@ -318,6 +314,7 @@ export default function LoginPage(): ReactNode {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                     className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -327,8 +324,9 @@ export default function LoginPage(): ReactNode {
 
               {/* Options : Se souvenir de moi */}
               <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label htmlFor="login-remember-me" className="flex items-center gap-2 cursor-pointer">
                   <input
+                    id="login-remember-me"
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
@@ -465,10 +463,11 @@ export default function LoginPage(): ReactNode {
 
               {/* Type de compte / Rôle */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="reg-role" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Type de compte *
                 </label>
                 <select
+                  id="reg-role"
                   value={regRole}
                   onChange={(e) => setRegRole(e.target.value as UserRole)}
                   className="block w-full px-3 py-2.5 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 bg-white"
@@ -513,10 +512,11 @@ export default function LoginPage(): ReactNode {
               {/* Nom & Prénom */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-nom" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Nom *
                   </label>
                   <input
+                    id="reg-nom"
                     type="text"
                     required
                     value={regNom}
@@ -526,10 +526,11 @@ export default function LoginPage(): ReactNode {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-prenom" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Prénom(s) *
                   </label>
                   <input
+                    id="reg-prenom"
                     type="text"
                     required
                     value={regPrenom}
@@ -543,10 +544,11 @@ export default function LoginPage(): ReactNode {
               {/* NPI ANIP & Téléphone */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-npi" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     NPI ANIP *
                   </label>
                   <input
+                    id="reg-npi"
                     type="text"
                     required
                     value={regNpi}
@@ -556,11 +558,12 @@ export default function LoginPage(): ReactNode {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-telephone" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Téléphone (MoMo)
                   </label>
                   <div className="relative">
                     <input
+                      id="reg-telephone"
                       type="tel"
                       value={regTelephone}
                       onChange={(e) => setRegTelephone(e.target.value)}
@@ -574,10 +577,11 @@ export default function LoginPage(): ReactNode {
               {/* Département & Commune */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-departement" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Département *
                   </label>
                   <select
+                    id="reg-departement"
                     value={regDepartement}
                     onChange={(e) => setRegDepartement(e.target.value)}
                     className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 bg-white"
@@ -590,10 +594,11 @@ export default function LoginPage(): ReactNode {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-commune" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Commune *
                   </label>
                   <input
+                    id="reg-commune"
                     type="text"
                     required
                     value={regCommune}
@@ -607,10 +612,11 @@ export default function LoginPage(): ReactNode {
               {/* Structure / Établissement (si rôle professionnel) */}
               {regRole !== "CITOYEN" && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-etablissement" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Structure / Établissement / Charge
                   </label>
                   <input
+                    id="reg-etablissement"
                     type="text"
                     value={regEtablissement}
                     onChange={(e) => setRegEtablissement(e.target.value)}
@@ -623,11 +629,12 @@ export default function LoginPage(): ReactNode {
               {/* Mot de passe & Confirmation */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Mot de passe *
                   </label>
                   <div className="relative">
                     <input
+                      id="reg-password"
                       type={showRegPassword ? "text" : "password"}
                       required
                       value={regPassword}
@@ -638,6 +645,7 @@ export default function LoginPage(): ReactNode {
                     <button
                       type="button"
                       onClick={() => setShowRegPassword(!showRegPassword)}
+                      aria-label={showRegPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                       className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                     >
                       {showRegPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -645,10 +653,11 @@ export default function LoginPage(): ReactNode {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="reg-confirm-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Confirmer *
                   </label>
                   <input
+                    id="reg-confirm-password"
                     type={showRegPassword ? "text" : "password"}
                     required
                     value={regConfirmPassword}
@@ -661,8 +670,9 @@ export default function LoginPage(): ReactNode {
 
               {/* Conditions d'utilisation */}
               <div className="pt-1">
-                <label className="flex items-start gap-2 cursor-pointer">
+                <label htmlFor="reg-accept-terms" className="flex items-start gap-2 cursor-pointer">
                   <input
+                    id="reg-accept-terms"
                     type="checkbox"
                     checked={acceptTerms}
                     onChange={(e) => setAcceptTerms(e.target.checked)}
