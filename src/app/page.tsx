@@ -437,7 +437,7 @@ export default function HomePage(): ReactNode {
 
       {/* 2. SECTION GUICHET UNIQUE (E-SERVICES INSPIRÉS DE L'ARCHITECTURE ANIP) */}
       <section className="w-full py-14 sm:py-22 px-4 sm:px-8 lg:px-12 bg-[#f6f8fb]">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1536px] mx-auto">
           <FadeIn className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#0a3764]/10 px-4 py-1 text-xs font-bold text-[#0a3764] mb-3 border border-[#0a3764]/20">
               Guichet Unique du Foncier National
@@ -516,7 +516,7 @@ export default function HomePage(): ReactNode {
 
       {/* 3. TÉLÉMÉTRIE NATIONALE SPACIEUSE EN DIRECT */}
       <section className="w-full border-y border-slate-200 bg-white py-12 sm:py-16 px-4 sm:px-8 lg:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1536px] mx-auto">
           {/* Header de la télémétrie */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
@@ -588,7 +588,7 @@ export default function HomePage(): ReactNode {
 
       {/* 4. MODULE SIG CADASTRAL GRAND FORMAT PANORAMIQUE */}
       <section className="w-full py-14 sm:py-22 px-4 sm:px-8 lg:px-12 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-[1536px] mx-auto space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-[#0a3764]/10 px-3.5 py-1 text-xs font-bold text-[#0a3764] mb-2 border border-[#0a3764]/20">
@@ -622,7 +622,7 @@ export default function HomePage(): ReactNode {
       </section>
 
       {/* 5. LES 4 PILIERS DE LA RÉFORME FONCIÈRE SOUVERAINE */}
-      <section id="piliers" className="w-full py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+      <section id="piliers" className="w-full py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-[1536px] mx-auto">
         <FadeIn className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#0a3764]/10 px-4 py-1.5 text-xs font-bold text-[#0a3764] mb-3 border border-[#0a3764]/20">
             Cadre de Souveraineté Domaniale 2026-2030
@@ -686,7 +686,7 @@ export default function HomePage(): ReactNode {
 
       {/* 6. DÉMONSTRATEUR INTERACTIF DE MUTATION (PARCELLE OUI-0421) */}
       <section className="w-full py-16 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white border-y border-slate-200">
-        <div className="max-w-7xl mx-auto space-y-8">
+        <div className="max-w-[1536px] mx-auto space-y-8">
           <FadeIn className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-1 text-xs font-bold text-amber-800 mb-3 border border-amber-500/20">
               <Sparkles className="h-3.5 w-3.5" />
@@ -706,7 +706,7 @@ export default function HomePage(): ReactNode {
 
       {/* 7. ACCÈS DIRECT AUX 8 ESPACES MÉTIERS */}
       <section className="w-full py-16 sm:py-24 px-4 sm:px-8 lg:px-12 bg-[#f6f8fb]">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1536px] mx-auto">
           <FadeIn className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
               Espaces Métiers &amp; Guichet d&apos;Accès Souverain

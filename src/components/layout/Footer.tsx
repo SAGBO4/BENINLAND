@@ -5,7 +5,7 @@ import { PhoneCall, ShieldCheck, Lock, MapPin, Scale } from "lucide-react";
 export function Footer() {
   return (
     <footer className="w-full bg-[#1b232d] text-white py-12 sm:py-16 px-4 sm:px-8 lg:px-12 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto flex flex-col gap-8 sm:gap-10">
+      <div className="max-w-[1536px] mx-auto flex flex-col gap-8 sm:gap-10">
         <div className="grid grid-cols-1 md:grid-cols-3 items-start justify-between gap-8 pb-8 sm:pb-10 border-b border-white/10">
           {/* Colonne Gauche : Services Fonciers Nationaux & Numéro Vert */}
           <div className="flex flex-col gap-3">

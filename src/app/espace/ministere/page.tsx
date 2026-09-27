@@ -6,7 +6,7 @@ import {
   Landmark,
   ShieldCheck,
   Scale,
-  Building,
+  Building2,
   TrendingUp,
   AlertTriangle,
   Lock,
@@ -19,20 +19,39 @@ import {
   Layers,
   ArrowRight,
   ShieldAlert,
-  UserCheck,
-  UserX,
   Ban,
   ExternalLink,
+  ChevronRight,
+  FileText,
+  Activity,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatFcfa } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 
+interface DepartementStat {
+  nom: string;
+  chefLieu: string;
+  parcelles: number;
+  litiges: number;
+  conformite: string;
+  titresDelivres: number;
+}
+
 export default function MinisterePage() {
   const [selectedDepartement, setSelectedDepartement] = useState("Atlantique");
+  const [deptSearch, setDeptSearch] = useState("");
   const [inspectionMsg, setInspectionMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,19 +62,25 @@ export default function MinisterePage() {
     fondsTransactionsSurveillees: "384 000 000 FCFA",
   };
 
-  const departements = [
-    { nom: "Atlantique", parcelles: 6840, litiges: 3, conformite: "99.4%" },
-    { nom: "Littoral", parcelles: 5120, litiges: 1, conformite: "99.8%" },
-    { nom: "Ouémé", parcelles: 2450, litiges: 4, conformite: "98.9%" },
-    { nom: "Borgou", parcelles: 1680, litiges: 2, conformite: "99.1%" },
-    { nom: "Zou", parcelles: 1140, litiges: 2, conformite: "98.7%" },
-    { nom: "Mono", parcelles: 620, litiges: 1, conformite: "99.0%" },
-    { nom: "Couffo", parcelles: 570, litiges: 0, conformite: "100%" },
+  // Les 12 Départements de la République du Bénin
+  const departements: DepartementStat[] = [
+    { nom: "Atlantique", chefLieu: "Allada", parcelles: 6840, litiges: 3, conformite: "99.4%", titresDelivres: 5410 },
+    { nom: "Littoral", chefLieu: "Cotonou", parcelles: 5120, litiges: 1, conformite: "99.8%", titresDelivres: 4980 },
+    { nom: "Ouémé", chefLieu: "Porto-Novo", parcelles: 2450, litiges: 4, conformite: "98.9%", titresDelivres: 1920 },
+    { nom: "Borgou", chefLieu: "Parakou", parcelles: 1680, litiges: 2, conformite: "99.1%", titresDelivres: 1250 },
+    { nom: "Zou", chefLieu: "Abomey", parcelles: 1140, litiges: 2, conformite: "98.7%", titresDelivres: 890 },
+    { nom: "Collines", chefLieu: "Dassa-Zoumè", parcelles: 1230, litiges: 3, conformite: "98.8%", titresDelivres: 940 },
+    { nom: "Mono", chefLieu: "Lokossa", parcelles: 620, litiges: 1, conformite: "99.0%", titresDelivres: 480 },
+    { nom: "Couffo", chefLieu: "Aplahoué", parcelles: 570, litiges: 0, conformite: "100%", titresDelivres: 460 },
+    { nom: "Atacora", chefLieu: "Natitingou", parcelles: 890, litiges: 1, conformite: "99.2%", titresDelivres: 670 },
+    { nom: "Donga", chefLieu: "Djougou", parcelles: 740, litiges: 0, conformite: "100%", titresDelivres: 580 },
+    { nom: "Alibori", chefLieu: "Kandi", parcelles: 980, litiges: 2, conformite: "98.5%", titresDelivres: 720 },
+    { nom: "Plateau", chefLieu: "Pobè", parcelles: 810, litiges: 1, conformite: "99.1%", titresDelivres: 610 },
   ];
 
   const corpsMetiers = [
     {
-      titre: "Chambre des Notaires du Bénin",
+      titre: "Chambre Nationale des Notaires du Bénin",
       actif: 42,
       dossiersTraites: 184,
       delaiMoyen: "48h",
@@ -63,7 +88,7 @@ export default function MinisterePage() {
       statutVariant: "success" as const,
     },
     {
-      titre: "Inspecteurs du Cadastre (ANDF)",
+      titre: "Conservations Foncières (ANDF)",
       actif: 28,
       dossiersTraites: 156,
       delaiMoyen: "24h",
@@ -71,7 +96,7 @@ export default function MinisterePage() {
       statutVariant: "success" as const,
     },
     {
-      titre: "Ordre des Géomètres-Experts",
+      titre: "Ordre des Géomètres-Experts (OGE)",
       actif: 64,
       dossiersTraites: 312,
       delaiMoyen: "72h",
@@ -79,10 +104,10 @@ export default function MinisterePage() {
       statutVariant: "info" as const,
     },
     {
-      titre: "Agents Fonciers de Terrain (Communes)",
+      titre: "Services Fonciers Communaux (77 Mairies)",
       actif: 120,
       dossiersTraites: 420,
-      delaiMoyen: "PV de Bornage & Voix",
+      delaiMoyen: "Procès-Verbaux & Voix",
       statut: "Surveillance Active",
       statutVariant: "warning" as const,
     },
@@ -94,7 +119,7 @@ export default function MinisterePage() {
     setTimeout(() => {
       setLoading(false);
       setInspectionMsg(
-        "Ordonnance ministérielle d'audit transmise avec succès à l'Inspection Générale des Affaires Foncières (IGAF). Contrôle inopiné programmé sous 24h avec réquisition des registres cryptographiques."
+        "Ordonnance ministérielle d'audit transmise à l'Inspection Générale des Affaires Foncières (IGAF). Contrôle inopiné programmé sous 24h avec réquisition des registres cryptographiques."
       );
     }, 500);
   };
@@ -105,9 +130,17 @@ export default function MinisterePage() {
   const validAccountsCount = registeredAccounts.filter((a) => a.statutValidation === "VALIDE").length;
   const rejectedAccountsCount = registeredAccounts.filter((a) => a.statutValidation === "REJETE").length;
 
+  const filteredDepartements = departements.filter(
+    (d) =>
+      d.nom.toLowerCase().includes(deptSearch.toLowerCase()) ||
+      d.chefLieu.toLowerCase().includes(deptSearch.toLowerCase())
+  );
+
+  const selectedDeptData = departements.find((d) => d.nom === selectedDepartement) || departements[0];
+
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground bg-grid-benin">
-      <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
+      <main id="main-content" className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-rise">
         {/* BANNIÈRE RÉGALIENNE : DIRECTION GÉNÉRALE & RÉGULATION MINISTÉRIELLE */}
         <Card className="border-secondary/40 shadow-xl bg-card">
           <CardHeader className="p-5 sm:p-6 pb-4">
@@ -132,8 +165,9 @@ export default function MinisterePage() {
               </div>
 
               <div className="flex items-center gap-2 text-xs bg-background/80 p-3 rounded-xl border border-border shrink-0">
+                <Activity className="w-4 h-4 text-emerald-500 shrink-0" />
                 <div>
-                  <span className="text-[10px] text-muted-foreground block font-medium">Session Ministérielle</span>
+                  <span className="text-[10px] text-muted-foreground block font-medium">Session Ministérielle Active</span>
                   <strong className="text-foreground">Cabinet du Ministre &bull; Inspection Générale</strong>
                 </div>
               </div>
@@ -150,7 +184,7 @@ export default function MinisterePage() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <CardTitle className="text-base sm:text-lg font-bold">
                       Tutelle Ministérielle &amp; Contrôle des Habilitations (IGAF)
                     </CardTitle>
@@ -244,11 +278,11 @@ export default function MinisterePage() {
                     Pouvoir Républicain de Révocation &amp; d&apos;Audit
                   </span>
                   <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                    Le Ministre dispose d&apos;un droit de réformation immédiat sur toute attribution de qualité (notariat, géomètre, banque, etc.) prononcée par l&apos;IGAF.
+                    Le Ministre dispose d&apos;un droit de réformation immédiat sur toute attribution de qualité (notariat, géomètre, banque) prononcée par l&apos;IGAF.
                   </p>
                 </div>
                 <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Registre cryptographique synchronisé avec la présidence</span>
                 </div>
               </div>
@@ -258,12 +292,12 @@ export default function MinisterePage() {
 
         {/* SECTION TRÉSOR PUBLIC DU BÉNIN : FLUX FINANCIERS RÉGALIENS (DGTCP / CUT) */}
         <section className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-secondary">
               <DollarSign className="w-4 h-4 text-secondary" />
               <span>Souveraineté Financière : Trésor Public du Bénin (DGTCP / TrésorPay)</span>
             </div>
-            <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
+            <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400 border-emerald-500/30">
               Compte Unique du Trésor (CUT) Actif
             </Badge>
           </div>
@@ -271,7 +305,7 @@ export default function MinisterePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="p-5 space-y-2 border-secondary/40 bg-card">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium">Recettes Fiscales Versées au Trésor</span>
+                <span className="text-xs text-muted-foreground font-medium">Recettes Fiscales au Trésor</span>
                 <Landmark className="w-4 h-4 text-secondary" />
               </div>
               <div className="text-xl sm:text-2xl font-black text-secondary font-mono">
@@ -290,7 +324,7 @@ export default function MinisterePage() {
               <div className="text-xl sm:text-2xl font-black text-foreground font-mono">
                 {statsTresor.droitsMutationCut}
               </div>
-              <p className="text-[10px] text-emerald-400 font-semibold">
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
                 +18.4% de recouvrement fiscal vs exercice 2025
               </p>
             </Card>
@@ -298,9 +332,9 @@ export default function MinisterePage() {
             <Card className="p-5 space-y-2 border-blue-500/40 bg-card">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground font-medium">Taxes Plus-Values (77 Mairies)</span>
-                <Building className="w-4 h-4 text-blue-400" />
+                <Building2 className="w-4 h-4 text-blue-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-black text-blue-400 font-mono">
+              <div className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">
                 {statsTresor.taxesPlusValueCommunes}
               </div>
               <p className="text-[10px] text-muted-foreground">
@@ -311,9 +345,9 @@ export default function MinisterePage() {
             <Card className="p-5 space-y-2 border-purple-500/40 bg-card">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground font-medium">Transactions Privées Sous Séquestre</span>
-                <Lock className="w-4 h-4 text-purple-400" />
+                <Lock className="w-4 h-4 text-purple-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-black text-purple-400 font-mono">
+              <div className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 font-mono">
                 {statsTresor.fondsTransactionsSurveillees}
               </div>
               <p className="text-[10px] text-muted-foreground">
@@ -323,7 +357,7 @@ export default function MinisterePage() {
           </div>
         </section>
 
-        {/* GRILLE CENTRALE : PANORAMA DES DÉPARTEMENTS & AUDIT DÉONTOLOGIQUE */}
+        {/* GRILLE CENTRALE : PANORAMA DES 12 DÉPARTEMENTS & AUDIT DÉONTOLOGIQUE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs">
           {/* PANORAMA DES 12 DÉPARTEMENTS (7 colonnes sur 12) */}
           <Card className="lg:col-span-7 border-border shadow-xl bg-card">
@@ -334,71 +368,86 @@ export default function MinisterePage() {
                     Cartographie Départementale de Conformité Cadastrale
                   </CardTitle>
                   <CardDescription className="text-xs text-muted-foreground">
-                    Suivi en temps réel de l&apos;immatriculation, de la conformité légale et des litiges CSAF.
+                    Suivi en temps réel des 12 départements, de l&apos;immatriculation foncière et des litiges CSAF.
                   </CardDescription>
                 </div>
-                <Badge variant="default" className="text-[10px]">
-                  77 Communes Numérisées
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <div className="relative w-36 sm:w-44">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Filtrer..."
+                      value={deptSearch}
+                      onChange={(e) => setDeptSearch(e.target.value)}
+                      className="h-8 pl-8 text-xs bg-background"
+                    />
+                  </div>
+                  <Badge variant="default" className="text-[10px] shrink-0">
+                    77 Communes
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
 
             <CardContent className="p-5 pt-0 space-y-3">
-              <div className="space-y-2 overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-border/80 text-[11px] text-muted-foreground">
-                      <th className="py-2.5 px-3 font-semibold">Département</th>
-                      <th className="py-2.5 px-3 font-semibold">Parcelles Enregistrées</th>
-                      <th className="py-2.5 px-3 font-semibold">Litiges CSAF</th>
-                      <th className="py-2.5 px-3 font-semibold">Taux de Sécurité</th>
-                      <th className="py-2.5 px-3 font-semibold text-right">Statut</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60 text-xs">
-                    {departements.map((dep) => (
-                      <tr
+              <div className="rounded-xl border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Département</TableHead>
+                      <TableHead>Chef-Lieu</TableHead>
+                      <TableHead>Parcelles</TableHead>
+                      <TableHead>Litiges CSAF</TableHead>
+                      <TableHead>Sécurité</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredDepartements.map((dep) => (
+                      <TableRow
                         key={dep.nom}
-                        className={`hover:bg-muted/40 transition cursor-pointer ${
+                        className={`cursor-pointer transition-colors ${
                           selectedDepartement === dep.nom ? "bg-primary/10" : ""
                         }`}
                         onClick={() => setSelectedDepartement(dep.nom)}
                       >
-                        <td className="py-3 px-3 font-bold text-foreground flex items-center gap-2">
+                        <TableCell className="font-bold text-foreground flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-primary" />
                           <span>{dep.nom}</span>
-                        </td>
-                        <td className="py-3 px-3 font-mono text-muted-foreground">
+                        </TableCell>
+                        <TableCell className="text-muted-foreground font-medium">
+                          {dep.chefLieu}
+                        </TableCell>
+                        <TableCell className="font-mono text-foreground">
                           {dep.parcelles.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-3 px-3">
+                        </TableCell>
+                        <TableCell>
                           {dep.litiges > 0 ? (
                             <Badge variant="destructive" className="text-[10px] py-0.5">
                               {dep.litiges} instance(s)
                             </Badge>
                           ) : (
-                            <span className="text-emerald-400 font-bold">0 litige</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">0 litige</span>
                           )}
-                        </td>
-                        <td className="py-3 px-3 text-emerald-400 font-bold font-mono">
+                        </TableCell>
+                        <TableCell className="text-emerald-600 dark:text-emerald-400 font-bold font-mono">
                           {dep.conformite}
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          <Badge variant="outline" className="text-[10px]">
-                            Surveillé
-                          </Badge>
-                        </td>
-                      </tr>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <ChevronRight className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-background/80 border border-border flex items-center justify-between text-xs">
+              <div className="p-3.5 rounded-xl bg-background/80 border border-border flex items-center justify-between text-xs flex-wrap gap-2">
                 <span className="text-muted-foreground">
-                  Département actif : <strong className="text-foreground">{selectedDepartement}</strong>
+                  Département sélectionné : <strong className="text-foreground">{selectedDeptData.nom}</strong> ({selectedDeptData.chefLieu}) &bull;{" "}
+                  <span className="font-mono text-primary font-bold">{selectedDeptData.titresDelivres}</span> titres CPF scellés
                 </span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1.5 text-[11px]">
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5 text-[11px]">
                   <CheckCircle2 className="w-4 h-4" /> Registre foncier certifié conforme
                 </span>
               </div>
@@ -454,7 +503,7 @@ export default function MinisterePage() {
 
               <CardContent className="p-5 pt-0 space-y-3">
                 {inspectionMsg && (
-                  <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs flex items-start gap-2 animate-rise">
+                  <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs flex items-start gap-2 animate-rise">
                     <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
                     <span>{inspectionMsg}</span>
                   </div>

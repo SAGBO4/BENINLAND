@@ -19,8 +19,8 @@ interface AuthContextType {
   user: UserSession | null;
   isLoading: boolean;
   loginAs: (role: UserRole) => void;
-  loginWithCredentials: (npi: string, role: UserRole, password?: string) => boolean;
-  registerAccount: (newSession: UserSession) => { success: boolean; requiresValidation: boolean; status: AccountStatus };
+  loginWithCredentials: (npi: string, role?: UserRole, password?: string) => Promise<boolean>;
+  registerAccount: (newSession: UserSession) => Promise<{ success: boolean; requiresValidation: boolean; status: AccountStatus }>;
   getRegisteredAccounts: () => UserSession[];
   validateAccount: (npi: string, validePar?: string) => void;
   rejectAccount: (npi: string, motif: string) => void;
@@ -178,120 +178,237 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loginWithCredentials = (npi: string, role: UserRole, password?: string): boolean => {
+  const loginWithCredentials = async (npi: string, role?: UserRole, password?: string): Promise<boolean> => {
     setLastLoginError(null);
 
-    // Vérifier si le rôle Contrôleur a son mandat actif auprès du Ministère
-    if (role === "CONTROLEUR" && !controllerMandate.active) {
-      setLastLoginError("Le mandat de l'Inspecteur Contrôleur est suspendu par décision du Ministère.");
+    const cleanInput = (npi || "").trim();
+    if (!cleanInput) {
+      setLastLoginError("Veuillez saisir votre identifiant ou Numéro Personnel d'Identification (NPI).");
       return false;
     }
 
-    // Chercher dans les comptes enregistrés
-    let matchedCustomUser: UserSession | null = null;
+    // Appel à l'API backend PostgreSQL
     try {
-      const existingRaw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
-      const list: UserSession[] = existingRaw ? JSON.parse(existingRaw) : registeredAccounts;
-      matchedCustomUser = list.find((u) => u.npi.trim().toLowerCase() === (npi || "").trim().toLowerCase()) || null;
-    } catch (e) {
-      console.error("Erreur lecture comptes enregistrés:", e);
-    }
+      const response = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: cleanInput, role, password }),
+      });
 
-    // CONTRÔLE RÉGLEMENTAIRE DE LA VALIDATION DU COMPTE
-    if (matchedCustomUser) {
-      if (matchedCustomUser.statutValidation === "EN_ATTENTE_VALIDATION") {
-        setLastLoginError(
-          `Votre compte (${matchedCustomUser.prenom} ${matchedCustomUser.nom} - NPI: ${matchedCustomUser.npi}) est en attente d'approbation par le Contrôleur National des Habilitations (sous tutelle du Ministère). Veuillez patienter que votre qualité d'officier/acteur soit certifiée.`
-        );
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setLastLoginError(data.error || "Identifiant ou mot de passe incorrect.");
         return false;
       }
 
-      if (matchedCustomUser.statutValidation === "REJETE") {
-        setLastLoginError(
-          `Demande d'habilitation refusée par le Contrôleur National. Motif : ${matchedCustomUser.motifRefus || "Justificatifs ou NPI non concordants avec l'annuaire national."}`
-        );
+      const session: UserSession = data.user;
+      setUser(session);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        localStorage.setItem("anyigba_user_role", session.role.toLowerCase());
+        localStorage.setItem("anyigba_user_name", `${session.prenom} ${session.nom}`);
+        localStorage.setItem("anyigba_user_npi", session.npi);
+      } catch (e) {
+        console.error("Erreur écriture session locale:", e);
+      }
+
+      const targetRoute = data.redirectUrl || ROLE_DASHBOARDS[session.role] || "/espace/citoyen";
+      router.push(targetRoute);
+      return true;
+    } catch (apiErr) {
+      console.warn("API indisponible, tentative avec le cache local:", apiErr);
+
+      // Fallback local résilient
+      let matchedCustomUser: UserSession | null = null;
+      try {
+        const existingRaw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
+        const list: UserSession[] = existingRaw ? JSON.parse(existingRaw) : registeredAccounts;
+        matchedCustomUser =
+          list.find(
+            (u) =>
+              u.npi.trim().toLowerCase() === cleanInput.toLowerCase() ||
+              (u.nom && u.nom.toLowerCase() === cleanInput.toLowerCase())
+          ) || null;
+      } catch (e) {
+        console.error("Erreur lecture comptes enregistrés:", e);
+      }
+
+      let matchedDemoRole: UserRole | null = null;
+      const demoEntries = Object.entries(DEMO_USERS) as [UserRole, UserSession][];
+      const foundDemo = demoEntries.find(
+        ([rKey, u]) =>
+          u.npi.toLowerCase() === cleanInput.toLowerCase() ||
+          rKey.toLowerCase() === cleanInput.toLowerCase() ||
+          u.nom.toLowerCase() === cleanInput.toLowerCase()
+      );
+      if (foundDemo) {
+        matchedDemoRole = foundDemo[0];
+      }
+
+      const targetRole: UserRole = role || matchedCustomUser?.role || matchedDemoRole || "CITOYEN";
+
+      if (targetRole === "CONTROLEUR" && !controllerMandate.active) {
+        setLastLoginError("Le mandat de l'Inspecteur Contrôleur est suspendu par décision du Ministère.");
         return false;
       }
 
-      if (matchedCustomUser.statutValidation === "SUSPENDU") {
-        setLastLoginError("Ce compte a été suspendu par mesure conservatoire de déontologie.");
+      const expectedPassword =
+        matchedCustomUser?.password ||
+        (foundDemo ? foundDemo[1].password : DEMO_USERS[targetRole]?.password) ||
+        "benin2026";
+
+      if (password && expectedPassword && password !== expectedPassword) {
+        setLastLoginError("Mot de passe incorrect. Veuillez vérifier votre saisie.");
         return false;
       }
-    }
 
-    const template = DEMO_USERS[role];
-    const session: UserSession = matchedCustomUser
-      ? { ...matchedCustomUser, role, statutValidation: "VALIDE" }
-      : {
-          ...template,
-          npi: npi || template.npi,
-          statutValidation: "VALIDE",
-        };
+      if (matchedCustomUser) {
+        if (matchedCustomUser.statutValidation === "EN_ATTENTE_VALIDATION") {
+          setLastLoginError(
+            `Votre compte (${matchedCustomUser.prenom} ${matchedCustomUser.nom} - NPI: ${matchedCustomUser.npi}) est en attente d'approbation par le Contrôleur National des Habilitations.`
+          );
+          return false;
+        }
 
-    setUser(session);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      localStorage.setItem("anyigba_user_role", session.role.toLowerCase());
-      localStorage.setItem("anyigba_user_name", `${session.prenom} ${session.nom}`);
-      localStorage.setItem("anyigba_user_npi", session.npi);
-    } catch (e) {
-      console.error("Erreur écriture session foncière:", e);
+        if (matchedCustomUser.statutValidation === "REJETE") {
+          setLastLoginError(
+            `Demande d'habilitation refusée. Motif : ${matchedCustomUser.motifRefus || "Non conforme."}`
+          );
+          return false;
+        }
+
+        if (matchedCustomUser.statutValidation === "SUSPENDU") {
+          setLastLoginError("Ce compte a été suspendu par mesure conservatoire de déontologie.");
+          return false;
+        }
+      }
+
+      const template = DEMO_USERS[targetRole] || DEMO_USERS.CITOYEN;
+      const session: UserSession = matchedCustomUser
+        ? { ...matchedCustomUser, role: targetRole, statutValidation: "VALIDE" }
+        : foundDemo
+        ? { ...foundDemo[1], statutValidation: "VALIDE" }
+        : {
+            ...template,
+            npi: cleanInput,
+            statutValidation: "VALIDE",
+          };
+
+      setUser(session);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        localStorage.setItem("anyigba_user_role", session.role.toLowerCase());
+        localStorage.setItem("anyigba_user_name", `${session.prenom} ${session.nom}`);
+        localStorage.setItem("anyigba_user_npi", session.npi);
+      } catch (e) {
+        console.error("Erreur écriture session foncière:", e);
+      }
+      const targetRoute = ROLE_DASHBOARDS[targetRole] || "/espace/citoyen";
+      router.push(targetRoute);
+      return true;
     }
-    const targetRoute = ROLE_DASHBOARDS[role];
-    router.push(targetRoute);
-    return true;
   };
 
-  const registerAccount = (
+  const registerAccount = async (
     newSession: UserSession
-  ): { success: boolean; requiresValidation: boolean; status: AccountStatus } => {
+  ): Promise<{ success: boolean; requiresValidation: boolean; status: AccountStatus }> => {
     setLastLoginError(null);
-    // Tout rôle officiel / à responsabilité juridique nécessite la validation du Contrôleur
-    const isOfficialRole = newSession.role !== "CITOYEN";
-    const status: AccountStatus = isOfficialRole ? "EN_ATTENTE_VALIDATION" : "VALIDE";
 
-    const sessionWithStatus: UserSession = {
-      ...newSession,
-      statutValidation: status,
-      dateDemande: new Intl.DateTimeFormat("fr-FR", {
-        dateStyle: "short",
-        timeStyle: "short",
-      }).format(new Date()),
-    };
-
-    let updatedList: UserSession[] = [];
     try {
-      const existingRaw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
-      const list: UserSession[] = existingRaw ? JSON.parse(existingRaw) : registeredAccounts;
-      updatedList = [sessionWithStatus, ...list.filter((u) => u.npi !== sessionWithStatus.npi)];
-      localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(updatedList));
-      setRegisteredAccounts(updatedList);
-    } catch (e) {
-      console.error("Erreur enregistrement nouveau compte:", e);
-    }
+      const response = await fetch("/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSession),
+      });
 
-    // Si c'est un citoyen (auto-validé), on ouvre directement sa session
-    if (!isOfficialRole) {
-      setUser(sessionWithStatus);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionWithStatus));
-        localStorage.setItem("anyigba_user_role", sessionWithStatus.role.toLowerCase());
-        localStorage.setItem("anyigba_user_name", `${sessionWithStatus.prenom} ${sessionWithStatus.nom}`);
-        localStorage.setItem("anyigba_user_npi", sessionWithStatus.npi);
-      } catch (e) {
-        console.error("Erreur écriture session:", e);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Impossible d'enregistrer le compte.");
       }
-      const targetRoute = ROLE_DASHBOARDS[sessionWithStatus.role];
-      router.push(targetRoute);
-      return { success: true, requiresValidation: false, status: "VALIDE" };
-    }
 
-    // Pour les rôles officiels, le compte reste bloqué jusqu'à validation par le Contrôleur
-    return {
-      success: true,
-      requiresValidation: true,
-      status: "EN_ATTENTE_VALIDATION",
-    };
+      const registeredUser: UserSession = data.user;
+
+      // Mise à jour de la persistance locale
+      let updatedList: UserSession[] = [];
+      try {
+        const existingRaw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
+        const list: UserSession[] = existingRaw ? JSON.parse(existingRaw) : registeredAccounts;
+        updatedList = [registeredUser, ...list.filter((u) => u.npi !== registeredUser.npi)];
+        localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(updatedList));
+        setRegisteredAccounts(updatedList);
+      } catch (e) {
+        console.error("Erreur sync locale:", e);
+      }
+
+      // Si citoyen, connexion directe
+      if (!data.requiresValidation) {
+        setUser(registeredUser);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(registeredUser));
+          localStorage.setItem("anyigba_user_role", registeredUser.role.toLowerCase());
+          localStorage.setItem("anyigba_user_name", `${registeredUser.prenom} ${registeredUser.nom}`);
+          localStorage.setItem("anyigba_user_npi", registeredUser.npi);
+        } catch (e) {
+          console.error("Erreur écriture session:", e);
+        }
+        const targetRoute = ROLE_DASHBOARDS[registeredUser.role] || "/espace/citoyen";
+        router.push(targetRoute);
+      }
+
+      return {
+        success: true,
+        requiresValidation: data.requiresValidation,
+        status: registeredUser.statutValidation || (data.requiresValidation ? "EN_ATTENTE_VALIDATION" : "VALIDE"),
+      };
+    } catch (apiErr: any) {
+      console.warn("API inscription non joignable, enregistrement en local:", apiErr);
+
+      const isOfficialRole = newSession.role !== "CITOYEN";
+      const status: AccountStatus = isOfficialRole ? "EN_ATTENTE_VALIDATION" : "VALIDE";
+
+      const sessionWithStatus: UserSession = {
+        ...newSession,
+        statutValidation: status,
+        dateDemande: new Intl.DateTimeFormat("fr-FR", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }).format(new Date()),
+      };
+
+      let updatedList: UserSession[] = [];
+      try {
+        const existingRaw = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
+        const list: UserSession[] = existingRaw ? JSON.parse(existingRaw) : registeredAccounts;
+        updatedList = [sessionWithStatus, ...list.filter((u) => u.npi !== sessionWithStatus.npi)];
+        localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(updatedList));
+        setRegisteredAccounts(updatedList);
+      } catch (e) {
+        console.error("Erreur enregistrement nouveau compte:", e);
+      }
+
+      if (!isOfficialRole) {
+        setUser(sessionWithStatus);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionWithStatus));
+          localStorage.setItem("anyigba_user_role", sessionWithStatus.role.toLowerCase());
+          localStorage.setItem("anyigba_user_name", `${sessionWithStatus.prenom} ${sessionWithStatus.nom}`);
+          localStorage.setItem("anyigba_user_npi", sessionWithStatus.npi);
+        } catch (e) {
+          console.error("Erreur écriture session:", e);
+        }
+        const targetRoute = ROLE_DASHBOARDS[sessionWithStatus.role];
+        router.push(targetRoute);
+        return { success: true, requiresValidation: false, status: "VALIDE" };
+      }
+
+      return {
+        success: true,
+        requiresValidation: true,
+        status: "EN_ATTENTE_VALIDATION",
+      };
+    }
   };
 
   const getRegisteredAccounts = (): UserSession[] => {

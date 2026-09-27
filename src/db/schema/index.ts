@@ -109,3 +109,29 @@ export const batis = pgTable("batis", {
   valeurEstimeeFcfa: integer("valeur_estimee_fcfa").notNull(),
   plusValueCalculeeFcfa: integer("plus_value_calculee_fcfa").default(0).notNull(),
 });
+
+export const utilisateurs = pgTable("utilisateurs", {
+  id: serial("id").primaryKey(),
+  npi: text("npi").notNull().unique(), // ex: "FICTIF-BEN-2026-0041" ou "ANIP-..."
+  nom: text("nom").notNull(),
+  prenom: text("prenom").notNull(),
+  email: text("email"),
+  telephone: text("telephone"),
+  role: text("role").notNull(), // "CITOYEN" | "NOTAIRE" | "AGENT" | "COMMUNE" | "BANQUE" | "ANDF" | "CSAF" | "MINISTERE" | "CONTROLEUR"
+  roleLabel: text("role_label"),
+  titre: text("titre"),
+  etablissementNom: text("etablissement_nom"),
+  commune: text("commune").notNull(),
+  departement: text("departement").notNull(),
+  badge: text("badge"),
+  passwordHash: text("password_hash").notNull(),
+  passwordSalt: text("password_salt").notNull(),
+  statutValidation: text("statut_validation").default("VALIDE").notNull(), // "VALIDE" | "EN_ATTENTE_VALIDATION" | "REJETE" | "SUSPENDU"
+  dateDemande: text("date_demande"),
+  dateValidation: text("date_validation"),
+  validePar: text("valide_par"),
+  motifRefus: text("motif_refus"),
+  creeLe: timestamp("cree_le").defaultNow().notNull(),
+  misAJourLe: timestamp("mis_a_jour_le").defaultNow().notNull(),
+});
+
