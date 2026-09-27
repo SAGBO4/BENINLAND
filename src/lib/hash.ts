@@ -86,3 +86,18 @@ export function generateBlockchainProof(hash: string): {
     timestamp: new Date().toISOString(),
   };
 }
+
+/**
+ * Hache un mot de passe utilisateur avec sel cryptographique fort et poivre régalien.
+ */
+export function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
+  return calculateDocumentHash(password, salt);
+}
+
+/**
+ * Valide un mot de passe contre son hash et son sel en temps constant.
+ */
+export function verifyPassword(password: string, expectedHash: string, salt: string): boolean {
+  return verifyDocumentIntegrity(password, expectedHash, salt);
+}
+

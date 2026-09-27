@@ -1,6 +1,8 @@
 import { db, pool } from "../index";
-import { parcelles, detenteurs, droits, mutations, coffreFortActes, litiges } from "../schema";
+import { parcelles, detenteurs, droits, mutations, coffreFortActes, litiges, utilisateurs } from "../schema";
 import { INITIAL_PARCELLES } from "./data";
+import { DEMO_USERS, UserRole } from "@/lib/auth-session";
+import { hashPassword } from "@/lib/hash";
 
 export async function seedDatabase() {
   console.log("🌱 Début du peuplement (seed) de la base Neon PostgreSQL...");
@@ -12,8 +14,30 @@ export async function seedDatabase() {
   await db.delete(coffreFortActes);
   await db.delete(parcelles);
   await db.delete(detenteurs);
+  await db.delete(utilisateurs);
 
   console.log("🧹 Tables vidées.");
+
+  // 0. Insertion des comptes utilisateurs républicains dans la DB
+  for (const [roleKey, u] of Object.entries(DEMO_USERS)) {
+    const { hash, salt } = hashPassword(u.password || "benin2026");
+    await db.insert(utilisateurs).values({
+      npi: u.npi,
+      nom: u.nom,
+      prenom: u.prenom,
+      role: u.role,
+      roleLabel: u.roleLabel,
+      titre: u.titre,
+      etablissementNom: u.etablissementNom,
+      commune: u.commune,
+      departement: u.departement,
+      badge: u.badge,
+      passwordHash: hash,
+      passwordSalt: salt,
+      statutValidation: "VALIDE",
+    });
+  }
+  console.log("✅ 9 comptes utilisateurs initiaux insérés dans la table utilisateurs.");
 
   // 1. Insertion des détenteurs
   const detenteursMap = new Map<string, number>();

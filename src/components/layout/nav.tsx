@@ -267,7 +267,7 @@ export function Nav(): ReactNode {
     <header className="sticky top-0 z-50 w-full bg-[#0a3764] text-white shadow-md">
       {/* 1. Bandeau d'alerte supérieur officiel républicain */}
       <div className="w-full bg-[#06213d] border-b border-white/10 px-3 sm:px-6 py-1.5 text-[10px] sm:text-xs text-white/90 overflow-hidden">
-        <div className="mx-auto max-w-7xl flex items-center justify-between gap-2">
+        <div className="mx-auto max-w-[1536px] flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <span className="inline-flex items-center gap-1 font-semibold text-emerald-400 shrink-0">
               <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
@@ -301,7 +301,7 @@ export function Nav(): ReactNode {
       {/* 2. Barre Principale de Navigation Souveraine */}
       <div
         ref={navRef}
-        className="mx-auto flex h-16 sm:h-20 w-full max-w-7xl items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 lg:px-8"
+        className="mx-auto flex h-16 sm:h-20 w-full max-w-[1536px] items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 lg:px-8"
       >
         {/* Marque Officielle avec Armoiries de la République du Bénin */}
         <Link

@@ -5,772 +5,745 @@ import { useAuth } from "@/lib/auth-context";
 import { DEMO_USERS, UserRole } from "@/lib/auth-session";
 import {
   Shield,
-  Building2,
   Lock,
   ArrowLeft,
   CheckCircle2,
-  UserCheck,
-  Copy,
-  Check,
-  MapPin,
-  FileCheck2,
-  ChevronRight,
-  Scale,
-  Landmark,
-  ShieldCheck,
+  AlertCircle,
+  Eye,
+  EyeOff,
   User,
   UserPlus,
   LogIn,
-  AlertTriangle,
+  Sparkles,
+  HelpCircle,
+  Scale,
+  Compass,
+  Building2,
+  Landmark,
 } from "lucide-react";
 import Link from "next/link";
-import { FadeIn, ScaleUnblur } from "@/components/ui/motion-primitives";
 
-type ActorCard = {
-  role: UserRole;
-  title: string;
-  category: "Gouvernance & Régulation" | "Officiers Publics & Mutation" | "Opérations de Terrain" | "Citoyens & Finances";
-  description: string;
-  facility: string;
-  cadreReglementaire: string;
-  icon: typeof Shield;
-  color: string;
-  badge: string;
-};
+const BENIN_DEPARTEMENTS = [
+  "Littoral",
+  "Atlantique",
+  "Ouémé",
+  "Plateau",
+  "Zou",
+  "Collines",
+  "Mono",
+  "Couffo",
+  "Borgou",
+  "Alibori",
+  "Atacora",
+  "Donga",
+];
 
-const ACTOR_CARDS: ActorCard[] = [
-  {
-    role: "MINISTERE",
-    title: "Ministère du Cadre de Vie & Trésor",
-    category: "Gouvernance & Régulation",
-    description: "Supervision cadastrale des 12 départements, régulation domaniale et suivi en direct des recettes du Trésor Public (CUT / DGTCP).",
-    facility: "Direction Générale du Domaine Foncier • Cotonou (Littoral)",
-    cadreReglementaire: "Arrêté Ministériel - Tutelle Cadastrale & Régulation",
-    icon: Landmark,
-    color: "from-[#0a3764] to-blue-950",
-    badge: "Régulation & CUT",
-  },
-  {
-    role: "ANDF",
-    title: "Agence Nationale du Domaine et du Foncier",
-    category: "Gouvernance & Régulation",
-    description: "Instruction républicaine des réquisitions d'immatriculation, conservation foncière, tenue du livre foncier et délivrance du CPF.",
-    facility: "Direction Nationale de la Conservation Foncière • Cotonou",
-    cadreReglementaire: "Loi n° 2013-01 portant Code Foncier et Domanial",
-    icon: ShieldCheck,
-    color: "from-blue-700 to-indigo-900",
-    badge: "Délivrance Titre CPF",
-  },
-  {
-    role: "CSAF",
-    title: "Cour Spéciale des Affaires Foncières (CSAF)",
-    category: "Gouvernance & Régulation",
-    description: "Juridiction spécialisée exclusive sur le contentieux domanial. Ordonnances de référé, gels conservatoires et jugements opposables.",
-    facility: "Siège de la Juridiction Spécialisée • Cotonou",
-    cadreReglementaire: "Loi n° 2022-16 créant la Cour Spéciale des Affaires Foncières",
-    icon: Scale,
-    color: "from-red-700 to-rose-900",
-    badge: "Gel Conservatoire",
-  },
-  {
-    role: "NOTAIRE",
-    title: "Étude Notariale Instrumentaire",
-    category: "Officiers Publics & Mutation",
-    description: "Réception des actes authentiques de mutation, activation du verrou notarial d'opposabilité immédiate et gestion du compte séquestre DGTCP.",
-    facility: "Chambre Nationale des Notaires du Bénin • Ouidah",
-    cadreReglementaire: "Monopole Légal des Actes de Mutation Immobilière",
-    icon: Lock,
-    color: "from-amber-600 to-yellow-800",
-    badge: "Verrou Notarial",
-  },
-  {
-    role: "AGENT",
-    title: "Agent Cadastral de Terrain & Géomètre",
-    category: "Opérations de Terrain",
-    description: "Bornage contradictoire, relevé GPS centimétrique des polygones parcellaires, recueil des accords vocaux en langues nationales et PV.",
-    facility: "Bureau Territorial du Cadre de Vie • Ouidah",
-    cadreReglementaire: "Ordre des Géomètres-Experts du Bénin",
-    icon: MapPin,
-    color: "from-emerald-600 to-teal-800",
-    badge: "Bornage GPS & Audio",
-  },
-  {
-    role: "COMMUNE",
-    title: "Mairie / Direction de l'Urbanisme",
-    category: "Opérations de Terrain",
-    description: "Contrôle de conformité au Plan Directeur d'Urbanisme (PDU), avis d'adressage parcellaire et liquidation des taxes communales de plus-value.",
-    facility: "Direction des Services Techniques • Mairie de Ouidah",
-    cadreReglementaire: "Code de l'Administration Territoriale",
-    icon: Building2,
-    color: "from-teal-700 to-cyan-900",
-    badge: "Urbanisme & Taxes",
-  },
-  {
-    role: "CITOYEN",
-    title: "Espace Citoyen, Famille & Usagers",
-    category: "Citoyens & Finances",
-    description: "Carnet foncier de famille, consultation de l'état des parcelles détenues, suivi de vente sous séquestre et notification Mobile Money.",
-    facility: "Collectivité Familiale Dossou • Pahou (Ouidah)",
-    cadreReglementaire: "Adossé au Numéro Personnel d'Identification (NPI ANIP)",
-    icon: User,
-    color: "from-sky-600 to-blue-800",
-    badge: "Patrimoine Familial",
-  },
-  {
-    role: "BANQUE",
-    title: "Établissement Bancaire & Prêteur Hypothécaire",
-    category: "Citoyens & Finances",
-    description: "Vérification en temps réel de l'inaliénabilité, levée d'état hypothécaire et inscription électronique de sûretés réelles opposables.",
-    facility: "Direction des Risques & Engagements • Cotonou",
-    cadreReglementaire: "Acte Uniforme OHADA portant Sûretés",
-    icon: Landmark,
-    color: "from-purple-700 to-indigo-900",
-    badge: "Garanties & Hypothèque",
-  },
-  {
-    role: "CONTROLEUR",
-    title: "Contrôleur National des Habilitations (IGAF)",
-    category: "Gouvernance & Régulation",
-    description: "Instruction déontologique des demandes d'accès, validation régalienne des officiers publics et contrôle de conformité sous tutelle ministérielle.",
-    facility: "Inspection Générale des Affaires Foncières • MCVDD",
-    cadreReglementaire: "Mandaté par Décret Ministériel MCVDD / MEF",
-    icon: ShieldCheck,
-    color: "from-blue-700 to-slate-900",
-    badge: "Contrôle & Habilitations",
-  },
+const ROLES_OPTIONS: { role: UserRole; label: string; desc: string; category: string }[] = [
+  { role: "MINISTERE", label: "Ministère du Cadre de Vie & Trésor (DGTCP)", desc: "Supervision cadastrale & CUT", category: "Gouvernance & Régulation" },
+  { role: "ANDF", label: "Agence Nationale du Domaine et du Foncier (ANDF)", desc: "Conservation foncière & délivrance CPF", category: "Gouvernance & Régulation" },
+  { role: "CSAF", label: "Cour Spéciale des Affaires Foncières (CSAF)", desc: "Contentieux domanial & ordonnances", category: "Gouvernance & Régulation" },
+  { role: "NOTAIRE", label: "Étude Notariale Instrumentaire", desc: "Actes authentiques & verrou notarial", category: "Officiers Publics & Mutation" },
+  { role: "AGENT", label: "Agent Cadastral / Géomètre de Zone", desc: "Bornage GPS & procès-verbaux", category: "Opérations de Terrain" },
+  { role: "COMMUNE", label: "Mairie / Direction de l'Urbanisme", desc: "Conformité PDU & taxes locales", category: "Opérations de Terrain" },
+  { role: "CITOYEN", label: "Espace Citoyen, Famille & Usagers", desc: "Patrimoine foncier & carnet de famille", category: "Citoyens & Finances" },
+  { role: "BANQUE", label: "Établissement Bancaire & Prêteur", desc: "Hypothèques & sûretés réelles", category: "Citoyens & Finances" },
+  { role: "CONTROLEUR", label: "Contrôleur National des Habilitations (IGAF)", desc: "Instruction & déontologie", category: "Gouvernance & Régulation" },
 ];
 
 export default function LoginPage(): ReactNode {
   const { loginWithCredentials, registerAccount, lastLoginError, clearLoginError } = useAuth();
 
   const [activeTab, setActiveTab] = useState<"connexion" | "inscription">("connexion");
-  const [step, setStep] = useState<"select" | "form">("select");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("NOTAIRE");
-  const [npi, setNpi] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showDirectory, setShowDirectory] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [regSuccessMsg, setRegSuccessMsg] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
-  // Formulaire d'inscription réelle
+  // Formulaire Connexion
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole | "AUTO">("AUTO");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
+  // Formulaire Inscription
+  const [regRole, setRegRole] = useState<UserRole>("CITOYEN");
   const [regNom, setRegNom] = useState("");
   const [regPrenom, setRegPrenom] = useState("");
   const [regNpi, setRegNpi] = useState("");
-  const [regRole, setRegRole] = useState<UserRole>("CITOYEN");
-  const [regTitre, setRegTitre] = useState("");
+  const [regTelephone, setRegTelephone] = useState("");
+  const [regDepartement, setRegDepartement] = useState("Atlantique");
+  const [regCommune, setRegCommune] = useState("Ouidah");
   const [regEtablissement, setRegEtablissement] = useState("");
-  const [regCommune, setRegCommune] = useState("Cotonou");
-  const [regDepartement, setRegDepartement] = useState("Littoral");
   const [regPassword, setRegPassword] = useState("");
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(true);
   const [regIsSubmitting, setRegIsSubmitting] = useState(false);
+  const [regSuccessMsg, setRegSuccessMsg] = useState<string | null>(null);
+  const [regErrorMsg, setRegErrorMsg] = useState<string | null>(null);
 
-  // Vérifier si un rôle est passé en paramètre URL
+  // Pré-remplissage via URL ?role=... ou ?tab=...
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab");
+      if (tabParam === "inscription") {
+        setActiveTab("inscription");
+      }
       const roleParam = params.get("role")?.toUpperCase() as UserRole | null;
       if (roleParam && DEMO_USERS[roleParam]) {
-        handleSelectActor(roleParam);
+        setSelectedRole(roleParam);
+        setIdentifier(DEMO_USERS[roleParam].npi);
+        setPassword(DEMO_USERS[roleParam].password || "benin2026");
       }
     }
   }, []);
 
-  const handleSelectActor = (role: UserRole) => {
+  // Détection / Remplissage rapide de test
+  const handleQuickFill = (role: UserRole) => {
     clearLoginError();
-    setRegSuccessMsg(null);
-    const user = DEMO_USERS[role] || DEMO_USERS.NOTAIRE;
-    setSelectedRole(role);
-    setNpi(user.npi);
-    setPassword(user.password || "benin2026");
-    setStep("form");
+    const demo = DEMO_USERS[role];
+    if (demo) {
+      setSelectedRole(role);
+      setIdentifier(demo.npi);
+      setPassword(demo.password || "benin2026");
+    }
   };
 
-  const handleResetToOfficial = () => {
-    clearLoginError();
-    const user = DEMO_USERS[selectedRole] || DEMO_USERS.NOTAIRE;
-    setNpi(user.npi);
-    setPassword(user.password || "benin2026");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  // Soumission Connexion
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearLoginError();
     setIsSubmitting(true);
-    setTimeout(() => {
-      loginWithCredentials(
-        npi || DEMO_USERS[selectedRole].npi,
-        selectedRole,
-        password || DEMO_USERS[selectedRole].password
-      );
+
+    try {
+      const roleToUse = selectedRole === "AUTO" ? undefined : selectedRole;
+      await loginWithCredentials(identifier.trim(), roleToUse, password.trim());
+    } finally {
       setIsSubmitting(false);
-    }, 350);
+    }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  // Soumission Inscription
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearLoginError();
+    setRegErrorMsg(null);
     setRegSuccessMsg(null);
+
+    if (regPassword !== regConfirmPassword) {
+      setRegErrorMsg("Les deux mots de passe ne correspondent pas.");
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setRegErrorMsg("Le mot de passe doit comporter au moins 6 caractères.");
+      return;
+    }
+
+    if (!acceptTerms) {
+      setRegErrorMsg("Veuillez accepter les conditions d'utilisation.");
+      return;
+    }
+
     setRegIsSubmitting(true);
-    setTimeout(() => {
-      const template = DEMO_USERS[regRole];
+
+    try {
+      const template = DEMO_USERS[regRole] || DEMO_USERS.CITOYEN;
+      const cleanNpi =
+        regNpi.trim() || `BEN-${regDepartement.slice(0, 3).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
       const newSession = {
-        npi: regNpi.trim() || `ANIP-BEN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-        nom: regNom.trim() || "Utilisateur",
-        prenom: regPrenom.trim() || "Nouveau",
+        npi: cleanNpi,
+        nom: regNom.trim().toUpperCase(),
+        prenom: regPrenom.trim(),
         role: regRole,
         roleLabel: template.roleLabel,
-        titre: regTitre.trim() || template.titre,
-        etablissementNom: regEtablissement.trim() || template.etablissementNom,
+        titre: regEtablissement.trim() || template.titre,
+        etablissementNom: regEtablissement.trim() || `${template.etablissementNom} (${regCommune})`,
         commune: regCommune.trim() || "Cotonou",
         departement: regDepartement.trim() || "Littoral",
+        telephone: regTelephone.trim() || undefined,
         badge: template.badge,
-        password: regPassword.trim() || "benin2026",
+        password: regPassword.trim(),
       };
-      const res = registerAccount(newSession);
-      setRegIsSubmitting(false);
+
+      const res = await registerAccount(newSession);
+
       if (res.requiresValidation) {
         setRegSuccessMsg(
-          `Demande d'enrôlement enregistrée avec succès sous le NPI ${newSession.npi}. Selon la hiérarchie du système étatique, votre accès en tant que "${newSession.role}" est actuellement soumis à l'instruction et à la validation du Contrôleur National des Habilitations (IGAF sous tutelle du Ministère).`
+          `Votre demande d'inscription sous le NPI ${cleanNpi} a été enregistrée avec succès dans la base foncière. En tant qu'officier ou acteur institutionnel (${regRole}), votre accès est soumis à l'habilitation régalienne de l'Inspection Générale des Affaires Foncières (IGAF).`
         );
       }
-    }, 400);
+    } catch (err: any) {
+      setRegErrorMsg(err.message || "Erreur lors de la création du compte.");
+    } finally {
+      setRegIsSubmitting(false);
+    }
   };
-
-  const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
-
-  const activeCard = ACTOR_CARDS.find((c) => c.role === selectedRole) || ACTOR_CARDS[0];
-  const activeUser = DEMO_USERS[selectedRole] || DEMO_USERS.NOTAIRE;
-  const ActiveIcon = activeCard.icon;
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-slate-900 pt-8 pb-20 px-4 sm:px-8 lg:px-12 flex flex-col justify-center">
-      {/* Sélecteur d'onglet : Connexion vs Inscription Réelle */}
-      <div className="flex justify-center mb-8">
-        <div className="inline-flex rounded-xl bg-slate-200/80 p-1.5 border border-slate-300 shadow-inner">
-          <button
-            type="button"
-            onClick={() => setActiveTab("connexion")}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeTab === "connexion"
-                ? "bg-white text-[#0a3764] shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <LogIn className="h-4 w-4" />
-            <span>Guichet d&apos;Accès Réglementaire</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("inscription")}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeTab === "inscription"
-                ? "bg-[#0a3764] text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <UserPlus className="h-4 w-4" />
-            <span>Créer un Nouveau Compte</span>
-          </button>
-        </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* Navigation retour simple */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Retour à l&apos;accueil Anyigba</span>
+        </Link>
       </div>
 
-      {/* VUE 1 : CRÉER UN NOUVEAU COMPTE RÉEL */}
-      {activeTab === "inscription" && (
-        <ScaleUnblur className="max-w-2xl mx-auto w-full">
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-7 sm:p-10 shadow-xl flex flex-col gap-6">
-            <div className="border-b border-slate-100 pb-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-800 mb-3">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                <span>Enrôlement Foncier National • Loi 2013-01 & 2017-20</span>
-              </div>
-              <h2 className="text-2xl font-black text-slate-900">
-                Créer un Nouveau Compte Foncier
-              </h2>
-              <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                Renseignez vos identifiants réels ou professionnels pour ouvrir un compte certifié et accéder immédiatement à votre espace de travail.
-              </p>
-            </div>
+      {/* Header institutionnel compact */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center px-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#0a3764] text-white shadow-md shadow-[#0a3764]/20 mb-3">
+          <Shield className="h-6 w-6 text-emerald-400" />
+        </div>
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#0a3764]/20 bg-[#0a3764]/5 px-3 py-1 text-[11px] font-bold text-[#0a3764] mb-2">
+          <span>Portail National d&apos;Authentification Habilitée</span>
+        </div>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+          Guichet d&apos;Accès Réglementaire
+        </h1>
+        <p className="text-xs text-slate-500 mt-1">
+          ANYIGBA • Système National de Sécurisation Foncière &bull; République du Bénin
+        </p>
+      </div>
 
-            {regSuccessMsg && (
-              <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 text-xs flex items-start gap-2.5 animate-rise">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-bold text-sm">Demande d&apos;Enrôlement Transmise à l&apos;IGAF</div>
-                  <p className="mt-1 leading-relaxed text-slate-700">{regSuccessMsg}</p>
+      {/* Boîte Principale d'Authentification Normale */}
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        <div className="bg-white py-8 px-6 sm:px-10 shadow-xl rounded-2xl border border-slate-200/90">
+          {/* Onglets Normaux : Connexion / Inscription */}
+          <div className="flex border-b border-slate-200 mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("connexion");
+                clearLoginError();
+              }}
+              className={`flex-1 py-3 text-center text-sm font-bold border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === "connexion"
+                  ? "border-[#0a3764] text-[#0a3764]"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Connexion</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("inscription");
+                clearLoginError();
+                setRegSuccessMsg(null);
+                setRegErrorMsg(null);
+              }}
+              className={`flex-1 py-3 text-center text-sm font-bold border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === "inscription"
+                  ? "border-[#0a3764] text-[#0a3764]"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Inscription</span>
+            </button>
+          </div>
+
+          {/* ============================================================ */}
+          {/* ONGLET 1 : CONNEXION NORMALE                                */}
+          {/* ============================================================ */}
+          {activeTab === "connexion" && (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              {/* Message d'erreur de connexion */}
+              {lastLoginError && (
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+                  <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="leading-relaxed">{lastLoginError}</div>
+                </div>
+              )}
+
+              {/* Champ Identifiant ou NPI */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Identifiant ou NPI ANIP
+                </label>
+                <div className="relative rounded-xl shadow-xs">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={identifier}
+                    onChange={(e) => {
+                      setIdentifier(e.target.value);
+                      if (lastLoginError) clearLoginError();
+                    }}
+                    placeholder="Ex: FICTIF-BEN-2026-0088 ou votre NPI"
+                    className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              {/* Champ Mot de passe */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Mot de passe
+                  </label>
                   <button
                     type="button"
-                    onClick={() => {
-                      setActiveTab("connexion");
-                      setRegSuccessMsg(null);
-                    }}
-                    className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0a3764] text-white font-bold text-xs hover:bg-[#082a4d] cursor-pointer"
+                    onClick={() => setShowHelpModal(true)}
+                    className="text-xs font-medium text-[#0a3764] hover:underline cursor-pointer flex items-center gap-1"
                   >
-                    <span>Consulter le guichet d&apos;accès</span>
-                    <ChevronRight className="h-3.5 w-3.5" />
+                    <span>Aide connexion</span>
+                    <HelpCircle className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="relative rounded-xl shadow-xs">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (lastLoginError) clearLoginError();
+                    }}
+                    placeholder="••••••••"
+                    className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 placeholder:text-slate-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
-            )}
 
-            <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-5">
-              {/* Choix du rôle réglementaire */}
+              {/* Options : Se souvenir de moi */}
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-[#0a3764] focus:ring-[#0a3764]"
+                  />
+                  <span className="text-xs text-slate-600">Se souvenir de moi</span>
+                </label>
+              </div>
+
+              {/* Bouton Principal de Connexion */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full mt-2 py-3 px-4 rounded-xl bg-[#0a3764] hover:bg-[#082a4d] text-white text-sm font-bold shadow-md shadow-[#0a3764]/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>{isSubmitting ? "Connexion en cours..." : "Se connecter"}</span>
+              </button>
+
+              {/* Sélecteur Rapide Discret de Comptes de Test */}
+              <div className="pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    <span>Remplissage rapide (démonstration) :</span>
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("CITOYEN")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <User className="w-3 h-3 text-slate-600" />
+                    <span>Citoyen</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("NOTAIRE")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <Scale className="w-3 h-3 text-slate-600" />
+                    <span>Notaire</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("AGENT")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <Compass className="w-3 h-3 text-slate-600" />
+                    <span>Géomètre</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("COMMUNE")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <Building2 className="w-3 h-3 text-slate-600" />
+                    <span>Mairie</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("ANDF")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <Shield className="w-3 h-3 text-slate-600" />
+                    <span>ANDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("BANQUE")}
+                    className="px-2 py-1.5 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer text-center truncate flex items-center justify-center gap-1.5"
+                  >
+                    <Landmark className="w-3 h-3 text-slate-600" />
+                    <span>Banque</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Lien vers Inscription */}
+              <div className="text-center pt-2">
+                <span className="text-xs text-slate-500">
+                  Vous n&apos;avez pas encore de compte ?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("inscription");
+                      clearLoginError();
+                    }}
+                    className="font-bold text-[#0a3764] hover:underline cursor-pointer"
+                  >
+                    S&apos;inscrire
+                  </button>
+                </span>
+              </div>
+            </form>
+          )}
+
+          {/* ============================================================ */}
+          {/* ONGLET 2 : INSCRIPTION NORMALE                              */}
+          {/* ============================================================ */}
+          {activeTab === "inscription" && (
+            <form onSubmit={handleRegisterSubmit} className="space-y-4">
+              {/* Message de succès d'inscription */}
+              {regSuccessMsg && (
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block font-bold text-sm mb-1 text-emerald-800">
+                      Demande enregistrée avec succès
+                    </strong>
+                    <p className="leading-relaxed">{regSuccessMsg}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTab("connexion");
+                        setRegSuccessMsg(null);
+                      }}
+                      className="mt-2.5 px-3 py-1.5 rounded-lg bg-[#0a3764] text-white text-xs font-bold hover:bg-[#082a4d] cursor-pointer"
+                    >
+                      Aller à la connexion
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Message d'erreur d'inscription */}
+              {regErrorMsg && (
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{regErrorMsg}</span>
+                </div>
+              )}
+
+              {/* Type de compte / Rôle */}
               <div>
-                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                  Corps Professionnel ou Statut Usager *
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Type de compte *
                 </label>
                 <select
                   value={regRole}
                   onChange={(e) => setRegRole(e.target.value as UserRole)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
+                  className="block w-full px-3 py-2.5 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 bg-white"
                   required
                 >
-                  <option value="CITOYEN">Citoyen / Propriétaire foncier (Espace Citoyen)</option>
-                  <option value="NOTAIRE">Notaire Instrumentaire (Chambre Nationale des Notaires)</option>
-                  <option value="AGENT">Agent Cadastral / Géomètre de Zone (Bornage GPS)</option>
-                  <option value="COMMUNE">Mairie / Direction de l&apos;Urbanisme (Affaires Domaniales)</option>
-                  <option value="BANQUE">Établissement Bancaire / Prêteur (Garanties &amp; Hypothèques)</option>
-                  <option value="CSAF">Cour Spéciale des Affaires Foncières (Contentieux Domanial)</option>
-                  <option value="ANDF">Agence Nationale du Domaine et du Foncier (ANDF)</option>
-                  <option value="CONTROLEUR">Inspecteur Contrôleur National (IGAF &bull; Tutelle Ministérielle)</option>
-                  <option value="MINISTERE">Ministère du Cadre de Vie &amp; des Finances (Régulation)</option>
+                  <optgroup label="Citoyens & Finances">
+                    {ROLES_OPTIONS.filter((o) => o.category === "Citoyens & Finances").map((opt) => (
+                      <option key={opt.role} value={opt.role}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Officiers Publics & Mutation">
+                    {ROLES_OPTIONS.filter((o) => o.category === "Officiers Publics & Mutation").map((opt) => (
+                      <option key={opt.role} value={opt.role}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Opérations de Terrain">
+                    {ROLES_OPTIONS.filter((o) => o.category === "Opérations de Terrain").map((opt) => (
+                      <option key={opt.role} value={opt.role}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Gouvernance & Régulation">
+                    {ROLES_OPTIONS.filter((o) => o.category === "Gouvernance & Régulation").map((opt) => (
+                      <option key={opt.role} value={opt.role}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  {regRole === "CITOYEN"
+                    ? "Accès immédiat après création de votre compte."
+                    : "Habilitation d'officier soumise à validation du Contrôleur IGAF."}
+                </span>
               </div>
 
               {/* Nom & Prénom */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
-                    Nom de famille *
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Nom *
                   </label>
                   <input
                     type="text"
+                    required
                     value={regNom}
                     onChange={(e) => setRegNom(e.target.value)}
                     placeholder="Ex: HOUNDÉGNON"
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
-                    required
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Prénom(s) *
                   </label>
                   <input
                     type="text"
+                    required
                     value={regPrenom}
                     onChange={(e) => setRegPrenom(e.target.value)}
                     placeholder="Ex: Christian"
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
-                    required
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
                   />
                 </div>
               </div>
 
               {/* NPI ANIP & Téléphone */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
-                    Numéro Personnel d&apos;Identification (NPI) *
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    NPI ANIP *
                   </label>
                   <input
                     type="text"
+                    required
                     value={regNpi}
                     onChange={(e) => setRegNpi(e.target.value)}
-                    placeholder="Ex: 2026-NPI-0089 ou ANIP..."
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-mono text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
-                    required
+                    placeholder="Ex: ANIP-2026-..."
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 font-mono"
                   />
-                  <span className="text-[10px] text-slate-500 mt-1 block">Votre numéro ANIP certifié</span>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
-                    Commune &amp; Département *
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Téléphone (MoMo)
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
                     <input
-                      type="text"
-                      value={regCommune}
-                      onChange={(e) => setRegCommune(e.target.value)}
-                      placeholder="Commune"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:outline-none"
-                      required
-                    />
-                    <input
-                      type="text"
-                      value={regDepartement}
-                      onChange={(e) => setRegDepartement(e.target.value)}
-                      placeholder="Département"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:outline-none"
-                      required
+                      type="tel"
+                      value={regTelephone}
+                      onChange={(e) => setRegTelephone(e.target.value)}
+                      placeholder="+229 97 00 00 00"
+                      className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Titre / Structure */}
-              <div>
-                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
-                  Structure / Établissement / Titre professionnel
-                </label>
-                <input
-                  type="text"
-                  value={regEtablissement}
-                  onChange={(e) => setRegEtablissement(e.target.value)}
-                  placeholder="Ex: Étude Notariale, Mandataire familial, Société..."
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
-                />
+              {/* Département & Commune */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Département *
+                  </label>
+                  <select
+                    value={regDepartement}
+                    onChange={(e) => setRegDepartement(e.target.value)}
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900 bg-white"
+                  >
+                    {BENIN_DEPARTEMENTS.map((dep) => (
+                      <option key={dep} value={dep}>
+                        {dep}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Commune *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={regCommune}
+                    onChange={(e) => setRegCommune(e.target.value)}
+                    placeholder="Ex: Ouidah, Cotonou..."
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
+                  />
+                </div>
               </div>
 
-              {/* Mot de passe */}
-              <div>
-                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
-                  Mot de passe de sécurité *
-                </label>
-                <input
-                  type="password"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="Définissez un mot de passe"
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none"
-                  required
-                />
+              {/* Structure / Établissement (si rôle professionnel) */}
+              {regRole !== "CITOYEN" && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Structure / Établissement / Charge
+                  </label>
+                  <input
+                    type="text"
+                    value={regEtablissement}
+                    onChange={(e) => setRegEtablissement(e.target.value)}
+                    placeholder="Ex: Étude Notariale Agbossou, Mairie de Ouidah, Cabinet..."
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
+                  />
+                </div>
+              )}
+
+              {/* Mot de passe & Confirmation */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Mot de passe *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showRegPassword ? "text" : "password"}
+                      required
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      placeholder="Min. 6 caractères"
+                      className="block w-full px-3 py-2 pr-8 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRegPassword(!showRegPassword)}
+                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                    >
+                      {showRegPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Confirmer *
+                  </label>
+                  <input
+                    type={showRegPassword ? "text" : "password"}
+                    required
+                    value={regConfirmPassword}
+                    onChange={(e) => setRegConfirmPassword(e.target.value)}
+                    placeholder="Répétez"
+                    className="block w-full px-3 py-2 sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#0a3764] focus:border-[#0a3764] text-slate-900"
+                  />
+                </div>
               </div>
 
+              {/* Conditions d'utilisation */}
+              <div className="pt-1">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={acceptTerms}
+                    onChange={(e) => setAcceptTerms(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-[#0a3764] focus:ring-[#0a3764] mt-0.5"
+                  />
+                  <span className="text-[11px] text-slate-600 leading-tight">
+                    J&apos;atteste l&apos;exactitude des informations fournies conformément à la Loi n° 2013-01 portant Code Foncier et Domanial.
+                  </span>
+                </label>
+              </div>
+
+              {/* Bouton Créer le Compte */}
               <button
                 type="submit"
                 disabled={regIsSubmitting}
-                className="w-full mt-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-3.5 text-sm font-bold text-white shadow-md shadow-emerald-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full mt-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-md shadow-emerald-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 <UserPlus className="h-4 w-4" />
-                <span>
-                  {regIsSubmitting
-                    ? "Création et initialisation du compte..."
-                    : "Créer mon compte et ouvrir ma session"}
-                </span>
+                <span>{regIsSubmitting ? "Création du compte..." : "Créer mon compte"}</span>
               </button>
+
+              {/* Déjà un compte ? */}
+              <div className="text-center pt-2">
+                <span className="text-xs text-slate-500">
+                  Vous avez déjà un compte ?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("connexion");
+                      clearLoginError();
+                    }}
+                    className="font-bold text-[#0a3764] hover:underline cursor-pointer"
+                  >
+                    Se connecter
+                  </button>
+                </span>
+              </div>
             </form>
-          </div>
-        </ScaleUnblur>
-      )}
-
-      {/* VUE 2 : GUICHET D'ACCÈS RÉGLEMENTAIRE (CONNEXION RAPIDE OU PAR IDENTIFIANTS) */}
-      {activeTab === "connexion" && step === "select" && (
-        <FadeIn className="w-full max-w-7xl mx-auto flex flex-col items-center">
-          {/* En-tête Institutionnel Spacieux */}
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#0a3764]/20 bg-[#0a3764]/5 px-4 py-1.5 text-xs font-bold text-[#0a3764] mb-4">
-              <CheckCircle2 className="h-4 w-4 text-[#008751]" />
-              <span>Portail National d&apos;Authentification Habilitée • Cadastre Bénin</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900">
-              Guichet d&apos;Accès Réglementaire
-            </h1>
-
-            <p className="mt-3 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Sélectionnez votre corps professionnel ou votre statut d&apos;usager pour accéder à votre console de travail habilitée par l&apos;ANDF et le Ministère du Cadre de Vie.
-            </p>
-          </div>
-
-          {lastLoginError && (
-            <div className="w-full max-w-2xl mb-8 p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs flex items-start gap-3 animate-rise">
-              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <strong className="font-bold text-sm block">Contrôle d&apos;Accès &amp; Validation IGAF</strong>
-                <p className="mt-1 leading-relaxed">{lastLoginError}</p>
-              </div>
-            </div>
           )}
-
-          {/* Grille Spacieuse des 8 Rôles Réglementaires (Large max-w-7xl) */}
-          <ScaleUnblur className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-            {ACTOR_CARDS.map((card) => {
-              const Icon = card.icon;
-              const u = DEMO_USERS[card.role] || DEMO_USERS.NOTAIRE;
-
-              return (
-                <div
-                  key={card.role}
-                  onClick={() => handleSelectActor(card.role)}
-                  className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white hover:border-[#0a3764]/50 p-6 shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div
-                        className={`h-12 w-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform`}
-                      >
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
-                        {card.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-bold text-slate-900 group-hover:text-[#0a3764] transition-colors leading-snug">
-                      {card.title}
-                    </h3>
-
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-3">
-                      {card.description}
-                    </p>
-
-                    <div className="mt-5 pt-3 border-t border-slate-100 flex flex-col gap-1.5 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-500 font-medium text-[11px]">Titulaire :</span>
-                        <span className="font-bold text-slate-900 truncate max-w-[140px]">
-                          {u?.prenom ?? ""} {u?.nom ?? ""}
-                        </span>
-                      </div>
-                      <div className="flex items-start justify-between gap-1">
-                        <span className="text-slate-500 font-medium text-[11px] shrink-0">Structure :</span>
-                        <span className="text-[11px] text-slate-600 text-right line-clamp-1">
-                          {u?.etablissementNom ?? card.facility}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-3 flex items-center justify-between border-t border-slate-100 text-xs font-bold text-[#0a3764]">
-                    <span className="group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                      <span>Ouvrir la session</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {u?.commune ?? "Bénin"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </ScaleUnblur>
-
-          {/* Bouton pour afficher l'annuaire officiel des comptes de test */}
-          <div className="mt-12 flex flex-col items-center">
-            <button
-              onClick={() => setShowDirectory(!showDirectory)}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 px-5 py-2.5 text-xs font-bold text-slate-800 shadow-xs transition-colors cursor-pointer"
-            >
-              <FileCheck2 className="h-4 w-4 text-[#0a3764]" />
-              <span>
-                {showDirectory
-                  ? "Masquer le registre officiel des comptes d'évaluation"
-                  : "Consulter le registre officiel des 8 comptes et identifiants pré-configurés"}
-              </span>
-            </button>
-
-            {showDirectory && (
-              <div className="mt-6 w-full max-w-5xl rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-slate-200 pb-4">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-[#008751]" />
-                    <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                      Registre des Comptes et Prérogatives Foncières
-                    </h4>
-                  </div>
-                  <span className="text-xs text-slate-600">
-                    Mot de passe universel d&apos;évaluation : <code className="font-bold text-[#0a3764]">benin2026</code>
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                  {ACTOR_CARDS.map((card) => {
-                    const u = DEMO_USERS[card.role] || DEMO_USERS.NOTAIRE;
-                    const isCopiedNpi = copiedKey === `${card.role}-npi`;
-                    const isCopiedPass = copiedKey === `${card.role}-pass`;
-
-                    return (
-                      <div
-                        key={card.role}
-                        className="rounded-xl border border-slate-200/90 bg-[#f6f8fb] p-4 flex flex-col justify-between gap-3 shadow-xs"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-xs text-slate-900 truncate">{card.badge}</span>
-                          </div>
-                          <span className="text-xs font-semibold text-slate-700 block truncate">
-                            {u?.prenom ?? ""} {u?.nom ?? ""}
-                          </span>
-                          <span className="text-[10px] text-slate-500 block truncate mt-0.5">
-                            {u?.etablissementNom ?? card.facility}
-                          </span>
-                        </div>
-
-                        <div className="font-mono text-[11px] space-y-1.5 bg-white p-2.5 rounded-lg border border-slate-200">
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-500 font-sans text-[10px]">NPI :</span>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[#0a3764] font-bold truncate max-w-[130px]">{u?.npi ?? ""}</span>
-                              <button
-                                onClick={() => handleCopy(u?.npi ?? "", `${card.role}-npi`)}
-                                className="p-0.5 text-slate-400 hover:text-slate-700 cursor-pointer"
-                                title="Copier le NPI"
-                              >
-                                {isCopiedNpi ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-500 font-sans text-[10px]">Pass :</span>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-amber-700 font-bold">{u?.password ?? "benin2026"}</span>
-                              <button
-                                onClick={() => handleCopy(u?.password || "benin2026", `${card.role}-pass`)}
-                                className="p-0.5 text-slate-400 hover:text-slate-700 cursor-pointer"
-                                title="Copier le mot de passe"
-                              >
-                                {isCopiedPass ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => handleSelectActor(card.role)}
-                          className="w-full text-center text-[11px] font-bold text-[#0a3764] hover:underline pt-1 cursor-pointer flex items-center justify-center gap-1"
-                        >
-                          <span>Accéder à ce profil</span>
-                          <ChevronRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        </FadeIn>
-      )}
-
-      {/* ÉTAPE 2 : FORMULAIRE DE CONNEXION AVEC IDENTIFIANTS DE L'ACTEUR CHOISI */}
-      {activeTab === "connexion" && step === "form" && (
-        <ScaleUnblur className="max-w-xl mx-auto w-full">
-          {/* Bouton retour vers le choix de l'acteur */}
-          <button
-            onClick={() => setStep("select")}
-            className="inline-flex items-center gap-2 text-xs font-bold text-[#0a3764] hover:text-[#082a4d] mb-6 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>← Retour à la sélection des profils institutionnels</span>
-          </button>
-
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-2xl border border-slate-200/90 bg-white p-7 sm:p-10 shadow-xl flex flex-col gap-6"
-          >
-            {lastLoginError && (
-              <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs flex items-start gap-2.5 animate-rise">
-                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="font-bold text-sm block">Accès Non Autorisé / Non Validé</strong>
-                  <p className="mt-1 leading-relaxed">{lastLoginError}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Bannière du Profil Choisi */}
-            <div className="flex items-start gap-4 p-4 rounded-xl border border-slate-200/90 bg-[#f6f8fb]">
-              <div
-                className={`h-12 w-12 rounded-xl bg-gradient-to-br ${activeCard.color} flex items-center justify-center text-white shadow-xs shrink-0 mt-0.5`}
-              >
-                <ActiveIcon className="h-6 w-6" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-slate-800">
-                    {activeCard.badge}
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-slate-900 truncate mt-1">
-                  {activeUser.prenom} {activeUser.nom}
-                </h3>
-                <p className="text-xs text-slate-600 truncate">
-                  {activeUser.titre}
-                </p>
-                <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 text-slate-400 shrink-0" />
-                  <span className="truncate">{activeCard.facility}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Champ NPI */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Numéro Personnel d&apos;Identification (NPI ANIP)
-                </label>
-                <button
-                  type="button"
-                  onClick={handleResetToOfficial}
-                  className="text-[11px] font-bold text-[#0a3764] hover:underline cursor-pointer"
-                >
-                  Rétablir l&apos;officiel
-                </button>
-              </div>
-              <input
-                type="text"
-                value={npi}
-                onChange={(e) => setNpi(e.target.value)}
-                placeholder={activeUser.npi}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-mono text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none transition-colors"
-                required
-              />
-              <span className="text-[11px] text-slate-500 mt-1.5 block">
-                NPI officiel certifié par l&apos;ANIP : <strong className="font-mono text-slate-800">{activeUser.npi}</strong>
-              </span>
-            </div>
-
-            {/* Champ Mot de passe */}
-            <div>
-              <label className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                Clé de Session Sécurisée / Mot de passe
-              </label>
-              <input
-                type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={activeUser.password}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-mono text-slate-900 focus:border-[#0a3764] focus:ring-1 focus:ring-[#0a3764] focus:outline-none transition-colors"
-                required
-              />
-              <span className="text-[11px] text-slate-500 mt-1.5 block">
-                Mot de passe officiel : <strong className="font-mono text-amber-700">{activeUser.password}</strong> (ou <em>benin2026</em>)
-              </span>
-            </div>
-
-            {/* Bouton de Soumission */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-2 rounded-xl bg-[#0a3764] hover:bg-[#082a4d] py-3.5 text-sm font-bold text-white shadow-md shadow-[#0a3764]/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <UserCheck className="h-4 w-4" />
-              <span>{isSubmitting ? "Vérification des habilitations..." : `Ouvrir la session réglementaire ${activeCard.badge}`}</span>
-            </button>
-
-            <div className="border-t border-slate-100 pt-4 text-center">
-              <span className="text-xs text-slate-500">
-                Structure de rattachement : <strong className="text-slate-800">{activeUser.etablissementNom}</strong> ({activeUser.commune}, {activeUser.departement})
-              </span>
-            </div>
-          </form>
-        </ScaleUnblur>
-      )}
-
-      {/* Garantie Légale et Réglementaire */}
-      <div className="text-center max-w-2xl mx-auto mt-12 text-xs text-slate-500 space-y-1">
-        <p>
-          Plateforme opérée sous l&apos;égide du Ministère du Cadre de Vie et des Transports et de l&apos;ANDF.
-        </p>
-        <p>
-          Conformité stricte à la Loi n° 2013-01 portant Code Foncier et Domanial et à la Loi n° 2017-20 (Code du Numérique).
-        </p>
+        </div>
       </div>
-    </main>
+
+      {/* Modal d'aide / FAQ de connexion */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-[#0a3764]" />
+              <span>Aide à la Connexion Anyigba</span>
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              La plateforme utilise le Numéro Personnel d&apos;Identification (NPI) délivré par l&apos;ANIP ou votre identifiant de fonction.
+            </p>
+            <div className="space-y-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700 mb-4">
+              <div>
+                <strong>Compte citoyen :</strong> NPI <code className="font-mono text-[#0a3764]">FICTIF-BEN-2026-0041</code>
+              </div>
+              <div>
+                <strong>Compte notaire :</strong> NPI <code className="font-mono text-[#0a3764]">FICTIF-BEN-2026-0088</code>
+              </div>
+              <div>
+                <strong>Mot de passe universel démo :</strong> <code className="font-mono text-amber-700">benin2026</code>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowHelpModal(false)}
+                className="px-4 py-2 rounded-xl bg-[#0a3764] text-white text-xs font-bold hover:bg-[#082a4d] cursor-pointer"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer institutionnel épuré */}
+      <div className="text-center mt-8 text-xs text-slate-500">
+        <p>République du Bénin • Ministère du Cadre de Vie et des Transports &bull; ANDF</p>
+      </div>
+    </div>
   );
 }

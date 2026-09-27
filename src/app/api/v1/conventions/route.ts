@@ -13,6 +13,9 @@ const ConventionSchema = z.object({
   village: z.string().min(2),
   surfaceM2: z.number().positive().max(114763000000),
   prixFcfa: z.number().positive().max(1000000000000),
+  parcelleCode: z.string().optional(),
+  certificatMairieRef: z.string().optional(),
+  certificatMairieHash: z.string().optional(),
   temoignagesVocaux: z.array(z.any()).optional(),
 }).refine((data) => data.vendeurNpi.trim().toUpperCase() !== data.acheteurNpi.trim().toUpperCase(), {
   message: "AUTO_CESSION_INTERDITE: Le vendeur et l'acheteur ne peuvent pas avoir le même NPI.",
@@ -48,7 +51,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data: convention }, { status: 201 });
   } catch (error: any) {
     const message = error?.message || "Erreur serveur";
-    const status = message.includes("AUTO_CESSION_INTERDITE") || message.includes("SURFACE_ABERRANTE") || message.includes("PRIX_INVALIDE") ? 400 : 500;
+    const status =
+      message.includes("AUTO_CESSION_INTERDITE") ||
+      message.includes("SURFACE_ABERRANTE") ||
+      message.includes("PRIX_INVALIDE") ||
+      message.includes("PRIX_NON_CONFORME_MAIRIE")
+        ? 400
+        : 500;
     return NextResponse.json(
       { success: false, error: message },
       { status }
