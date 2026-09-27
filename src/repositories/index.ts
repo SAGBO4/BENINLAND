@@ -186,6 +186,42 @@ class AnyigbaRepository {
       txBlockchainId: "0xbc887766554433221100aabbccddeeff",
       dateDepot: "2026-01-15T10:00:00.000Z",
     },
+    {
+      id: "ACT-002",
+      referenceActe: "ATT-REC-OUIDAH-PAHOU-2024-081",
+      parcelleCode: "OUI-0421",
+      typeActe: "ATTESTATION_DETENTION_COUTUMIERE",
+      signataire: "M. Christian Houetchenou (Maire de Ouidah) & ANDF",
+      hashSha256: "0x89a4cf31e792b04f98124efb189a246813579bdf0246813579bdf0246813579b",
+      salt: "b2c3d4e5f6a17890",
+      otsProof: "OTS-BTC-ADC-OUIDAH-PAHOU-89A4CF31",
+      txBlockchainId: "0xbc89a4cf31e792b04f98124efb189a246813579b",
+      dateDepot: "2024-06-18T09:30:00.000Z",
+    },
+    {
+      id: "ACT-003",
+      referenceActe: "PV-BORNAGE-GPS-2026-0421",
+      parcelleCode: "OUI-0421",
+      typeActe: "PROCES_VERBAL_BORNAGE",
+      signataire: "Mamadou Bio (Agent Foncier Assermenté NPI: FICTIF-BEN-2026-0045)",
+      hashSha256: "0x4b7c1e9a3f2d80517e69ac24810bf23d8491a6204859c3a172e9058471b6329a",
+      salt: "c3d4e5f6a1b28901",
+      otsProof: "OTS-BTC-BORNAGE-OUI-0421-4B7C1E9A",
+      txBlockchainId: "0xbc4b7c1e9a3f2d80517e69ac24810bf23d8491a",
+      dateDepot: "2026-01-22T11:15:00.000Z",
+    },
+    {
+      id: "ACT-004",
+      referenceActe: "CARNET-FAMILLE-OUI-0421",
+      parcelleCode: "OUI-0421",
+      typeActe: "CARNET_FAMILLE_FONCIER",
+      signataire: "Collectivité Familiale Germain Dossou & Notaire Instrumentaire",
+      hashSha256: "0x12a9c3e4b78901f45678cd981234ef56789012ab34cd56ef78901234567890ab",
+      salt: "d4e5f6a1b2c39012",
+      otsProof: "OTS-BTC-CARNET-OUI-0421-12A9C3E4",
+      txBlockchainId: "0xbc12a9c3e4b78901f45678cd981234ef56789012",
+      dateDepot: "2026-02-01T15:00:00.000Z",
+    },
   ];
   private certificatsCommune: CertificatCommuneRecord[] = [
     {
@@ -593,6 +629,16 @@ class AnyigbaRepository {
     return [...this.actes];
   }
 
+  public getActesByParcelle(code: string): ActeRecord[] {
+    const clean = code.trim().toUpperCase();
+    return this.actes.filter((a) => a.parcelleCode.toUpperCase() === clean);
+  }
+
+  public getConventionsByParcelle(code: string): ConventionRecord[] {
+    const clean = code.trim().toUpperCase();
+    return this.conventions.filter((c) => (c.parcelleCode || "").toUpperCase() === clean);
+  }
+
   /**
    * Tente d'initier une mutation avec pose de verrou anti-double-vente.
    * Lève une erreur explicite si la parcelle est déjà verrouillée ou en litige.
@@ -942,6 +988,42 @@ class AnyigbaRepository {
         otsProof: "OTS-BTC-SEAL-E3B0C442",
         txBlockchainId: "0xbc887766554433221100aabbccddeeff",
         dateDepot: "2026-01-15T10:00:00.000Z",
+      },
+      {
+        id: "ACT-002",
+        referenceActe: "ATT-REC-OUIDAH-PAHOU-2024-081",
+        parcelleCode: "OUI-0421",
+        typeActe: "ATTESTATION_DETENTION_COUTUMIERE",
+        signataire: "M. Christian Houetchenou (Maire de Ouidah) & ANDF",
+        hashSha256: "0x89a4cf31e792b04f98124efb189a246813579bdf0246813579bdf0246813579b",
+        salt: "b2c3d4e5f6a17890",
+        otsProof: "OTS-BTC-ADC-OUIDAH-PAHOU-89A4CF31",
+        txBlockchainId: "0xbc89a4cf31e792b04f98124efb189a246813579b",
+        dateDepot: "2024-06-18T09:30:00.000Z",
+      },
+      {
+        id: "ACT-003",
+        referenceActe: "PV-BORNAGE-GPS-2026-0421",
+        parcelleCode: "OUI-0421",
+        typeActe: "PROCES_VERBAL_BORNAGE",
+        signataire: "Mamadou Bio (Agent Foncier Assermenté NPI: FICTIF-BEN-2026-0045)",
+        hashSha256: "0x4b7c1e9a3f2d80517e69ac24810bf23d8491a6204859c3a172e9058471b6329a",
+        salt: "c3d4e5f6a1b28901",
+        otsProof: "OTS-BTC-BORNAGE-OUI-0421-4B7C1E9A",
+        txBlockchainId: "0xbc4b7c1e9a3f2d80517e69ac24810bf23d8491a",
+        dateDepot: "2026-01-22T11:15:00.000Z",
+      },
+      {
+        id: "ACT-004",
+        referenceActe: "CARNET-FAMILLE-OUI-0421",
+        parcelleCode: "OUI-0421",
+        typeActe: "CARNET_FAMILLE_FONCIER",
+        signataire: "Collectivité Familiale Germain Dossou & Notaire Instrumentaire",
+        hashSha256: "0x12a9c3e4b78901f45678cd981234ef56789012ab34cd56ef78901234567890ab",
+        salt: "d4e5f6a1b2c39012",
+        otsProof: "OTS-BTC-CARNET-OUI-0421-12A9C3E4",
+        txBlockchainId: "0xbc12a9c3e4b78901f45678cd981234ef56789012",
+        dateDepot: "2026-02-01T15:00:00.000Z",
       },
     ];
     this.hypotheques = [];
