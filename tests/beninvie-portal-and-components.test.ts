@@ -128,13 +128,10 @@ describe("BENINVIE Sovereign Portal — Architecture, Télémétrie & Composants
       const content = fs.readFileSync(loginPath, "utf-8");
 
       expect(
-        content.includes("Portail National d&apos;Authentification Sécurisé") ||
-        content.includes("Portail National d&apos;Authentification Habilitée")
-      ).toBe(true);
-      expect(
         content.includes("Connexion à votre Espace Foncier") ||
         content.includes("Guichet d&apos;Accès Réglementaire")
       ).toBe(true);
+      expect(content.includes("Retour à l&apos;accueil Anyigba")).toBe(true);
 
       // Vérification des 8 rôles dans le composant
       for (const role of roles) {

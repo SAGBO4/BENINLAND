@@ -182,36 +182,30 @@ export default function LoginPage(): ReactNode {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Navigation retour simple */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 mb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Retour à l&apos;accueil Anyigba</span>
-        </Link>
-      </div>
-
-      {/* Header institutionnel compact */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center px-4">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#0a3764] text-white shadow-md shadow-[#0a3764]/20 mb-3">
-          <Shield className="h-6 w-6 text-emerald-400" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-8 sm:py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        {/* Navigation retour ergonomique alignée avec le formulaire */}
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#0a3764] transition-colors py-1.5 px-3 rounded-lg hover:bg-slate-200/70 w-fit group"
+          >
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Retour à l&apos;accueil Anyigba</span>
+          </Link>
         </div>
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#0a3764]/20 bg-[#0a3764]/5 px-3 py-1 text-[11px] font-bold text-[#0a3764] mb-2">
-          <span>Portail National d&apos;Authentification Sécurisé • Cadastre Bénin</span>
-        </div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-          Connexion à votre Espace Foncier
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          ANYIGBA • Système National de Sécurisation Foncière &bull; République du Bénin
-        </p>
-      </div>
 
-      {/* Boîte Principale d'Authentification Normale */}
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        {/* Header institutionnel épuré */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Connexion à votre Espace Foncier
+          </h1>
+          <p className="text-xs text-slate-500 mt-1.5">
+            ANYIGBA • Système National de Sécurisation Foncière &bull; République du Bénin
+          </p>
+        </div>
+
+        {/* Boîte Principale d'Authentification Normale */}
         <div className="bg-white py-8 px-6 sm:px-10 shadow-xl rounded-2xl border border-slate-200/90">
           {/* Onglets Normaux : Connexion / Inscription */}
           <div className="flex border-b border-slate-200 mb-6">
