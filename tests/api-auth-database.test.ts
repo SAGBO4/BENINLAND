@@ -115,4 +115,37 @@ describe("Authentification Déployable : Base de Données & APIs (/api/v1/auth)"
     expect(data.success).toBe(false);
     expect(data.error).toContain("Mot de passe incorrect");
   });
+
+  it("doit accepter le mot de passe universel démo benin2026 pour un compte officiel", async () => {
+    const req = new Request("http://localhost/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        identifier: "FICTIF-BEN-2026-0088", // Notaire Agbossou (password officiel: not2026)
+        password: "benin2026",
+      }),
+    });
+
+    const res = await loginRoute(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.user.role).toBe("NOTAIRE");
+    expect(data.redirectUrl).toBe("/espace/notaire");
+  });
+
+  it("doit renvoyer 404 pour un identifiant inconnu permettant le fallback local", async () => {
+    const req = new Request("http://localhost/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        identifier: "BEN-LOCAL-UNKNOWN-9999",
+        password: "anypassword",
+      }),
+    });
+
+    const res = await loginRoute(req);
+    expect(res.status).toBe(404);
+    const data = await res.json();
+    expect(data.success).toBe(false);
+  });
 });
+
