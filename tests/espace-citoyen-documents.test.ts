@@ -170,6 +170,7 @@ describe("Espace Citoyen — Situation Détaillée & Coffre-fort Numérique des 
       expect(content).toContain("RÉPUBLIQUE DU BÉNIN");
       expect(content).toContain("LIVRE FONCIER NATIONAL &bull; ACTE SCELLÉ");
       expect(content).toContain("print:p-0 print:border-none print:shadow-none");
+      expect(content).toContain("print:hidden");
     });
 
     it("doit intégrer les Armoiries officielles et la devise républicaine", () => {

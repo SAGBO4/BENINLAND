@@ -61,12 +61,12 @@ export function DocumentViewerModal({ document, onClose }: DocumentViewerModalPr
       role="dialog"
       aria-modal="true"
       aria-labelledby="doc-viewer-modal-title"
-      className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex flex-col p-0 sm:p-4 overflow-hidden animate-rise"
+      className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex flex-col p-0 sm:p-4 overflow-hidden animate-rise print:static print:p-0 print:bg-white print:overflow-visible"
     >
       {/* ========================================================================= */}
       {/* BARRE D'OUTILS SUPÉRIEURE (STYLE LECTEUR PDF ADMINISTRATIF PRO)           */}
       {/* ========================================================================= */}
-      <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-3 flex items-center justify-between gap-3 shrink-0 shadow-md">
+      <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-3 flex items-center justify-between gap-3 shrink-0 shadow-md print:hidden">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -134,10 +134,10 @@ export function DocumentViewerModal({ document, onClose }: DocumentViewerModalPr
       {/* ========================================================================= */}
       {/* ZONE DE LECTURE : BUREAU D'AFFICHAGE DU DOCUMENT FORMAT PAPIER A4         */}
       {/* ========================================================================= */}
-      <div className="flex-1 overflow-y-auto bg-slate-700/60 p-3 sm:p-8 flex justify-center items-start">
+      <div className="flex-1 overflow-y-auto bg-slate-700/60 p-3 sm:p-8 flex justify-center items-start print:p-0 print:overflow-visible print:bg-white">
         {/* FEUILLE OFFICIELLE FORMAT A4 */}
         <div
-          className={`bg-white text-black shadow-2xl transition-all duration-200 w-full relative font-serif text-[11px] sm:text-xs leading-relaxed print:p-0 print:border-none print:shadow-none print:max-w-none print:m-0 print:min-h-0 ${
+          className={`bg-white text-black shadow-2xl transition-all duration-200 w-full relative font-serif text-[11px] sm:text-xs leading-relaxed print:p-0 print:border-none print:shadow-none print:max-w-none print:m-0 print:min-h-0 print:w-full ${
             zoomLevel === "normal" ? "max-w-[820px] min-h-[1140px] p-6 sm:p-10" : "max-w-4xl p-6 sm:p-12"
           }`}
           style={{ boxSizing: "border-box" }}
