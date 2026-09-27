@@ -1,6 +1,6 @@
 {
   "name": "anyigba",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Anyigba (BENINLAND) — Plateforme Nationale de Gestion et de Sécurisation du Foncier au Bénin",
   "main": "electron/main.js",
