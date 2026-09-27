@@ -54,6 +54,34 @@ describe("API /api/v1/mutations & finalisation", () => {
       expect(parcelle?.enVerrouMutation).toBe(true);
     });
 
+    it("doit rattacher automatiquement et sceller le Certificat Municipal de la Mairie lors de l'acte notarié", async () => {
+      const payload = {
+        parcelleCode: "OUI-0421",
+        certificatMairieRef: "CERTIF-COMMUNE-OUI-0421-2026-9315",
+        certificatMairieHash: "0xb4b0feb41ecbaae8a088b568d1c8d0767171bbefd3ad8344ec0a1310784721a1",
+        cedantNpi: "FICTIF-BEN-2026-0041",
+        cedantNom: "Germain Dossou",
+        cessionnaireNpi: "FICTIF-BEN-2026-0003",
+        cessionnaireNom: "Koffi Mensah",
+        notaireId: "Me Christian Agbossou",
+        prixFcfa: 4500000,
+      };
+
+      const request = new Request("http://localhost:3000/api/v1/mutations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const response = await postMutation(request);
+      expect(response.status).toBe(201);
+
+      const json = await response.json();
+      expect(json.success).toBe(true);
+      expect(json.data.certificatMairieRef).toBe("CERTIF-COMMUNE-OUI-0421-2026-9315");
+      expect(json.data.quittanceSequestreRef).toContain("SEQUESTRE-DGTCP-2026-");
+    });
+
     it("doit bloquer formellement avec 409 Conflict toute tentative de double vente concurrente", async () => {
       // 1. Première mutation légitime
       const payload1 = {
