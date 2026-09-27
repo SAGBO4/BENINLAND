@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import fs from "fs";
+import path from "path";
 import { anyigbaRepo } from "@/repositories/index";
 import {
   getSituationDetailleeParcelle,
@@ -153,6 +155,64 @@ describe("Espace Citoyen — Situation Détaillée & Coffre-fort Numérique des 
         expect(doc.baseLegale).toMatch(/Loi|Code/);
         expect(doc.parcelleCode).toBe("OUI-0421");
       }
+    });
+  });
+
+  describe("3. Conformité Réglementaire et Graphique du Visualiseur d'Actes Officiels (DocumentViewerModal)", () => {
+    const modalPath = path.resolve(__dirname, "../src/components/citoyen/DocumentViewerModal.tsx");
+    const content = fs.readFileSync(modalPath, "utf-8");
+
+    it("doit respecter le format feuille A4 réglementaire avec double filet et filigrane officiel", () => {
+      // Format A4 et cadre double filet
+      expect(content).toContain("max-w-[820px]");
+      expect(content).toContain("border-2 border-black");
+      expect(content).toContain("border border-black");
+      expect(content).toContain("RÉPUBLIQUE DU BÉNIN");
+      expect(content).toContain("LIVRE FONCIER NATIONAL &bull; ACTE SCELLÉ");
+      expect(content).toContain("print:p-0 print:border-none print:shadow-none");
+    });
+
+    it("doit intégrer les Armoiries officielles et la devise républicaine", () => {
+      expect(content).toContain('src="/armoiries-benin.png"');
+      expect(content).toContain("Armoiries Officielles de la République du Bénin");
+      expect(content).toContain("Fraternité &bull; Justice &bull; Travail");
+    });
+
+    it("doit afficher les en-têtes ministériels compétents selon le type d'acte officiel", () => {
+      // Certificat communal (Ouidah)
+      expect(content).toContain("DÉPARTEMENT DE L&apos;ATLANTIQUE &bull; COMMUNE DE OUIDAH");
+      expect(content).toContain("DIRECTION DES AFFAIRES DOMANIALES, DE L&apos;URBANISME ET DU CADASTRE");
+
+      // Quittance Trésor (DGTCP / CUT)
+      expect(content).toContain("MINISTÈRE DE L&apos;ÉCONOMIE ET DES FINANCES (MEF)");
+      expect(content).toContain("DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE (DGTCP)");
+      expect(content).toContain("COMPTE UNIQUE DU TRÉSOR (CUT)");
+
+      // PV de bornage
+      expect(content).toContain("MINISTÈRE DU CADRE DE VIE ET DES TRANSPORTS (MCVDD)");
+      expect(content).toContain("DIRECTION DE LA CARTOGRAPHIE ET DU CADASTRE &bull; ORDRE DES GÉOMÈTRES-EXPERTS");
+
+      // Titre cadastral ANDF
+      expect(content).toContain("AGENCE NATIONALE DU DOMAINE ET DU FONCIER (ANDF)");
+
+      // Carnet foncier CSAF
+      expect(content).toContain("COUR SPÉCIALE DES AFFAIRES FONCIÈRES (CSAF) &bull; LIVRE FONCIER NATIONAL");
+    });
+
+    it("doit intégrer le cachet circulaire régalien officiel à l'encre bleue républicaine", () => {
+      expect(content).toContain("#1e3a8a");
+      expect(content).toContain("SCEAU OFFICIEL");
+      expect(content).toContain("ADMINISTRATION FONCIÈRE");
+      expect(content).toContain("Cachet Officiel Régalien &bull; République du Bénin");
+    });
+
+    it("doit intégrer le cartouche de scellement cryptographique avec QRCodeSVG et OpenTimestamps", () => {
+      expect(content).toContain("Scellement Cryptographique &bull; Inviolabilité BéninChain");
+      expect(content).toContain("QRCodeSVG");
+      expect(content).toContain("level=\"H\"");
+      expect(content).toContain("Empreinte SHA-256");
+      expect(content).toContain("Preuve OpenTimestamps");
+      expect(content).toContain("Flash Vérification");
     });
   });
 });

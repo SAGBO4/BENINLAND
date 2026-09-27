@@ -232,7 +232,7 @@ export function DocumentViewerModal({ document, onClose }: DocumentViewerModalPr
                   {document.type === "CONVENTION" && (
                     <>
                       <h2 className="text-xs font-bold uppercase text-black font-sans">
-                        MINISTÈRE DU CADRE DE actuation ET DES TRANSPORTS (MCVDD)
+                        MINISTÈRE DU CADRE DE VIE ET DES TRANSPORTS (MCVDD)
                       </h2>
                       <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
                         REGISTRE OFFICIEL DES ACTES SOUS SEING PRIVÉ &bull; CONVENTIONS VILLAGEOISES
