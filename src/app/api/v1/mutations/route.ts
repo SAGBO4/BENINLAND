@@ -4,6 +4,8 @@ import { z } from "zod";
 
 const MutationSchema = z.object({
   parcelleCode: z.string().min(3),
+  certificatMairieRef: z.string().optional(),
+  certificatMairieHash: z.string().optional(),
   cedantNpi: z.string().min(5),
   cedantNom: z.string().min(2),
   cessionnaireNpi: z.string().min(5),
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
       let status = 409;
       if (result.error?.includes("PROPRIETAIRE_NON_CONFORME")) status = 403;
       if (result.error?.includes("PARCELLE_INEXISTANTE")) status = 404;
-      if (result.error?.includes("AUTO_CESSION_INTERDITE") || result.error?.includes("PRIX_INVALIDE")) status = 400;
+      if (result.error?.includes("AUTO_CESSION_INTERDITE") || result.error?.includes("PRIX_INVALIDE") || result.error?.includes("PRIX_NON_CONFORME_MAIRIE")) status = 400;
 
       return NextResponse.json(
         { success: false, error: result.error },
