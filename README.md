@@ -1,4 +1,4 @@
-# 🌍 ANYIGBA (BENINLAND)
+# ANYIGBA (BENINLAND)
 ### Plateforme Nationale Souveraine de Gestion et de Sécurisation du Foncier en République du Bénin
 
 <p align="center">
@@ -8,7 +8,8 @@
 <p align="center">
   <strong>République du Bénin</strong><br>
   <em>Fraternité — Justice — Travail</em><br>
-  <strong>Agence Nationale du Domaine et du Foncier (ANDF)</strong> &bull; <strong>Ministère du Cadre de Vie et des Transports</strong>
+  <strong>Agence Nationale du Domaine et du Foncier (ANDF)</strong> &bull; <strong>Ministère du Cadre de Vie et des Transports</strong><br>
+  <strong>Cour Spéciale des Affaires Foncières (CSAF)</strong> &bull; <strong>Direction Générale du Trésor et de la Comptabilité Publique (DGTCP)</strong>
 </p>
 
 <p align="center">
@@ -18,193 +19,191 @@
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4.3.3-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" /></a>
   <a href="https://orm.drizzle.team"><img src="https://img.shields.io/badge/Drizzle_ORM-0.40.1-C5F74F?style=for-the-badge&logo=drizzle" alt="Drizzle ORM" /></a>
   <a href="https://www.postgresql.org"><img src="https://img.shields.io/badge/PostgreSQL_/_PostGIS-16-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL" /></a>
+  <a href="https://vitest.dev"><img src="https://img.shields.io/badge/Vitest-148_Tests_Passed-success?style=for-the-badge&logo=vitest" alt="Vitest 148 Tests" /></a>
   <a href="https://www.electronjs.org"><img src="https://img.shields.io/badge/Electron-44.4.5-47848F?style=for-the-badge&logo=electron" alt="Electron" /></a>
-  <a href="https://vitest.dev"><img src="https://img.shields.io/badge/Vitest-3.0.7-FCC72B?style=for-the-badge&logo=vitest" alt="Vitest" /></a>
   <a href="https://www.docker.com"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker" alt="Docker" /></a>
-  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel" alt="Vercel" /></a>
 </p>
 
 ---
 
-## 📌 Sommaire
+## Sommaire
 
-1. [Vision & Problématique Nationale](#-1-vision--problématique-nationale)
-2. [Principes Fondamentaux de Sécurité Foncire](#-2-principes-fondamentaux-de-sécurité-foncière)
-3. [Fonctionnalités Clés & Piliers Métiers](#-3-fonctionnalités-clés--piliers-métiers)
-4. [Matrice des Rôles & Espaces Applicatifs Dédiés](#-4-matrice-des-rôles--espaces-applicatifs-dédiés)
-5. [Architecture Technique & Stack Technologique](#-5-architecture-technique--stack-technologique)
-6. [Arborescence Détaillée du Projet](#-6-arborescence-détaillée-du-projet)
-7. [Prérequis Système](#-7-prérequis-système)
-8. [Installation & Guide de Démarrage Pas-à-Pas](#-8-installation--guide-de-démarrage-pas-à-pas)
-9. [Scripts Disponibles & Commandes NPM](#-9-scripts-disponibles--commandes-npm)
-10. [Application Desktop Souveraine (Electron)](#-10-application-desktop-souveraine-electron)
-11. [Assurance Qualité, Tests & Audit Adversarial](#-11-assurance-qualité-tests--audit-adversarial)
-12. [Déploiement & Conteneurisation](#-12-déploiement--conteneurisation)
-13. [Conformité Légale & Protection des Données (APDP / Code Foncier)](#-13-conformité-légale--protection-des-données)
-14. [Équipe, Gouvernance & Support](#-14-équipe-gouvernance--support)
+1. [Vision, Enjeux Nationaux & Mission d'Anyigba](#1-vision-enjeux-nationaux--mission-danyigba)
+2. [Cadre Légal & Principes Fondamentaux de Sécurité Foncière](#2-cadre-légal--principes-fondamentaux-de-sécurité-foncière)
+3. [Les 8 Piliers Métiers & Fonctionnalités Opérationnelles](#3-les-8-piliers-métiers--fonctionnalités-opérationnelles)
+4. [Matrice des Rôles & Espaces Applicatifs Dédiés](#4-matrice-des-rôles--espaces-applicatifs-dédiés)
+5. [Découpage Territorial : 12 Départements & 6 Pôles](#5-découpage-territorial--12-départements--6-pôles)
+6. [Architecture Technique, Données & Cryptographie](#6-architecture-technique-données--cryptographie)
+7. [Arborescence du Projet](#7-arborescence-du-projet)
+8. [Prérequis Système & Installation](#8-prérequis-système--installation)
+9. [Scripts Disponibles](#9-scripts-disponibles)
+10. [Application Desktop Souveraine (Electron)](#10-application-desktop-souveraine-electron)
+11. [Assurance Qualité : Les 148 Tests Vitest](#11-assurance-qualité--les-148-tests-vitest)
+12. [Déploiement & Conteneurisation](#12-déploiement--conteneurisation)
+13. [Conformité Réglementaire & Protection des Données](#13-conformité-réglementaire--protection-des-données)
+14. [Documentation Complémentaire & Références](#14-documentation-complémentaire--références)
 
 ---
 
-## 🏛️ 1. Vision & Problématique Nationale
+## 1. Vision, Enjeux Nationaux & Mission d'Anyigba
 
-Au Bénin, la terre (**« Anyigba »** en langue Fongbe) est à la fois l'héritage sacré des ancêtres, le pilier de la paix sociale et le premier actif économique des ménages et des entreprises. 
+Au Bénin, la terre (**« Anyigba »** en langue Fongbe) est à la fois l'héritage sacré des ancêtres, le garant de la cohésion sociale et le premier levier de création de richesse économique.
 
 Pendant des décennies, l'écosystème foncier traditionnel a souffert de failles structurelles majeures :
 - **La double ou triple vente** d'une même parcelle par un vendeur indélicat ou des cohéritiers concurrents.
-- **La prolifération des conventions manuscrites sous seing privé**, signées sur papier libre, sans coordonnées géoréférencées fiables, sans bornes cadastrales inaltérables ni vérification d'identité souveraine.
-- **L'engorgement massif des juridictions civiles**, ayant conduit le Gouvernement du Bénin à instituer la **Cour Spéciale des Affaires Foncières (CSAF)** pour traiter le contentieux foncier d'urgence.
-- **L'exclusion numérique des populations rurales et des aînés**, ne maîtrisant ni le français écrit ni les interfaces web complexes.
+- **La prolifération des conventions manuscrites sous seing privé**, signées sur papier libre sans coordonnées géoréférencées fiables, sans bornes cadastrales inaltérables ni vérification d'identité souveraine.
+- **L'engorgement massif des tribunaux de première instance**, ayant conduit le Gouvernement de la République à instituer la **Cour Spéciale des Affaires Foncières (CSAF)** par la Loi n° 2022-16.
+- **L'exclusion numérique des populations rurales et des aînés**, ne maîtrisant ni le français écrit ni les interfaces numériques complexes.
 
 ### La Mission d'Anyigba (BENINLAND)
-**Anyigba** unifie l'ensemble des acteurs de la chaîne foncière béninoise (Citoyens, Notaires, Agents Fonciers de village, Géomètres, ANDF, Mairies, Banques, Magistrats CSAF) au sein d'une infrastructure numérique d'autorité :
-- **Visible** : Cartographie cadastrale interactive haute précision PostGIS/Leaflet couvrant les 77 communes et les 6 Pôles Territoriaux.
+Anyigba unifie l'ensemble des acteurs de la chaîne domaniale (Citoyens, Notaires, Agents Fonciers de village, Géomètres, ANDF, Mairies, Banques, Trésor Public, Magistrats CSAF) au sein d'une infrastructure numérique d'autorité :
+- **Visible** : Cartographie cadastrale interactive haute précision PostGIS / OpenStreetMap couvrant les 77 communes et les 12 départements.
 - **Vérifiable en 30 secondes** : Par le web, par QR Code souverain, par SMS (numéro court `132`), par USSD feature phone (`*123*7#`) ou par synthèse vocale en langues nationales (**Fongbe, Yoruba, Hausa, Français**).
-- **Infalsifiable & Inviolable** : Verrouillage cryptographique anti-double-vente, séquestre bancaire/Mobile Money (MTN MoMo & Moov Money), coffre-fort d'actes scellés par SHA-256 et ancrage sur registre immuable (**BéninChain** et **OpenTimestamps**).
+- **Infalsifiable & Inviolable** : Verrouillage transactionnel atomique anti-double-vente (HTTP 409 Conflict), séquestre public via la DGTCP, coffre-fort d'actes scellés par SHA-256 et ancrage sur registre immuable (**BéninChain** et **OpenTimestamps**).
 
-> [!IMPORTANT]
-> **Règle N°1 du Projet : « La Démo et le Registre Souverain ne doivent jamais faillir. »**  
-> Tous les parcours critiques fonctionnent de bout en bout de façon déterministe. Les services tiers (télécoms, Mobile Money, blockchain) sont émulés avec une **persistance effective et traçable en base de données**, avec la possibilité d'une réinitialisation atomique en un clic vers un état de référence parfait.
+> **Règle d'Or du Système : « La Démo et le Registre Souverain ne doivent jamais faillir. »**  
+> Tous les parcours critiques fonctionnent de bout en bout de façon déterministe. Les services tiers (télécoms, Mobile Money, TrésorPay, blockchain) sont orchestrés avec une persistance effective en base de données, complétée par un mode mémoire haute disponibilité et la possibilité d'une réinitialisation atomique en un clic vers un état de référence parfait.
 
 ---
 
-## 🛡️ 2. Principes Fondamentaux de Sécurité Foncière
+## 2. Cadre Légal & Principes Fondamentaux de Sécurité Foncière
 
 ```mermaid
 flowchart TD
-    A["Vendeur & Acheteur"] -->|Initiation Cession| B["Espace Notaire / Agent Foncier"]
+    A["Vendeur & Acheteur (NPI ANIP)"] -->|Initiation Cession| B["Espace Notaire"]
     B -->|Pose Immédiate| C{"VERROU ATOMIQUE<br/>en_verrou_mutation = true"}
-    C -->|Parcelle 🔒| D["Tentative de double vente refusée<br/>Code 409 CONFLICT"]
+    C -->|Parcelle Verrouillée| D["Tentative de double vente refusée<br/>Code HTTP 409 CONFLICT"]
     C -->|Notification SMS Propriétaire| E["Alerte temps réel NPI"]
-    C -->|Séquestre Mobile Money / Virement| F["Fonds bloqués sous séquestre étatique"]
+    C -->|Séquestre Financier DGTCP| F["Fonds consignés au Compte Unique du Trésor"]
     F -->|Contrôle Réglementaire| G["Instruction & Validation ANDF"]
-    G -->|Succès| H["Droit transféré + Fonds libérés + Acte scellé SHA-256"]
-    G -->|Rejet / Litige CSAF| I["Fonds remboursés + Parcelle gelée ou libérée"]
+    G -->|Succès| H["Délivrance CPF + Fonds Libérés + Acte Scellé SHA-256"]
+    G -->|Requête Litige CSAF| I["Gel Conservatoire Immédiat (Loi 2022-16)"]
 ```
 
 ### Le Crédo Architectural
-> *« On ne met pas la terre sur la blockchain, on y met la preuve. Et on rend la double vente mathématiquement et logiquement impossible. »*
+> *« On ne met pas la terre sur la blockchain, on y met la preuve. Et on rend la double vente mathématiquement et logiquement impossible dans le registre public. »*
 
-1. **Le registre souverain légal** réside dans la base relationnelle géospatiale **PostgreSQL + PostGIS**.
-2. **Le verrouillage transactionnel atomique** garantit qu'aucune seconde convention ou intention de mutation ne peut être reçue pendant qu'un dossier est ouvert.
-3. **Le séquestre financier intégré** protège l'acheteur contre la fuite du vendeur avant la validation du titre de propriété.
-4. **La couche d'intégrité cryptographique** conserve les condensés numériques SHA-256 avec salage (`HASH_PEPPER`) et empreintes OpenTimestamps.
+1. **Le registre souverain légal** réside dans la base relationnelle géospatiale **PostgreSQL 16 + PostGIS 3.4**, orchestrée par **Drizzle ORM**.
+2. **Le verrouillage transactionnel atomique** garantit qu'aucune seconde convention ou intention de mutation ne peut être reçue pendant qu'un dossier est instruit.
+3. **Le séquestre financier étatique (DGTCP)** protège l'acheteur contre la dissipation des fonds avant la délivrance du titre définitif.
+4. **La couche d'intégrité cryptographique** conserve les condensés numériques SHA-256 salés (`HASH_PEPPER`) et les preuves OpenTimestamps.
+5. **La conformité textuelle** applique rigoureusement la **Loi n° 2013-01 / 2017-15** (Code Foncier), la **Loi n° 2022-16** (CSAF) et la **Loi n° 2017-08** (NPI ANIP).
 
 ---
 
-## ⚡ 3. Fonctionnalités Clés & Piliers Métiers
+## 3. Les 8 Piliers Métiers & Fonctionnalités Opérationnelles
 
-### 🔍 1. Moteur de Recherche & Vérification Publique Multi-Canal
-Accessible sans prérequis technique ni compte obligatoire :
+### 1. Moteur de Recherche & Vérification Publique Multi-Canal (`/verification`)
 - **Recherche Instantanée** : Saisie du code cadastral unique (ex: `OUI-0421`, `CAL-1002`, `COT-0012`).
-- **Restitution Certifiée** : Statut juridique clair (Titre Foncier 🟢, CPF 🔵, Coutumier Déclaré 🟡, Litige 🔴, Cession Verrouillée 🔒).
+- **Restitution Certifiée** : Statut juridique clair (Titre Foncier, CPF, Coutumier Déclaré, Litige CSAF, Cession Verrouillée).
 - **Conformité APDP** : Masquage automatique des données à caractère personnel du propriétaire (`M. Sossou A*** M***`).
 - **QR Code Souverain** : Scannable directement sur les attestations d'affichage et certificats physiques.
-- **Synthèse Vocale 229 (API TTS)** : Restitution audio fluide de la situation juridique du terrain en **Fongbe, Yoruba, Hausa et Français**, éliminant la barrière de l'analphabétisme.
-- **Simulateur Téléphone Portable (Feature Phone)** :
-  - **SMS (Numéro Court 132)** : Commande `VERIF <CODE_PARCELLE>` avec réponse instantanée officielle.
-  - **USSD (`*123*7#`)** : Navigation interactive par menus numériques adaptée aux zones à couverture réseau 2G.
+- **Synthèse Vocale Multilingue (API TTS 229)** : Restitution audio en **Fongbe, Yoruba, Hausa et Français**.
+- **Canaux Feature Phone** : SMS au numéro court `132` et menu interactif USSD `*123*7#`.
 
-### 🗺️ 2. Cartographie Cadastrale Interactive PostGIS & Leaflet (`/carte`)
-- Visualisation vectorielle interactive sur fonds de carte haute fidélité (OpenStreetMap, satellite hybride).
-- **Intégration des 6 Pôles Territoriaux du Bénin** :
-  - *Grand-Nokoué* (Cotonou, Abomey-Calavi, Ouidah, Sèmè-Kpodji, Porto-Novo)
-  - *Sud-Ouest* (Mono-Couffo et plateau de l'Atlantique intérieur)
-  - *Zou-Collines* (Plateau central, Abomey, Bohicon, Dassa)
-  - *Borgou-Sud* (Parakou, bassin cotonnier et agro-pastoral)
-  - *Atacora-Donga* (Chaîne de l'Atacora, Natitingou, Djougou)
-  - *Alibori* (Grand Nord sahélien, Kandi, Malanville)
-- **Filtres Avancés** : Par commune, pôle, statut juridique, superficie, usage (Agricole, Bâti, Commercial).
-- **Radar Télémétrique & Inspecteur Foncier** : Analyse géométrique détaillée, périmètre, surface calculée, coordonnées WGS84 des bornes et historique des actes.
+### 2. Cartographie Cadastrale Interactive PostGIS (`/carte`)
+- Visualisation vectorielle interactive Leaflet / OpenStreetMap.
+- Couverture intégrale des **12 départements** et des **6 Pôles Territoriaux**.
+- Filtres avancés : par commune, pôle territorial, statut juridique, superficie, usage.
+- Radar télémétrique et inspecteur cadastral : bornes WGS84, contrôle topologique zéro empiètement.
 
-### 🔒 3. Verrou Anti-Double-Vente & Mutations Notariées (`/espace/notaire`, `/espace/andf`)
-- Dès l'ouverture de l'acte par le notaire, la parcelle est instantanément verrouillée.
-- Une tentative de vente simultanée chez un confrère ou un agent déclenche une **interdiction système 409 Conflict**.
-- Intégration d'un module de **Paiement sous Séquestre Mobile Money (MTN / Moov)** garantissant la consignation des fonds jusqu'à la délivrance du titre définitif par l'ANDF.
-- Déduction automatisée de la taxe communale sur la plus-value lors du déblocage final.
+### 3. Verrou Anti-Double-Vente & Mutations Notariées (`/espace/notaire`)
+- Verrouillage instantané de la parcelle dès l'ouverture du dossier par le notaire.
+- Rejet immédiat de toute tentative concurrente avec code HTTP `409 CONFLICT`.
+- Intégration du séquestre financier avec consignation Trésor Public (DGTCP) et Mobile Money (MTN / Moov).
+- Déduction automatisée de la taxe communale de plus-value (5%) lors du déblocage final.
 
-### 📍 4. Convention de Vente Assistée au Village (`/espace/agent`)
-Conçue spécifiquement pour le milieu rural et les arrondissements périurbains :
-- Saisie sur le terrain par l'Agent Foncier assermenté.
-- Saisie des coordonnées GPS des 4 bornes avec **contrôle topologique automatique de non-chevauchement (zéro overlap PostGIS)**.
-- Prise de vue géolocalisée et scellement numérique des **photos des bornes**.
-- **Recueil des témoignages vocaux** en langues nationales des voisins de bornes (Nord, Sud, Est, Ouest) et du Chef de Village.
-- Validation décentralisée avec émission d'un dossier complet scellé en SHA-256.
+### 4. Cadastre Communal & Certificats d'Évaluation TrésorPay (`/espace/commune`)
+- Instruction municipale et fixation du prix homologué au mètre carré (Art. 142 Code Foncier).
+- Émission de certificats d'évaluation avec QR-Code et quittance TrésorPay DGTCP.
+- Décodage automatique côté client et serveur des certificats PDF scellés.
 
-### 🛡️ 5. Coffre-Fort Numérique des Actes & Détecteur de Falsification (`/verification/actes`)
-- Archivage sécurisé des Titres Fonciers, Plans de Bornage de Géomètres et Actes de Cession.
-- **Générateur d'Empreinte SHA-256 Salée** avec identifiant de preuve **BéninChain** et ancrage **OpenTimestamps**.
-- **Laboratoire Interactif de Pentest Foncier** : Possibilité de tester la falsification d'un acte en injectant un pixel ou un caractère modifié pour observer la détection instantanée de fraude par la machine cryptographique.
+### 5. Validation Souveraine & Délivrance du Titre CPF (`/espace/andf`)
+- Instruction technique et vérification cadastrale centrale par l'ANDF.
+- Délivrance du **Certificat de Propriété Foncière (CPF)** conférant pleine opposabilité aux tiers.
+- Notification SMS automatique au propriétaire lors de la confirmation des droits.
 
-### ⚖️ 6. Chambre Spéciale des Affaires Foncières - CSAF (`/espace/csaf`)
-- Dépôt de requête et instruction des litiges fonciers.
-- **Gel Conservatoire Automatique** : Passage instantané au statut rouge bloquant toute transaction, division ou hypothèque sur la parcelle.
-- Historique d'audiences, conciliation traditionnelle et publication des jugements et ordonnances.
+### 6. Chambre Spéciale des Affaires Foncières (`/espace/csaf`)
+- Enregistrement des requêtes et contentieux domaniaux (Loi n° 2022-16).
+- **Gel Conservatoire Automatique** : Blocage immédiat de toute mutation, division ou hypothèque sur la parcelle litigieuse.
+- Suivi des audiences, ordonnances de conciliation et arrêts de la Cour.
 
-### 👨‍👩‍👧‍👦 7. Carnet de Famille Foncier & Successions (`/espace/citoyen`)
-- Déclaration anticipée du patrimoine foncier familial du vivant des parents.
-- Recueil des consentements des ayants droit authentifiés par le Numéro Personnel d'Identification (**NPI**).
-- Liquidation successorale transparente pilotée avec le Notaire, prévenant les ventes occultes par un héritier isolé.
+### 7. Établissements de Crédit & Hypothèques Prudentielles LTV 70% (`/espace/banque`)
+- Vérification de la solvabilité foncière et de la pureté du titre en temps réel.
+- **Application du ratio prudentiel LTV plafonné à 70%** de la valeur communale homologuée.
+- Inscription et mainlevée électronique des sûretés hypothécaires.
 
-### 🏢 8. Cadastre Communal & Taxe sur la Plus-Value (`/espace/commune`)
-- Déclaration et inventaire des constructions et bâtis (villas, immeubles, hangars).
-- Moteur de calcul automatisé de la **Taxe Communale sur la Plus-Value Immobilière** lors de chaque mutation.
-- Suivi en temps réel des recettes fiscales et délivrance d'avis d'imposition foncière.
+### 8. Convention de Vente Assistée au Village (`/espace/agent`)
+- Saisie de terrain par l'Agent Foncier assermenté.
+- Bornage GPS avec contrôle de non-chevauchement PostGIS.
+- Recueil audio des témoignages des 4 voisins riverains et du Chef de Village.
 
 ---
 
-## 👥 4. Matrice des Rôles & Espaces Applicatifs Dédiés
-
-Anyigba intègre un système d'authentification souveraine multi-rôles avec bascule instantanée en un clic pour les présentations officielles :
+## 4. Matrice des Rôles & Espaces Applicatifs Dédiés
 
 | Rôle Métier | Identifiant Démo | Accès Espace | Missions Principales |
 |---|---|---|---|
-| **🏛️ Notaire Instrumentaire** | `notaire@demo.bj` | `/espace/notaire` | Pose de verrou anti-double-vente, actes authentiques, gestion du séquestre |
-| **📜 ANDF (Direction Générale)** | `andf@demo.bj` | `/espace/andf` | Instruction souveraine, validation définitive, émission des TF et CPF |
-| **📍 Agent Foncier de Village** | `agent@demo.bj` | `/espace/agent` | Conventions assistées, bornage GPS, recueil audio des témoins riverains |
-| **⚖️ Magistrat CSAF** | `csaf@demo.bj` | `/espace/csaf` | Contentieux foncier, gel conservatoire, ordonnances de conciliation |
-| **🏢 Commune / Mairie** | `commune@demo.bj` | `/espace/commune` | Recensement des bâtis, calcul de taxe sur plus-value, permis d'aménager |
-| **👤 Citoyen / Propriétaire** | `citoyen@demo.bj` | `/espace/citoyen` | Suivi de patrimoine, carnet de famille foncier, alertes d'usurpation SMS |
-| **🏦 Banque / Établissement de Crédit** | `banque@demo.bj` | `/espace/banque` | Vérification de solvabilité foncière, prise et radiation d'hypothèques |
-| **🔎 Contrôleur Foncier Cadastral** | `controleur@demo.bj` | `/espace/controleur` | Inspection topologique, audits de conformité de bornage, levés de réserves |
-| **🏛️ Ministère du Cadre de Vie** | `ministere@demo.bj` | `/espace/ministere` | Observatoire national, thermomètre des prix au m², statistiques macro |
-| **⚙️ Administrateur Système** | `admin@demo.bj` | `/admin` | Santé des nœuds, audit logs, réinitialisation atomique de la démo |
+| **Notaire Instrumentaire** | `notaire@demo.bj` | `/espace/notaire` | Pose de verrou anti-double-vente, actes authentiques, séquestre DGTCP |
+| **ANDF (Direction Générale)** | `andf@demo.bj` | `/espace/andf` | Instruction souveraine, validation définitive, émission des TF et CPF |
+| **Agent Foncier de Village** | `agent@demo.bj` | `/espace/agent` | Conventions assistées, bornage GPS, recueil audio des témoins riverains |
+| **Magistrat CSAF** | `csaf@demo.bj` | `/espace/csaf` | Contentieux foncier (Loi 2022-16), gel conservatoire immédiat |
+| **Commune / Mairie** | `commune@demo.bj` | `/espace/commune` | Certificats d'évaluation, quittances TrésorPay, taxe sur plus-value |
+| **Citoyen / Propriétaire** | `citoyen@demo.bj` | `/espace/citoyen` | Suivi de patrimoine, carnet de famille foncier, alertes SMS NPI |
+| **Banque / Établissement de Crédit** | `banque@demo.bj` | `/espace/banque` | Vérification de garantie, contrôle ratio LTV 70%, hypothèques |
+| **Contrôleur Foncier Cadastral** | `controleur@demo.bj` | `/espace/controleur` | Inspection topologique, audit de bornage, conformité SIG |
+| **Ministère du Cadre de Vie** | `ministere@demo.bj` | `/espace/ministere` | Observatoire national, thermomètre des prix au m², statistiques macro |
+| **Administrateur Système** | `admin@demo.bj` | `/admin` | Santé des nœuds, audit logs, réinitialisation déterministe |
 
 ---
 
-## 🛠️ 5. Architecture Technique & Stack Technologique
+## 5. Découpage Territorial : 12 Départements & 6 Pôles
+
+La plateforme intègre le référentiel géographique officiel de la République du Bénin :
+
+- **Les 12 Départements** : Alibori, Atacora, Atlantique, Borgou, Collines, Couffo, Donga, Littoral, Mono, Ouémé, Plateau, Zou.
+- **Les 6 Pôles Territoriaux de Développement** :
+  1. *Grand-Nokoué* (Cotonou, Abomey-Calavi, Ouidah, Sèmè-Kpodji, Porto-Novo)
+  2. *Sud-Ouest* (Mono-Couffo et plateau de l'Atlantique intérieur)
+  3. *Sud-Est / Plateau* (Ouémé périurbain et département du Plateau)
+  4. *Zou-Collines* (Plateau central, Abomey, Bohicon, Dassa, Savalou)
+  5. *Atacora-Donga* (Nord-Ouest, Natitingou, Djougou, Tanguiéta)
+  6. *Alibori-Borgou* (Grand Nord, Parakou, Kandi, Malanville, Bembèrèkè)
+
+---
+
+## 6. Architecture Technique, Données & Cryptographie
 
 ```
 +-----------------------------------------------------------------------------------+
 |                            APPLICATION FRONTEND & DESKTOP                         |
-|  Next.js 15 (App Router)  |  React 19  |  Tailwind CSS v4  |  Framer Motion / UI  |
-|  Leaflet (SIG / PostGIS)  |  QR Code   |  Electron v44 (Linux AppImage & Win EXE) |
+|  Next.js 15.5 (App Router) • React 19 • Tailwind CSS v4 • Lucide Icons            |
+|  Leaflet (SIG / PostGIS) • QR Code SVG • Electron v44 (Linux AppImage & Win EXE)  |
 +-----------------------------------------------------------------------------------+
                                          |
                                          v
 +-----------------------------------------------------------------------------------+
 |                             COUCHE LOGIQUE & API REST                             |
-|  Next.js Route Handlers (/api/v1)  |  Validation Zod  |  Authentification Sessions |
-|  Moteur Anti-Double-Vente  |  Séquestre Mobile Money  |  Synthèse Vocale TTS 229  |
+|  Next.js Route Handlers (/api/v1) • Validation Zod • Authentification NPI / ANIP  |
+|  Moteur Anti-Double-Vente • Séquestre DGTCP • Synthèse Vocale TTS 229            |
 +-----------------------------------------------------------------------------------+
                                          |
                                          v
 +-----------------------------------------------------------------------------------+
 |                        COUCHE DE DONNÉES & CRYPTOGRAPHIE                          |
-|  Drizzle ORM 0.40  |  PostgreSQL 16 + PostGIS 3.4 (Neon Cloud / Docker Local)     |
-|  Hachage SHA-256 + PEPPER Souverain  |  Ancrage OpenTimestamps / BéninChain       |
+|  Drizzle ORM 0.40 • PostgreSQL 16 + PostGIS 3.4 (Cloud Neon / Docker Local)       |
+|  Hachage SHA-256 + PEPPER Souverain • Ancrage OpenTimestamps / BéninChain         |
 +-----------------------------------------------------------------------------------+
 ```
 
-- **Frontend** : Next.js 15.1.7 (App Router), React 19, TypeScript strict 5.8, Tailwind CSS v4, Lucide Icons, Leaflet 1.9, Framer Motion.
-- **Backend / API** : Next.js API Routes (`src/app/api/v1/*`), Zod schemas pour la validation stricte de schéma, typage de bout en bout.
-- **Base de Données & SIG** : PostgreSQL 16 avec extension spatiale PostGIS, Drizzle ORM, Drizzle Kit.
-- **Client Desktop** : Electron 44.4.5, Electron Builder 26.15 (empaquetage AppImage x64, tar.gz, Windows portable et installateur).
-- **Simulations Réalistes Déterministes** : Passerelle SMS simulée avec accusé de réception, menu USSD interactif, passerelle Mobile Money MTN/Moov, synthèse vocale des langues béninoises.
-- **Assurance Qualité & Tests** : Vitest 3.0.7 avec 106 cas de tests automatisés.
+- **Frontend** : Next.js 15 (App Router), React 19, TypeScript strict 5.8, Tailwind CSS v4 (largeur aérée `max-w-[1536px]`, 12 colonnes, paddings sm: et lg:), icônes Lucide.
+- **Backend / API** : Route Handlers (`src/app/api/v1/*`), validation stricte Zod, persistance hybride PostgreSQL / Mémoire sécurisée.
+- **Base de Données & SIG** : PostgreSQL 16 avec extension PostGIS 3.4, schémas typés avec Drizzle ORM.
+- **Client Desktop** : Electron 44.4.5, packaging Linux (.AppImage) et Windows (.exe).
 
 ---
 
-## 📂 6. Arborescence Détaillée du Projet
+## 7. Arborescence du Projet
 
 ```text
 BENINLAND/
@@ -213,30 +212,24 @@ BENINLAND/
 ├── docker-compose.yml               # Déploiement multi-conteneurs local (App + PostgreSQL)
 ├── drizzle.config.ts                # Configuration Drizzle ORM & Drizzle Kit
 ├── electron-builder.json            # Configuration du packaging desktop (Linux & Windows)
-├── next.config.js                   # Configuration Next.js (optimisations de compilation)
-├── package.json                     # Dépendances, scripts de build et de test
+├── next.config.js                   # Configuration Next.js
+├── package.json                     # Dépendances et scripts de build
 ├── tsconfig.json                    # Configuration TypeScript strict
 ├── vitest.config.ts                 # Configuration de la suite de tests Vitest
-├── desktop/                         # Fichiers binaires exécutables packagés (AppImage, EXE, ZIP)
-│   ├── BENINLAND-1.0.0.AppImage     # Binaire exécutable autonome Linux x64
-│   ├── BENINLAND 1.0.0.exe          # Binaire exécutable portable Windows x64
-│   └── BENINLAND-1.0.0-win.zip      # Archive portable Windows
-├── docker/
-│   ├── Dockerfile                   # Build multi-stage Node 22 Alpine optimisé
-│   └── init.sql                     # Initialisation PostGIS automatisée
+├── desktop/                         # Binaires exécutables packagés (AppImage, EXE, ZIP)
 ├── docs/
+│   ├── PRESENTATION_BENINLAND.md    # Dossier magistral de présentation institutionnelle
 │   ├── CDC_SOURCE_DE_VERITE.md      # Cahier des charges exhaustif et règles d'or
 │   ├── ROADMAP_IMPLEMENTATION.md    # Feuille de route et jalons de livraison
-│   ├── presentation-anyigba.html    # Support interactif de présentation de haut niveau
+│   ├── presentation-anyigba.html    # Support interactif de présentation
 │   └── ANYIGBA_DOSSIER_DE_PRESENTATION.pdf # Dossier exécutif officiel imprimable
-├── electron/
-│   ├── main.js                      # Processus principal Electron (menus, fenêtres, raccourcis)
-│   ├── preload.js                   # Script de préchargement sécurisé
-│   └── start.js                     # Script de démarrage avec détection de port et serveur
-├── public/                          # Actifs statiques, armoiries républicaines, icônes
-├── tests/                           # 11 suites de tests automatisés (106 tests)
+├── tests/                           # 15 suites de tests automatisés (148 tests réussis)
 │   ├── adversarial-pentest-qa.test.ts        # Tests de pénétration et résistance aux injections
+│   ├── api-auth-database.test.ts             # Authentification par NPI ANIP et mot de passe
 │   ├── api-auxiliary.test.ts                 # Tests des routes SMS, TTS audio et passerelles
+│   ├── api-banque-hypotheques.test.ts        # Module bancaire, vérification garantie, ratio LTV 70%
+│   ├── api-commune-certificats.test.ts       # Certificats municipaux, extraction PDF et TrésorPay
+│   ├── api-csaf-gel.test.ts                  # Procédure de saisine CSAF et gel conservatoire
 │   ├── api-demo-reset.test.ts                # Test de réinitialisation déterministe
 │   ├── api-mutations.test.ts                 # Test du verrou anti-double-vente et séquestre
 │   ├── api-verification.test.ts              # Test du moteur de vérification publique
@@ -248,149 +241,41 @@ BENINLAND/
 │   └── system-hardening-adversarial.test.ts  # Durcissement contre fraudes IDOR et usurpations
 └── src/
     ├── app/                         # Pages et Routes App Router Next.js
-    │   ├── admin/                   # Console d'administration et journal d'audit
-    │   ├── api/v1/                  # API REST sécurisée (parcelles, mutations, vérification, etc.)
-    │   ├── carte/                   # Cartographie plein écran Leaflet/PostGIS
-    │   ├── demo/telephone/          # Simulateur téléphone feature phone USSD & SMS
-    │   ├── espace/                  # Espaces de travail par métier
-    │   │   ├── agent/               # Conventions assistées au village
-    │   │   ├── andf/                # Validation souveraine et délivrance de titres
-    │   │   ├── banque/              # Inscription des garanties et hypothèques
-    │   │   ├── citoyen/             # Consultation des biens et carnet de famille
-    │   │   ├── commune/             # Urbanisme, bâtis et taxes sur plus-value
-    │   │   ├── controleur/          # Contrôle topologique et audit de bornage
-    │   │   ├── csaf/                # Contentieux foncier et gel conservatoire
-    │   │   ├── ministere/           # Observatoire national foncier
-    │   │   └── notaire/             # Actes notariés et verrou anti-double-vente
-    │   ├── login/                   # Portail d'authentification souveraine avec quick-switch
-    │   ├── verification/            # Page de vérification publique de parcelle
-    │   │   └── actes/               # Coffre-fort numérique des actes et détecteur de fraude
-    │   ├── layout.tsx               # Disposition racine, polices et métadonnées
-    │   └── page.tsx                 # Landing page républicaine asymétrique
-    ├── components/                  # Composants React modulaires
-    │   ├── audio/                   # Lecteur vocal multilingue Fongbe / Yoruba / Français
-    │   ├── auth/                    # Panneau de connexion multi-rôles
-    │   ├── cadastre/                # Radar télémétrique et télémétrie cadastrale
-    │   ├── carte/                   # Cartes Leaflet, styles officiels, inspecteur de polygone
-    │   ├── dashboard/               # Tableaux de bord et statistiques
-    │   ├── layout/                  # En-tête républicain, pied de page, barres de navigation
-    │   ├── marketing/               # Vitrine institutionnelle
-    │   ├── reactbits/               # Micro-animations typographiques et visuelles
-    │   ├── simulators/              # Simulateurs modaux Mobile Money et télécoms
-    │   ├── ui/                      # Composants d'interface shadcn/ui
-    │   └── verification/            # Composants de recherche et restitution cadastrale
-    ├── db/                          # Gestion de la base de données
-    │   ├── index.ts                 # Connexion Drizzle ORM (PostgreSQL local / Neon)
-    │   ├── migrate.ts               # Runner de migrations Drizzle
-    │   ├── reset.ts                 # Script de remise à zéro et ré-exécution du seed
-    │   ├── schema/index.ts          # Schémas Drizzle des 8 tables maîtresses
-    │   └── seed/                    # Données de référence réalistes béninoises
-    ├── lib/                         # Utilitaires transversaux
-    │   ├── audio.ts                 # Dictionnaires et traductions audio multilingues
-    │   ├── auth-context.tsx         # Contexte React d'authentification utilisateur
-    │   ├── auth-session.ts          # Gestion sécurisée des sessions de connexion
-    │   ├── channels.ts              # Moteurs de simulation des flux SMS, USSD et MoMo
-    │   ├── geo.ts                   # Calculs géodésiques, surfaces et détection d'overlap
-    │   ├── hash.ts                  # Hachage SHA-256 salé, scellement et intégrité
-    │   ├── poles-benin.ts           # Référentiel des 6 Pôles Territoriaux et 77 communes
-    │   └── utils.ts                 # Utilitaires de classes CSS et formatage FCFA
-    └── repositories/                # Couche d'accès aux données persistées
-        └── index.ts                 # Opérations CRUD et abstraction du registre
+    ├── components/                  # Composants React modulaires (UI, Carte, Layout)
+    ├── db/                          # Schémas Drizzle, migrations et seed souverain
+    ├── lib/                         # Utilitaires (géodésie, hash, audio, auth)
+    └── repositories/                # Abstraction et accès aux données persistées
 ```
 
 ---
 
-## 💻 7. Prérequis Système
+## 8. Prérequis Système & Installation
 
-Pour exécuter et développer sur **Anyigba (BENINLAND)**, assurez-vous de disposer des éléments suivants :
+### Prérequis
+- **Node.js** `>= 20.x` (recommandé : Node 22 LTS)
+- **pnpm** `>= 9.x`
+- **PostgreSQL** `>= 16.x` avec extension **PostGIS 3.4** (ou conteneur Docker)
 
-| Prérequis | Version Recommandée | Utilité |
-|---|---|---|
-| **Node.js** | `>= 20.x` (idéalement Node 22 LTS) | Moteur d'exécution JavaScript serveur |
-| **pnpm** | `>= 9.x` (ou npm / yarn) | Gestionnaire de paquets ultra-rapide |
-| **PostgreSQL** | `>= 16.x` avec **PostGIS 3.4** | Base de données relationnelle et spatiale |
-| **Docker & Compose** | `>= 24.x` | Conteneurisation locale complète |
-| **Git** | `>= 2.30` | Gestionnaire de versions |
-
----
-
-## 🚀 8. Installation & Guide de Démarrage Pas-à-Pas
-
-### Étape 1 : Cloner le Répertoire
+### Installation Pas-à-Pas
 
 ```bash
+# 1. Cloner le dépôt
 git clone git@github.com:SAGBO4/BENINLAND.git
 cd BENINLAND
-```
 
-### Étape 2 : Installer les Dépendances
-
-```bash
+# 2. Installer les dépendances
 pnpm install
-```
 
-### Étape 3 : Configurer les Variables d'Environnement
-
-Créez un fichier `.env.local` à la racine en vous basant sur `.env.example` :
-
-```bash
+# 3. Configurer les variables d'environnement
 cp .env.example .env.local
-```
 
-Exemple de configuration standard :
-```env
-PORT=3000
-NODE_ENV=development
-
-# Base de Données (PostgreSQL local ou Neon Serverless)
-DB_DRIVER=pg
-DATABASE_URL=postgres://dev:dev@localhost:5432/anyigba
-DATABASE_URL_UNPOOLED=postgres://dev:dev@localhost:5432/anyigba
-
-# Sécurité & Empreintes Cryptographiques
-AUTH_SECRET=anyigba_sovereign_secret_key_benin_2026
-HASH_PEPPER=benin_anyigba_pepper_secret_salting_hash_2026
-
-# Modes de Démonstration & Simulateurs
-DEMO_MODE=true
-SMS_MODE=simulate
-USSD_MODE=simulate
-PAYMENT_MODE=simulate
-
-# API 229 Langues Nationales (Fongbe, Yoruba, Hausa)
-API229_BASE_URL=https://ronaldodev-api.hf.space
-API229_HF_TOKEN=your_huggingface_token
-API229_API_KEY=your_api229_api_key
-```
-
-### Étape 4 : Lancer la Base de Données PostgreSQL
-
-#### Option A : Via Docker Compose (Recommandé en local)
-```bash
-# Démarre PostgreSQL 16 avec initialisation automatique de la base
+# 4. Lancer la base PostgreSQL (via Docker Compose)
 docker compose up -d db
-```
 
-#### Option B : Base de Données Cloud (Neon / Supabase)
-Indiquez simplement votre chaîne de connexion `DATABASE_URL` dans `.env.local`.
-
-### Étape 5 : Migrations et Injection des Données Initiales (Seed)
-
-Initialisez la structure des tables et peuplez le registre avec les parcelles et acteurs de référence :
-
-```bash
-# Exécution du seed souverain (parcelles d'Ouidah, Calavi, Allada, Cotonou)
+# 5. Initialiser les tables et injecter le jeu de données souverain
 pnpm db:seed
-```
 
-Pour réinitialiser complètement la base à tout moment :
-```bash
-pnpm db:reset
-```
-
-### Étape 6 : Lancer le Serveur Web de Développement
-
-```bash
+# 6. Démarrer le serveur de développement
 pnpm dev
 ```
 
@@ -398,149 +283,96 @@ L'application est immédiatement accessible à l'adresse : **[http://localhost:3
 
 ---
 
-## 📜 9. Scripts Disponibles & Commandes NPM
+## 9. Scripts Disponibles
 
 | Commande | Action & Rôle |
 |---|---|
 | `pnpm dev` | Démarre l'application Next.js en mode développement sur le port `3000` |
 | `pnpm build` | Compile l'application pour la production avec optimisations Next.js |
 | `pnpm start` | Lance le serveur de production compilé |
-| `pnpm desktop` | Lance l'application Desktop Electron en démarrant le serveur si nécessaire |
-| `pnpm desktop:open` | Ouvre Electron directement sur l'instance locale en cours |
-| `pnpm desktop:package` | Génère les binaires Desktop pour **Linux** (.AppImage, .tar.gz) et **Windows** (.exe, .zip) |
-| `pnpm desktop:package:linux` | Génère exclusivement les paquets Linux |
-| `pnpm desktop:package:win` | Génère exclusivement les paquets Windows |
-| `pnpm test` | Exécute les 11 suites de tests avec **Vitest** (106 tests unitaires, d'intégration et pentest) |
-| `pnpm typecheck` | Vérifie la conformité de l'ensemble du code TypeScript sans émettre de fichier |
-| `pnpm db:generate` | Génère les migrations SQL Drizzle à partir des schémas TypeScript |
-| `pnpm db:migrate` | Applique les migrations SQL en base de données |
+| `pnpm test` | Exécute les 15 suites de tests avec **Vitest** (148 tests réussis) |
+| `pnpm typecheck` | Vérifie la conformité de l'ensemble du code TypeScript strict |
+| `pnpm desktop` | Lance l'application Desktop Electron en environnement autonome |
+| `pnpm desktop:package` | Génère les binaires Desktop pour Linux (.AppImage) et Windows (.exe) |
 | `pnpm db:seed` | Peuple la base de données avec le jeu de données souverain officiel 2026 |
-| `pnpm db:reset` | Remet à zéro la base de données et ré-exécute le seed initial parfait |
+| `pnpm db:reset` | Remet à zéro la base de données et ré-exécute le seed déterministe |
 
 ---
 
-## 🖥️ 10. Application Desktop Souveraine (Electron)
+## 10. Application Desktop Souveraine (Electron)
 
-Pour les agents fonciers en préfecture, les notaires ou les postes isolés en mairie, **BENINLAND** dispose d'un client lourd Desktop multi-plateforme autonome :
-
-### Caractéristiques du Client Desktop
-- **Détection Automatique de Connectivité** :
-  - Sonde l'environnement local (`http://localhost:3000`).
-  - Si aucun serveur local ne répond, bascule de manière transparente et sécurisée sur l'instance cloud souveraine (**`https://beninland.vercel.app`**).
-- **Intégration OS & Raccourcis Clavier Métiers** :
-  - `Ctrl+N` / `Cmd+N` : Ouvrir directement une nouvelle vérification de parcelle.
-  - `Ctrl+M` / `Cmd+M` : Basculer en mode Carte Cadastrale plein écran.
-  - Impression directe des attestations cadastrales certifiées via le spooler d'impression système.
-  - Protection contre les redirections web externes non autorisées.
-
-### Démarrage en Mode Développement Desktop
-```bash
-pnpm desktop
-```
-
-### Binaires Pré-Compilés Disponibles
-Les binaires distribuables sont situés dans le dossier [`desktop/`](file:///home/lesaint/Rendue/BENINLAND/desktop) :
-- **Linux** : `desktop/BENINLAND-1.0.0.AppImage` (Exécutable direct sans installation : `chmod +x` puis lancer)
-- **Windows** : `desktop/BENINLAND 1.0.0.exe` (Exécutable portable autonome x64)
-- **Windows Archive** : `desktop/BENINLAND-1.0.0-win.zip`
-
-Pour régénérer les binaires à partir des sources :
-```bash
-pnpm desktop:package
-```
+Pour les préfectures, tribunaux ou postes de travail municipaux à connectivité restreinte :
+- **Détection Automatique de Connectivité** : Bascule transparente entre l'instance locale (`localhost:3000`) et le serveur cloud souverain officiel.
+- **Raccourcis Clavier Métiers** : `Ctrl+N` (nouvelle vérification de parcelle), `Ctrl+M` (carte cadastrale plein écran).
+- **Impression Directe** : Sortie imprimante officielle des attestations certifiées via le spooler système.
 
 ---
 
-## 🧪 11. Assurance Qualité, Tests & Audit Adversarial
+## 11. Assurance Qualité : Les 148 Tests Vitest
 
-Le projet met en œuvre une politique d'assurance qualité rigoureuse garantissant l'intégrité du cadastre face à des attaques malveillantes ou des défaillances réseau.
+Le projet applique une rigueur industrielle totale avec **148 tests automatisés** réussis à 100% sur 15 suites :
 
+```text
+ ✓ tests/api-commune-certificats.test.ts (15 tests)
+ ✓ tests/leaflet-and-gis.test.ts (16 tests)
+ ✓ tests/api-banque-hypotheques.test.ts (14 tests)
+ ✓ tests/system-hardening-adversarial.test.ts (16 tests)
+ ✓ tests/api-auxiliary.test.ts (16 tests)
+ ✓ tests/security-crypto-audio.test.ts (11 tests)
+ ✓ tests/beninvie-portal-and-components.test.ts (11 tests)
+ ✓ tests/adversarial-pentest-qa.test.ts (10 tests)
+ ✓ tests/api-mutations.test.ts (8 tests)
+ ✓ tests/frontend-unified.test.ts (8 tests)
+ ✓ tests/core-logic.test.ts (7 tests)
+ ✓ tests/api-auth-database.test.ts (6 tests)
+ ✓ tests/api-csaf-gel.test.ts (5 tests)
+ ✓ tests/api-verification.test.ts (5 tests)
+ ✓ tests/api-demo-reset.test.ts (1 test)
+
+ Test Files  15 passed (15)
+      Tests  148 passed (148)
+```
+
+Pour exécuter la suite de tests :
 ```bash
 pnpm test
 ```
 
-### Rapport de Validation des 11 Suites de Tests (106 tests réussis) :
-```text
-✓ tests/core-logic.test.ts (7 tests)
-  - Calcul des superficies, taxe de plus-value communale, formats des codes NPI/NUP.
-✓ tests/security-crypto-audio.test.ts (11 tests)
-  - Scellement SHA-256 avec salage HASH_PEPPER, détection d'altération de documents, phonétique audio.
-✓ tests/leaflet-and-gis.test.ts (16 tests)
-  - Validation des coordonnées géographiques, calculs de distance, détection d'empiètement topologique.
-✓ tests/beninvie-portal-and-components.test.ts (11 tests)
-  - Composants UI républicains, formats de devises FCFA, accessibilité WCAG.
-✓ tests/api-auxiliary.test.ts (16 tests)
-  - Passerelle SMS, endpoints USSD, génération de voix de synthèse en langues nationales.
-✓ tests/frontend-unified.test.ts (8 tests)
-  - Navigation multi-rôles, redirection contextuelle par espace de travail.
-✓ tests/system-hardening-adversarial.test.ts (16 tests)
-  - Résistance aux attaques IDOR, isolation stricte des sessions notaires et magistrats.
-✓ tests/api-verification.test.ts (5 tests)
-  - Exactitude de l'API de vérification publique, masquage conforme APDP.
-✓ tests/api-mutations.test.ts (7 tests)
-  - Verrou anti-double-vente, rejet 409 sur tentative concurrente, déblocage séquestre.
-✓ tests/api-demo-reset.test.ts (1 test)
-  - Restauration déterministe atomique de la base.
-✓ tests/adversarial-pentest-qa.test.ts (8 tests)
-  - Protection contre les injections SQL, fausses coordonnées hors-frontières, bypass de séquestre.
-```
-
 ---
 
-## 🚢 12. Déploiement & Conteneurisation
+## 12. Déploiement & Conteneurisation
 
-### Déploiement via Docker Compose
-
-Pour déployer l'intégralité de la pile (Next.js Standalone + PostgreSQL 16 PostGIS) sur un serveur souverain ou une machine virtuelle :
-
+### Déploiement Docker Compose
 ```bash
-# Lancement de l'ensemble des conteneurs en tâche de fond
 docker compose up -d --build
-
-# Suivre les journaux d'exécution
-docker compose logs -f app
 ```
+L'application et son instance PostGIS démarrent en environnement autonome sur le port `3000`.
 
-Le service web est exposé sur le port `3000`, avec redémarrage automatique en cas d'incident et sonde de santé (`healthcheck`) sur la base PostgreSQL.
-
-### Déploiement sur le Cloud Vercel
-
-Le projet est nativement configuré pour un déploiement continu sur **Vercel** :
-- Le fichier `vercel.json` est prêt pour la production.
-- La base PostgreSQL distante peut être hébergée sur **Neon Serverless Postgres** (avec prise en charge du pooling de connexions).
-- Ajoutez les variables d'environnement listées dans `.env.example` dans le tableau de bord Vercel.
+### Déploiement Vercel & Neon Cloud
+Le projet est configuré pour un déploiement continu sur **Vercel** couplé à une base **Neon Serverless Postgres**.
 
 ---
 
-## ⚖️ 13. Conformité Légale & Protection des Données
+## 13. Conformité Réglementaire & Protection des Données
 
-Anyigba est conçu en stricte conformité avec le cadre légal et institutionnel béninois :
-
-1. **Loi N° 2013-01 portant Code Foncier et Domanial en République du Bénin** (modifiée et complétée par la loi N° 2017-15) :
-   - Respect de la procédure d'immatriculation et de confirmation des droits fonciers.
-   - Primauté du Titre Foncier (TF) inattaquable et opposable aux tiers.
-   - Enregistrement des droits coutumiers et préservation des droits d'usage collectifs ruraux.
-2. **Autorité de Protection des Données Personnelles (APDP)** :
-   - Masquage systématique des noms et téléphones des propriétaires sur les flux de consultation publique.
-   - Séparation stricte des données d'identité réelles et des identifiants cryptographiques publics.
-3. **Chambre Spéciale des Affaires Foncières (CSAF)** :
-   - Interface directe de gel conservatoire judiciaire permettant la protection instantanée d'une parcelle litigieuse dès la saisine du tribunal.
+- **Loi n° 2013-01 / 2017-15** : Primauté du Titre Foncier inattaquable et opposable aux tiers.
+- **Loi n° 2022-16** : Compétence exclusive de la CSAF et gel conservatoire immédiat dès la saisine.
+- **Loi n° 2017-08** : Authentification universelle par le NPI délivré par l'ANIP.
+- **Autorité de Protection des Données Personnelles (APDP)** : Masquage systématique des données nominatives sur les interfaces publiques.
 
 ---
 
-## 🤝 14. Équipe, Gouvernance & Support
+## 14. Documentation Complémentaire & Références
 
-- **Maîtrise d'Ouvrage Institutionnelle** : Agence Nationale du Domaine et du Foncier (ANDF) / Ministère du Cadre de Vie et des Transports.
-- **Référence du Dépôt** : [`git@github.com:SAGBO4/BENINLAND.git`](https://github.com/SAGBO4/BENINLAND)
-- **Documentation Complémentaire** :
-  - [Cahier des Charges & Source de Vérité](docs/CDC_SOURCE_DE_VERITE.md)
-  - [Feuille de Route d'Implémentation](docs/ROADMAP_IMPLEMENTATION.md)
-  - [Présentation Interactive Multimédia](docs/presentation-anyigba.html)
-  - [Dossier Exécutif Imprimable (PDF)](docs/ANYIGBA_DOSSIER_DE_PRESENTATION.pdf)
+- **[Dossier de Présentation Magistrale (docs/PRESENTATION_BENINLAND.md)](docs/PRESENTATION_BENINLAND.md)**
+- **[Cahier des Charges & Source de Vérité (docs/CDC_SOURCE_DE_VERITE.md)](docs/CDC_SOURCE_DE_VERITE.md)**
+- **[Feuille de Route d'Implémentation (docs/ROADMAP_IMPLEMENTATION.md)](docs/ROADMAP_IMPLEMENTATION.md)**
+- **[Présentation Multimédia Interactive (docs/presentation-anyigba.html)](docs/presentation-anyigba.html)**
+- **[Dossier Exécutif Imprimable PDF (docs/ANYIGBA_DOSSIER_DE_PRESENTATION.pdf)](docs/ANYIGBA_DOSSIER_DE_PRESENTATION.pdf)**
 
 ---
 
 <p align="center">
   <em>ANYIGBA (BENINLAND) — « La Terre Sécurisée, la Nation Prospère. »</em><br>
-  <strong>Fait avec rigueur républicaine &bull; République du Bénin &bull; 2026</strong>
+  <strong>République du Bénin &bull; 2026</strong>
 </p>
