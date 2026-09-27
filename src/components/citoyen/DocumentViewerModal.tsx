@@ -7,18 +7,12 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Download,
   ShieldCheck,
-  Landmark,
-  FileCheck2,
-  QrCode,
-  Fingerprint,
-  Calendar,
-  UserCheck,
-  Scale,
-  Award,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { CitoyenDocument } from "./citoyen-data";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 import Link from "next/link";
@@ -31,6 +25,7 @@ interface DocumentViewerModalProps {
 
 export function DocumentViewerModal({ document, onClose }: DocumentViewerModalProps) {
   const [copiedHash, setCopiedHash] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<"normal" | "fit">("normal");
 
   if (!document) return null;
 
@@ -52,7 +47,7 @@ export function DocumentViewerModal({ document, onClose }: DocumentViewerModalPr
       : `https://beninland.bj/verification?code=${document.parcelleCode}`;
 
   const qrPayload = JSON.stringify({
-    emetteur: "REPUBLIQUE_DU_BENIN_MCVDD_ANDF",
+    emetteur: "REPUBLIQUE_DU_BENIN_ADMINISTRATION_FONCIERE",
     ref: document.referenceOfficielle,
     parcelle: document.parcelleCode,
     type: document.type,
@@ -66,425 +61,611 @@ export function DocumentViewerModal({ document, onClose }: DocumentViewerModalPr
       role="dialog"
       aria-modal="true"
       aria-labelledby="doc-viewer-modal-title"
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-5 overflow-y-auto animate-rise"
+      className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex flex-col p-0 sm:p-4 overflow-hidden animate-rise"
     >
-      <div className="relative bg-card border border-border rounded-2xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-2xl overflow-hidden text-xs">
-        {/* Barre d'outils supérieure */}
-        <div className="p-4 border-b border-border bg-background/80 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-              <FileCheck2 className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">
-                Visualiseur d&apos;Acte Officiel Souverain
-              </span>
-              <strong className="text-foreground font-mono text-xs">{document.referenceOfficielle}</strong>
-            </div>
+      {/* ========================================================================= */}
+      {/* BARRE D'OUTILS SUPÉRIEURE (STYLE LECTEUR PDF ADMINISTRATIF PRO)           */}
+      {/* ========================================================================= */}
+      <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-3 flex items-center justify-between gap-3 shrink-0 shadow-md">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/armoiries-benin.png" alt="Armoiries du Bénin" className="h-5 w-auto object-contain" />
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="h-8 text-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Imprimer l&apos;Acte</span>
-            </Button>
-
-            <Link
-              href={`/verification?code=${document.parcelleCode}`}
-              target="_blank"
-              className="h-8 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Vérifier au Registre</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Fermer le visualiseur"
-              className="p-1.5 rounded-lg bg-background hover:bg-muted text-muted-foreground hover:text-foreground border border-border cursor-pointer transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
+                Document Officiel de la République du Bénin
+              </span>
+              <span className="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 hidden sm:inline">
+                Format A4 Réglementaire
+              </span>
+            </div>
+            <strong className="text-white font-mono text-xs sm:text-sm truncate block">
+              {document.referenceOfficielle} &bull; {document.titre}
+            </strong>
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* CORPS DE L'ACTE OFFICIEL (FEUILLE A4 RÉPUBLICAINE HAUTE DÉFINITION)       */}
-        {/* ========================================================================= */}
-        <div className="p-6 sm:p-10 overflow-y-auto flex-1 bg-white text-slate-900 space-y-6 font-sans">
-          {/* Bande tricolore républicaine du Bénin */}
-          <div className="flex h-1.5 w-full rounded-full overflow-hidden">
-            <div className="bg-[#008751] w-1/3" />
-            <div className="bg-[#FCD116] w-1/3" />
-            <div className="bg-[#E8112D] w-1/3" />
-          </div>
+        {/* Commandes d'action */}
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setZoomLevel(zoomLevel === "normal" ? "fit" : "normal")}
+            className="h-8 text-xs bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hidden md:flex items-center gap-1.5 cursor-pointer"
+            title="Ajuster la vue"
+          >
+            {zoomLevel === "normal" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            <span>{zoomLevel === "normal" ? "Pleine Largeur" : "Vue Page"}</span>
+          </Button>
 
-          {/* En-tête officiel de la République du Bénin */}
-          <div className="text-center space-y-1.5 border-b-2 border-slate-900 pb-5">
-            <div className="flex items-center justify-center gap-2">
-              <Award className="w-5 h-5 text-emerald-700" />
-              <h1 className="text-base sm:text-xl font-black uppercase tracking-widest text-slate-900">
-                RÉPUBLIQUE DU BÉNIN
-              </h1>
-              <Award className="w-5 h-5 text-emerald-700" />
-            </div>
-            <p className="text-[11px] font-serif font-bold uppercase tracking-wider text-slate-600">
-              Fraternité &bull; Justice &bull; Travail
-            </p>
-            <div className="h-0.5 bg-slate-900 w-28 mx-auto my-1" />
-            <h2 className="text-xs font-bold uppercase text-slate-800">
-              MINISTÈRE DU CADRE DE VIE ET DES TRANSPORTS, CHARGÉ DU DÉVELOPPEMENT DURABLE (MCVDD)
-            </h2>
-            <h3 className="text-xs font-semibold text-slate-700">{document.autoriteEmettrice}</h3>
+          <Button
+            type="button"
+            size="sm"
+            onClick={handlePrint}
+            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 cursor-pointer shadow"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Imprimer / Télécharger (PDF)</span>
+          </Button>
 
-            {/* Titre encadré de l'acte */}
-            <div className="mt-4 p-3 bg-slate-100 border-2 border-slate-900 inline-block rounded-sm max-w-2xl">
-              <span id="doc-viewer-modal-title" className="text-xs sm:text-sm font-black uppercase tracking-wide text-slate-900">
-                {document.titre}
-              </span>
-            </div>
-            <p className="font-mono text-xs font-bold text-slate-700 mt-1">
-              RÉFÉRENCE D&apos;ENREGISTREMENT OFFICIELLE : {document.referenceOfficielle}
-            </p>
-          </div>
+          <Link
+            href={`/verification?code=${document.parcelleCode}`}
+            target="_blank"
+            className="h-8 px-3 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold hidden lg:flex items-center gap-1.5 cursor-pointer transition"
+          >
+            <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Contrôle au Registre</span>
+          </Link>
 
-          {/* Description & Base Légale */}
-          <div className="space-y-2 text-xs leading-relaxed text-slate-800">
-            <p>
-              Le Conservateur de la Propriété Foncière et des Affaires Domaniales, soussigné, certifie que l&apos;acte désigné
-              ci-après a été régulièrement instruit, vérifié et consigné au Registre Foncier National conformément aux
-              dispositions de la{" "}
-              <strong>Loi n° 2013-01 portant Code Foncier et Domanial</strong> en République du Bénin, modifiée par la{" "}
-              <strong>Loi n° 2017-15</strong> :
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fermer le visualiseur"
+            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 cursor-pointer transition ml-1"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
 
-          {/* Section 1 : Désignation de l'Immeuble & Titulaire */}
-          <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs">
-            <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900 flex items-center justify-between">
-              <span>1. Désignation Cadastrale de l&apos;Immeuble</span>
-              <span className="font-mono text-[10px] text-slate-600 font-normal">IUF : {document.parcelleCode}</span>
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-800">
-              <div>
-                <span className="text-slate-500 font-medium">Identifiant Unique Foncier : </span>
-                <strong className="font-mono text-slate-900">{document.parcelleCode}</strong>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">Localisation administrative : </span>
-                <strong>Pahou, Commune de Ouidah (Atlantique)</strong>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">Titulaire légitime déclaré : </span>
-                <strong>Germain DOSSOU (Famille Dossou)</strong>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">NPI Titulaire (ANIP) : </span>
-                <strong className="font-mono text-slate-900">FICTIF-BEN-2026-0041</strong>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">Superficie certifiée : </span>
-                <strong className="font-mono text-slate-900">1 250 m²</strong>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">Date d&apos;enregistrement : </span>
-                <strong>{new Date(document.dateEmission).toLocaleDateString("fr-BJ", { day: "2-digit", month: "long", year: "numeric" })}</strong>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2 : Spécificités selon la nature du document */}
-          {document.type === "CERTIFICAT_COMMUNAL" && document.details && (
-            <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs bg-slate-50">
-              <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900">
-                2. Évaluation Légale du Prix Foncier &amp; Liquidation Fiscale (Art. 142)
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <span className="text-slate-500">Prix d&apos;acquisition d&apos;origine : </span>
-                  <strong className="font-mono">{formatFcfa(document.details.prixAcquisitionInitial)}</strong>
+      {/* ========================================================================= */}
+      {/* ZONE DE LECTURE : BUREAU D'AFFICHAGE DU DOCUMENT FORMAT PAPIER A4         */}
+      {/* ========================================================================= */}
+      <div className="flex-1 overflow-y-auto bg-slate-700/60 p-3 sm:p-8 flex justify-center items-start">
+        {/* FEUILLE OFFICIELLE FORMAT A4 */}
+        <div
+          className={`bg-white text-black shadow-2xl transition-all duration-200 w-full relative font-serif text-[11px] sm:text-xs leading-relaxed print:p-0 print:border-none print:shadow-none print:max-w-none print:m-0 print:min-h-0 ${
+            zoomLevel === "normal" ? "max-w-[820px] min-h-[1140px] p-6 sm:p-10" : "max-w-4xl p-6 sm:p-12"
+          }`}
+          style={{ boxSizing: "border-box" }}
+        >
+          {/* Cadre institutionnel double filet réglementaire */}
+          <div className="border-2 border-black p-5 sm:p-8 relative min-h-[1050px] flex flex-col justify-between">
+            {/* Liseré fin intérieur */}
+            <div className="border border-black p-4 sm:p-6 flex-1 flex flex-col justify-between relative bg-[#fdfdfc]">
+              
+              {/* Filigrane d'authenticité discret */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.035] overflow-hidden">
+                <div className="text-center transform -rotate-45">
+                  <p className="text-6xl font-black uppercase tracking-widest font-sans">RÉPUBLIQUE DU BÉNIN</p>
+                  <p className="text-3xl font-bold uppercase mt-2">LIVRE FONCIER NATIONAL &bull; ACTE SCELLÉ</p>
                 </div>
-                <div>
-                  <span className="text-slate-500">PRIX DE MUTATION OFFICIEL FIXÉ : </span>
-                  <strong className="font-mono text-sm underline text-emerald-800">
-                    {formatFcfa(document.details.prixFixeFcfa)}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Travaux et aménagements déductibles : </span>
-                  <strong className="font-mono">{formatFcfa(document.details.travauxDeductibles)}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Plus-value nette imposable : </span>
-                  <strong className="font-mono">{formatFcfa(document.details.plusValueNette)}</strong>
-                </div>
-                <div className="sm:col-span-2 pt-2 border-t border-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                  <div>
-                    <span className="text-slate-500">Taxe communale sur plus-value (5%) : </span>
-                    <strong className="font-mono text-slate-900">{formatFcfa(document.details.taxeCalculeeFcfa)}</strong>
+              </div>
+
+              {/* ------------------------------------------------------------------ */}
+              {/* 1. EN-TÊTE OFFICIEL DE LA RÉPUBLIQUE DU BÉNIN                      */}
+              {/* ------------------------------------------------------------------ */}
+              <div>
+                <div className="text-center space-y-1 pb-3 border-b-2 border-black">
+                  {/* Armoiries Officielles */}
+                  <div className="flex justify-center mb-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/armoiries-benin.png"
+                      alt="Armoiries Officielles de la République du Bénin"
+                      className="h-14 w-auto object-contain mx-auto"
+                    />
                   </div>
-                  <div>
-                    <span className="text-slate-500">Quittance TrésorPay DGTCP : </span>
-                    <strong className="font-mono text-emerald-800">{document.details.quittanceTresorRef}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {document.type === "QUITTANCE_TRESOR" && document.details && (
-            <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs bg-slate-50">
-              <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900">
-                2. Encaissement et Liquidation par le Trésor Public (DGTCP)
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <span className="text-slate-500">Quittance officielle TrésorPay : </span>
-                  <strong className="font-mono text-emerald-800">{document.referenceOfficielle}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Montant net encaissé : </span>
-                  <strong className="font-mono text-sm underline text-emerald-800">
-                    {formatFcfa(document.details.montantVerseFcfa || 100000)}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Guichet de perception : </span>
-                  <strong>{document.details.guichet}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Compte récepteur : </span>
-                  <strong>{document.details.compteTresor}</strong>
-                </div>
-                <div className="sm:col-span-2 text-emerald-800 font-bold flex items-center gap-1.5 pt-1">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Statut : DROITS DE MUTATION ACQUITTÉS &bull; QUITTANCE LIBÉRATOIRE DÉFINITIVE</span>
-                </div>
-              </div>
-            </div>
-          )}
+                  <h1 className="text-base sm:text-lg font-black uppercase tracking-widest text-black font-sans">
+                    RÉPUBLIQUE DU BÉNIN
+                  </h1>
+                  <p className="text-[10px] sm:text-[11px] uppercase italic font-medium tracking-wider text-slate-800">
+                    Fraternité &bull; Justice &bull; Travail
+                  </p>
+                  <div className="h-0.5 bg-black w-24 mx-auto my-1.5" />
 
-          {document.type === "PV_BORNAGE" && (
-            <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs bg-slate-50">
-              <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900">
-                2. Opérations Techniques de Bornage &amp; Délimitation Contradictoire
-              </h4>
-              <p className="text-slate-600 text-[11px]">
-                Bornes géodésiques normalisées scellées sur le terrain en présence du mandataire familial, de l&apos;agent assermenté et des riverains :
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[10px]">
-                <div className="p-2 border border-slate-300 rounded bg-white">
-                  <strong>Borne B1 :</strong>
-                  <div>Lat : 6.365000° N</div>
-                  <div>Lng : 2.081500° E</div>
-                </div>
-                <div className="p-2 border border-slate-300 rounded bg-white">
-                  <strong>Borne B2 :</strong>
-                  <div>Lat : 6.365000° N</div>
-                  <div>Lng : 2.083000° E</div>
-                </div>
-                <div className="p-2 border border-slate-300 rounded bg-white">
-                  <strong>Borne B3 :</strong>
-                  <div>Lat : 6.366500° N</div>
-                  <div>Lng : 2.083000° E</div>
-                </div>
-                <div className="p-2 border border-slate-300 rounded bg-white">
-                  <strong>Borne B4 :</strong>
-                  <div>Lat : 6.366500° N</div>
-                  <div>Lng : 2.081500° E</div>
-                </div>
-              </div>
-              <p className="text-slate-700 text-[11px] pt-1">
-                Riverains et témoins contradictoires signataires : <strong>Paul Hounkpatin (Voisin Est)</strong> &amp;{" "}
-                <strong>Chef Dah Sèhou (Chef de Village)</strong>.
-              </p>
-            </div>
-          )}
+                  {/* Ministères & Directions compétents selon le type d'acte */}
+                  {document.type === "CERTIFICAT_COMMUNAL" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        DÉPARTEMENT DE L&apos;ATLANTIQUE &bull; COMMUNE DE OUIDAH
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        DIRECTION DES AFFAIRES DOMANIALES, DE L&apos;URBANISME ET DU CADASTRE
+                      </h3>
+                    </>
+                  )}
 
-          {document.type === "CONVENTION" && document.details && (
-            <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs bg-slate-50">
-              <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900">
-                2. Dispositions de la Convention Sous Seing Privé Assistée
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <span className="text-slate-500">Cédant (Vendeur) : </span>
-                  <strong>{document.details.vendeurNom} ({document.details.vendeurNpi})</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Cessionnaire (Acheteur) : </span>
-                  <strong>{document.details.acheteurNom} ({document.details.acheteurNpi})</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Prix convenu sous séquestre : </span>
-                  <strong className="font-mono">{formatFcfa(document.details.prixFcfa)}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-500">Séquestre bancaire / Trésor : </span>
-                  <strong className="text-emerald-800">FONDS BLOQUÉS SÉQUESTRE DGTCP</strong>
-                </div>
-              </div>
-              <p className="text-[11px] text-slate-600 pt-1">
-                Témoignages vocaux en langue nationale <strong>Fongbe</strong> archivés et scellés avec le procès-verbal.
-              </p>
-            </div>
-          )}
+                  {document.type === "QUITTANCE_TRESOR" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        MINISTÈRE DE L&apos;ÉCONOMIE ET DES FINANCES (MEF)
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        DIRECTION GÉNÉRALE DU TRÉSOR ET DE LA COMPTABILITÉ PUBLIQUE (DGTCP)
+                      </h3>
+                      <p className="text-[10px] font-mono font-bold text-slate-700">
+                        AGENCE COMPTABLE CENTRALE DU TRÉSOR &bull; COMPTE UNIQUE DU TRÉSOR (CUT)
+                      </p>
+                    </>
+                  )}
 
-          {document.type === "CARNET_FONCIER" && document.details && (
-            <div className="border border-slate-900 p-4 rounded-sm space-y-2.5 text-xs bg-slate-50">
-              <h4 className="font-black border-b border-slate-300 pb-1 uppercase text-slate-900">
-                2. Dévolutions et Consentements des Ayants-Droit Vérifiés
-              </h4>
-              <ul className="space-y-1.5 text-slate-800">
-                {document.details.ayantsDroit?.map((ad: any, i: number) => (
-                  <li key={i} className="flex justify-between border-b border-slate-200 pb-1">
-                    <span>
-                      &bull; <strong>{ad.nom}</strong> ({ad.part})
+                  {document.type === "PV_BORNAGE" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        MINISTÈRE DU CADRE DE VIE ET DES TRANSPORTS (MCVDD)
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        DIRECTION DE LA CARTOGRAPHIE ET DU CADASTRE &bull; ORDRE DES GÉOMÈTRES-EXPERTS
+                      </h3>
+                      <p className="text-[10px] font-bold text-slate-700">
+                        BUREAU TERRITORIAL DU CADASTRE DE L&apos;ATLANTIQUE (CIRCONSCRIPTION DE OUIDAH)
+                      </p>
+                    </>
+                  )}
+
+                  {document.type === "TITRE_CADASTRAL" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        MINISTÈRE DU CADRE DE VIE ET DES TRANSPORTS &bull; PRÉFECTURE DE L&apos;ATLANTIQUE
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        AGENCE NATIONALE DU DOMAINE ET DU FONCIER (ANDF) &bull; COMMUNE DE OUIDAH
+                      </h3>
+                    </>
+                  )}
+
+                  {document.type === "CONVENTION" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        MINISTÈRE DU CADRE DE actuation ET DES TRANSPORTS (MCVDD)
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        REGISTRE OFFICIEL DES ACTES SOUS SEING PRIVÉ &bull; CONVENTIONS VILLAGEOISES
+                      </h3>
+                    </>
+                  )}
+
+                  {document.type === "CARNET_FONCIER" && (
+                    <>
+                      <h2 className="text-xs font-bold uppercase text-black font-sans">
+                        MINISTÈRE DE LA JUSTICE ET DE LA LÉGISLATION
+                      </h2>
+                      <h3 className="text-[11px] font-semibold text-slate-800 font-sans">
+                        COUR SPÉCIALE DES AFFAIRES FONCIÈRES (CSAF) &bull; LIVRE FONCIER NATIONAL
+                      </h3>
+                      <p className="text-[10px] font-bold text-slate-700">
+                        EXTRAIT DU REGISTRE DES DÉVOLUTIONS ET DES PACTES SUCCESSORAUX
+                      </p>
+                    </>
+                  )}
+
+                  {/* CARTOUCHE DU TITRE OFFICIEL DU DOCUMENT */}
+                  <div className="mt-3 p-2 bg-slate-100 border-2 border-black inline-block max-w-xl text-center shadow-xs">
+                    <span
+                      id="doc-viewer-modal-title"
+                      className="text-xs sm:text-sm font-black uppercase tracking-wider text-black font-sans block"
+                    >
+                      {document.titre}
                     </span>
-                    <span className="text-emerald-700 font-bold text-[11px]">{ad.statut}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-[11px] text-emerald-800 font-medium pt-1">
-                Accord formel scellé : inopposabilité garantie contre toute contestation successorale ultérieure devant la CSAF.
-              </p>
-            </div>
-          )}
+                  </div>
 
-          {/* Section 3 : Base Légale et Opposabilité */}
-          <div className="p-3 bg-slate-100 border border-slate-400 rounded-sm text-[11px] leading-relaxed text-slate-700">
-            <strong>RÉFÉRENCE LÉGALE &amp; EFFETS JURIDIQUES : </strong>
-            <span>{document.baseLegale}.</span>
-            <p className="mt-1">
-              Le présent acte fait foi jusqu&apos;à inscription de faux devant toute juridiction de la République du Bénin.
-              Son intégrité cryptographique est garantie par ancrage sur la Blockchain souveraine BeninChain et le réseau OpenTimestamps.
-            </p>
-          </div>
+                  <p className="font-mono text-[10px] sm:text-[11px] font-bold text-slate-900 mt-1">
+                    N° D&apos;ENREGISTREMENT OFFICIEL : <span className="underline">{document.referenceOfficielle}</span>
+                  </p>
+                </div>
 
-          {/* Signatures et Cachet Officiel */}
-          <div className="grid grid-cols-2 gap-4 border-t-2 border-slate-900 pt-4 text-xs">
-            <div className="text-center space-y-1">
-              <p className="font-bold text-slate-900 uppercase">Le Déclarant / Titulaire</p>
-              <p className="text-[10px] text-slate-600 italic">Germain DOSSOU (Famille Dossou)</p>
-              <div className="pt-6 font-serif italic text-slate-500 text-[11px]">Signé numériquement via ANIP</div>
-            </div>
+                {/* ------------------------------------------------------------------ */}
+                {/* 2. FORMULE SOLENNELLE D'INSTRUCTION ET BASE LÉGALE                 */}
+                {/* ------------------------------------------------------------------ */}
+                <div className="my-3 space-y-2 text-justify">
+                  <p>
+                    L&apos;Autorité compétente soussignée, agissant en vertu des prérogatives qui lui sont conférées par la{" "}
+                    <strong>Loi n° 2013-01 du 14 août 2013 portant Code Foncier et Domanial</strong> en République du Bénin,
+                    modifiée et complétée par la <strong>Loi n° 2017-15 du 10 août 2017</strong>, et les textes subséquents :
+                  </p>
+                  <p className="italic font-medium">
+                    Certifie et atteste publiquement l&apos;exactitude des énonciations et constatations administratives
+                    ci-après consignées au Registre Foncier National :
+                  </p>
+                </div>
 
-            <div className="text-center space-y-1">
-              <p className="font-bold text-slate-900 uppercase">L&apos;Autorité Compétente</p>
-              <p className="text-xs font-semibold text-slate-900">{document.signataireNom}</p>
-              <p className="text-[10px] text-slate-600">{document.signataireQualite}</p>
-              <div className="pt-4 text-[10px] font-bold uppercase text-emerald-800">
-                Cachet Officiel &bull; République du Bénin
+                {/* ------------------------------------------------------------------ */}
+                {/* 3. DÉSIGNATION DE L'IMMEUBLE (SECTION COMMUNE FORMELLE)           */}
+                {/* ------------------------------------------------------------------ */}
+                <div className="border border-black p-3 my-3 space-y-1.5 bg-slate-50/50">
+                  <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                    1. Désignation Cadastrale de l&apos;Immeuble &amp; Titulaire
+                  </h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                    <p>
+                      <strong>Identifiant Unique (IUF) :</strong>{" "}
+                      <span className="font-mono font-bold">{document.parcelleCode}</span>
+                    </p>
+                    <p>
+                      <strong>Localisation :</strong> Commune de Ouidah, Arr. Pahou
+                    </p>
+                    <p>
+                      <strong>Village / Quartier :</strong> Hounhanmèdji
+                    </p>
+                    <p>
+                      <strong>Superficie Certifiée :</strong> <span className="font-mono font-bold">1 250 m²</span>
+                    </p>
+                    <p>
+                      <strong>Titulaire Déclaré :</strong> Germain DOSSOU (Famille Dossou)
+                    </p>
+                    <p>
+                      <strong>NPI ANIP Titulaire :</strong>{" "}
+                      <span className="font-mono font-bold">FICTIF-BEN-2026-0041</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* ------------------------------------------------------------------ */}
+                {/* 4. CORPS SPÉCIFIQUE DU DOCUMENT SELON SA NATURE OFFICIELLE        */}
+                {/* ------------------------------------------------------------------ */}
+
+                {/* CAS A : CERTIFICAT MUNICIPAL D'ÉVALUATION ET PRIX (Art. 142) */}
+                {document.type === "CERTIFICAT_COMMUNAL" && document.details && (
+                  <div className="space-y-3">
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Évaluation et Fixation Légale du Prix Foncier
+                      </h4>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <p>
+                          <strong>Prix d&apos;Acquisition Initial :</strong>{" "}
+                          <span className="font-mono">{formatFcfa(document.details.prixAcquisitionInitial)}</span>
+                        </p>
+                        <p>
+                          <strong>PRIX OFFICIEL FIXÉ :</strong>{" "}
+                          <span className="font-mono font-bold underline text-black">
+                            {formatFcfa(document.details.prixFixeFcfa)}
+                          </span>
+                        </p>
+                        <p>
+                          <strong>Aménagements Déductibles :</strong>{" "}
+                          <span className="font-mono">{formatFcfa(document.details.travauxDeductibles)}</span>
+                        </p>
+                        <p>
+                          <strong>Plus-Value Nette Imposable :</strong>{" "}
+                          <span className="font-mono font-bold">{formatFcfa(document.details.plusValueNette)}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        3. Liquidation et Quittance de Paiement
+                      </h4>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <p>
+                          <strong>Taxe Communale sur Plus-Value (5%) :</strong>{" "}
+                          <span className="font-mono font-bold">{formatFcfa(document.details.taxeCalculeeFcfa)}</span>
+                        </p>
+                        <p>
+                          <strong>Statut du Règlement :</strong> ACQUITTÉ &amp; ENCAISSÉ
+                        </p>
+                        <p>
+                          <strong>Quittance TrésorPay DGTCP :</strong>{" "}
+                          <span className="font-mono font-bold">{document.details.quittanceTresorRef}</span>
+                        </p>
+                        <p>
+                          <strong>Canal de Perception :</strong> TrésorPay (Compte Unique du Trésor)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-2 border border-black bg-slate-100 text-[10px] leading-tight">
+                      <strong>MENTION LÉGALE D&apos;OPPOSABILITÉ (Art. 142 du Code Foncier et Domanial) :</strong>
+                      <p className="mt-0.5">
+                        Le présent certificat constitue la base d&apos;évaluation exclusive et opposable pour la rédaction
+                        de tout procès-verbal de bornage contradictoire par l&apos;Agent Foncier ou de tout acte notarié de mutation.
+                        Le QR-Code scellé ci-dessous fait foi devant toute autorité administrative ou judiciaire.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* CAS B : QUITTANCE OFFICIELLE DE PAIEMENT DU TRÉSOR PUBLIC */}
+                {document.type === "QUITTANCE_TRESOR" && document.details && (
+                  <div className="space-y-3">
+                    <div className="border-2 border-black p-3 space-y-2 bg-emerald-50/30">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Constatation d&apos;Encaissement par le Trésor Public (DGTCP)
+                      </h4>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        <p>
+                          <strong>N° Quittance TrésorPay :</strong>{" "}
+                          <span className="font-mono font-bold">{document.referenceOfficielle}</span>
+                        </p>
+                        <p>
+                          <strong>Compte de Destination :</strong> COMPTE UNIQUE DU TRÉSOR (CUT)
+                        </p>
+                        <p>
+                          <strong>Montant Versé en Chiffres :</strong>{" "}
+                          <span className="font-mono font-black text-sm">{formatFcfa(document.montantFcfa || 100000)}</span>
+                        </p>
+                        <p>
+                          <strong>Montant en Toutes Lettres :</strong>{" "}
+                          <span className="font-bold uppercase">Cent Mille Francs CFA</span>
+                        </p>
+                        <p>
+                          <strong>Nature de la Recette :</strong> Taxe Domaniale sur Plus-Value (Art. 142)
+                        </p>
+                        <p>
+                          <strong>Mode de Règlement :</strong> Télé-paiement Sécurisé TrésorPay
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-2 border border-black bg-slate-50 text-[10px]">
+                      <strong>EFFET LIBÉRATOIRE :</strong> Le présent paiement éteint la dette fiscale domaniale afférente à
+                      l&apos;opération pour l&apos;exercice budgétaire en cours.
+                    </div>
+                  </div>
+                )}
+
+                {/* CAS C : PROCÈS-VERBAL DE BORNAGE CONTRADICTOIRE & GPS */}
+                {document.type === "PV_BORNAGE" && (
+                  <div className="space-y-3">
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Tableau des Coordonnées Géodésiques des Bornes (Système WGS-84 / UTM 31N)
+                      </h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-black text-[10px] text-center">
+                          <thead>
+                            <tr className="bg-slate-200">
+                              <th className="border border-black p-1">Borne</th>
+                              <th className="border border-black p-1">Désignation</th>
+                              <th className="border border-black p-1">Latitude (°N)</th>
+                              <th className="border border-black p-1">Longitude (°E)</th>
+                              <th className="border border-black p-1">Nature de la Borne</th>
+                              <th className="border border-black p-1">Constat Contradictoire</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-black p-1 font-mono font-bold">B1</td>
+                              <td className="border border-black p-1">Angle Nord-Ouest</td>
+                              <td className="border border-black p-1 font-mono">6.365000</td>
+                              <td className="border border-black p-1 font-mono">2.081500</td>
+                              <td className="border border-black p-1">Béton normalisé ANDF</td>
+                              <td className="border border-black p-1 text-emerald-800 font-bold">Conforme</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-black p-1 font-mono font-bold">B2</td>
+                              <td className="border border-black p-1">Angle Nord-Est</td>
+                              <td className="border border-black p-1 font-mono">6.365000</td>
+                              <td className="border border-black p-1 font-mono">2.083000</td>
+                              <td className="border border-black p-1">Béton normalisé ANDF</td>
+                              <td className="border border-black p-1 text-emerald-800 font-bold">Conforme</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-black p-1 font-mono font-bold">B3</td>
+                              <td className="border border-black p-1">Angle Sud-Est</td>
+                              <td className="border border-black p-1 font-mono">6.366500</td>
+                              <td className="border border-black p-1 font-mono">2.083000</td>
+                              <td className="border border-black p-1">Béton normalisé ANDF</td>
+                              <td className="border border-black p-1 text-emerald-800 font-bold">Conforme</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-black p-1 font-mono font-bold">B4</td>
+                              <td className="border border-black p-1">Angle Sud-Ouest</td>
+                              <td className="border border-black p-1 font-mono">6.366500</td>
+                              <td className="border border-black p-1 font-mono">2.081500</td>
+                              <td className="border border-black p-1">Béton normalisé ANDF</td>
+                              <td className="border border-black p-1 text-emerald-800 font-bold">Conforme</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-[10px] italic text-slate-700 mt-1">
+                        Les 4 bornes ont été implantées contradictoirement en présence des riverains dûment convoqués.
+                        Aucun empiètement n&apos;a été constaté sur les parcelles contiguës.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* CAS D : ATTESTATION DE DÉTENTION COUTUMIÈRE / RECASEMENT */}
+                {document.type === "TITRE_CADASTRAL" && (
+                  <div className="space-y-3">
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Reconnaissance des Droits Coutumiers &amp; Constat de Recasement
+                      </h4>
+                      <p>
+                        Le Service Domanial atteste que la parcelle <strong>OUI-0421</strong> est issue des opérations
+                        de lotissement et recasement de l&apos;arrondissement de Pahou, et se trouve détenue de façon paisible,
+                        publique et continue par la <strong>Collectivité Familiale DOSSOU</strong> sous l&apos;autorité du mandataire désigné.
+                      </p>
+                      <p className="mt-1">
+                        Cette attestation confère au détenteur la pleine jouissance coutumière et ouvre droit à l&apos;immatriculation
+                        au Livre Foncier national pour l&apos;obtention du Certificat de Propriété Foncière (CPF).
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* CAS E : CONVENTION DE VENTE SOUS SEING PRIVÉ */}
+                {document.type === "CONVENTION" && (
+                  <div className="space-y-3">
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Stipulations de la Cession &amp; Séquestre Financier
+                      </h4>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <p>
+                          <strong>Cédant :</strong> Germain DOSSOU (FICTIF-BEN-2026-0041)
+                        </p>
+                        <p>
+                          <strong>Cessionnaire :</strong> Koffi MENSAH (FICTIF-BEN-2026-0003)
+                        </p>
+                        <p>
+                          <strong>Prix Convenu :</strong>{" "}
+                          <span className="font-mono font-bold">{formatFcfa(document.montantFcfa || 4500000)}</span>
+                        </p>
+                        <p>
+                          <strong>Séquestre Trésor :</strong>{" "}
+                          <span className="font-bold text-emerald-800">FONDS BLOQUÉS SÉQUESTRE DGTCP</span>
+                        </p>
+                      </div>
+                      <p className="text-[10px] text-slate-700 italic border-t border-slate-300 pt-1">
+                        Témoignages oraux en langue nationale <strong>Fongbe</strong> enregistrés et scellés avec
+                        l&apos;acte conformément à la législation foncière béninoise.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* CAS F : CARNET DE FAMILLE FONCIER & SUCCESSION */}
+                {document.type === "CARNET_FONCIER" && document.details && (
+                  <div className="space-y-3">
+                    <div className="border border-black p-3 space-y-1.5">
+                      <h4 className="font-bold border-b border-black pb-0.5 uppercase text-black font-sans text-[11px]">
+                        2. Dévolutions Héréditaires &amp; Pacte de Prévention Successorale
+                      </h4>
+                      <div className="space-y-1">
+                        {document.details.ayantsDroit?.map((ad: any, i: number) => (
+                          <div key={i} className="flex justify-between border-b border-slate-200 py-0.5">
+                            <span>
+                              &bull; <strong>{ad.nom}</strong> ({ad.part})
+                            </span>
+                            <span className="font-bold text-emerald-800">{ad.statut}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[10px] italic text-slate-700 mt-1">
+                        Le pacte de famille d&apos;anticipation successorale scellé ci-dessus est opposable aux tiers et
+                        prévient tout contentieux domanial ultérieur devant la Cour Spéciale (CSAF).
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
 
-          {/* ========================================================================= */}
-          {/* SCEAU OFFICIEL, QR CODE & ANCRAGE CRYPTOGRAPHIQUE                         */}
-          {/* ========================================================================= */}
-          <div className="border-t-2 border-slate-900 pt-5 mt-6 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50 p-4 rounded-xl">
-            {/* Blason / Sceau républicain stylisé */}
-            <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-full border-2 border-slate-800 flex items-center justify-center p-1 bg-white shrink-0 shadow-xs">
-                <div className="w-full h-full rounded-full border border-dashed border-emerald-700 flex flex-col items-center justify-center text-center p-1">
-                  <Scale className="w-4 h-4 text-emerald-800" />
-                  <span className="text-[6px] font-black uppercase text-slate-800 leading-tight">BÉNIN &bull; SCEAU</span>
-                  <span className="text-[5px] text-slate-600 leading-tight">OFFICIEL</span>
+              {/* ------------------------------------------------------------------ */}
+              {/* 5. MENTION DU LIEU, DATE, SIGNATURES & AUTHENTIQUE CACHET ROND     */}
+              {/* ------------------------------------------------------------------ */}
+              <div className="pt-4 border-t-2 border-black mt-4">
+                <div className="text-right text-[11px] italic mb-3">
+                  Fait à Ouidah, le{" "}
+                  <strong>
+                    {new Date(document.dateEmission).toLocaleDateString("fr-BJ", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </strong>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 items-start relative">
+                  {/* Colonne Gauche : Le Déclarant / Titulaire */}
+                  <div className="text-center space-y-1">
+                    <p className="font-bold uppercase text-black font-sans text-[11px]">
+                      Le Déclarant / Titulaire
+                    </p>
+                    <p className="text-[10px] text-slate-700 italic">Germain DOSSOU</p>
+                    <div className="h-14 flex items-center justify-center font-serif italic text-slate-700 text-xs">
+                      [Signature numérique certifiée ANIP]
+                    </div>
+                    <p className="text-[9px] font-mono text-slate-500">NPI: FICTIF-BEN-2026-0041</p>
+                  </div>
+
+                  {/* Colonne Droite : L'Autorité Compétente avec Cachet Rond */}
+                  <div className="text-center space-y-1 relative">
+                    <p className="font-bold uppercase text-black font-sans text-[11px]">
+                      Pour l&apos;Administration / L&apos;Autorité Foncier
+                    </p>
+                    <p className="text-xs font-bold text-black font-sans">{document.signataireNom}</p>
+                    <p className="text-[10px] text-slate-700">{document.signataireQualite}</p>
+
+                    <div className="h-16 flex items-center justify-center relative my-1">
+                      {/* Signature stylisée */}
+                      <span className="font-serif italic text-base text-slate-800 transform -rotate-6 select-none">
+                        {document.signataireNom.split(" ")[0] || "Signé"}
+                      </span>
+
+                      {/* AUTHENTIQUE CACHET ROND ADMINISTRATIF BÉNINOIS (ENCRE BLEUE RÉPUBLICAINE) */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-24 h-24 rounded-full border-2 border-dashed border-[#1e3a8a] text-[#1e3a8a] p-1 flex flex-col items-center justify-center text-center transform -rotate-12 bg-[#1e3a8a]/5 shadow-xs select-none">
+                          <div className="w-full h-full rounded-full border border-solid border-[#1e3a8a] flex flex-col items-center justify-center p-1">
+                            <span className="text-[6px] font-black uppercase tracking-wider leading-tight">
+                              RÉPUBLIQUE DU BÉNIN
+                            </span>
+                            <span className="text-[5px] font-bold uppercase my-0.5 leading-tight">
+                              ★ ADMINISTRATION FONCIÈRE ★
+                            </span>
+                            <span className="text-[6px] font-black uppercase tracking-widest text-[#1e3a8a]">
+                              SCEAU OFFICIEL
+                            </span>
+                            <span className="text-[5px] font-mono leading-tight">OUIDAH</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-[9px] font-bold uppercase text-[#1e3a8a]">
+                      Cachet Officiel Régalien &bull; République du Bénin
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                  <span>Sceau d&apos;Authenticité &amp; Ancrage Légal</span>
+              {/* ------------------------------------------------------------------ */}
+              {/* 6. CARTOUCHE DE SÉCURITÉ & SCELLEMENT BLOCKCHAIN                   */}
+              {/* ------------------------------------------------------------------ */}
+              <div className="border-t border-black pt-3 mt-4 flex items-center justify-between gap-4 bg-slate-100/80 p-2.5">
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-1.5 font-sans font-bold text-xs text-black">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                    <span>Scellement Cryptographique &bull; Inviolabilité BéninChain</span>
+                  </div>
+                  <p className="text-[9px] text-slate-600 leading-tight">
+                    Acte inscrit de façon inaltérable au Livre Foncier National. Toute altération physique ou numérique
+                    rompt immédiatement la concordance cryptographique et rend l&apos;acte nul.
+                  </p>
+                  <p className="text-[9px] font-mono text-slate-700">
+                    <strong>Empreinte SHA-256 :</strong>{" "}
+                    <span className="break-all font-bold text-slate-900">{document.hashSha256}</span>
+                  </p>
+                  <p className="text-[9px] font-mono text-slate-600">
+                    Preuve OpenTimestamps : <span className="font-bold">{document.otsProof}</span>
+                  </p>
                 </div>
-                <p className="text-[10px] text-slate-600 max-w-sm leading-tight">
-                  Scellé au Livre Foncier National. Toute altération physique ou numérique rompt instantanément l&apos;intégrité mathématique.
-                </p>
-                <div className="font-mono text-[9px] text-slate-700 flex items-center gap-1">
-                  <span>Preuve OTS : </span>
-                  <strong className="text-slate-900">{document.otsProof}</strong>
+
+                {/* QR Code officiel d'authentification */}
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="p-1.5 bg-white border border-black shadow-xs">
+                    <QRCodeSVG value={qrPayload} size={82} level="H" />
+                  </div>
+                  <span className="text-[8px] font-mono font-bold uppercase text-slate-700 mt-0.5">
+                    Flash Vérification
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* QR Code officiel */}
-            <div className="flex flex-col items-center text-center shrink-0">
-              <div className="p-2 border-2 border-slate-900 rounded-lg bg-white shadow-sm">
-                <QRCodeSVG value={qrPayload} size={84} level="H" />
-              </div>
-              <span className="text-[9px] font-mono text-slate-600 mt-1 uppercase font-semibold">
-                Flash de vérification
-              </span>
-            </div>
-          </div>
-
-          {/* Empreinte SHA-256 intégrale */}
-          <div className="p-3 bg-slate-900 text-white rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] font-mono">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <Fingerprint className="w-4 h-4 text-emerald-400 shrink-0" />
-              <div className="overflow-hidden">
-                <span className="text-slate-400 block text-[9px] font-sans">Empreinte Cryptographique SHA-256 (64 caractères) :</span>
-                <span className="font-bold text-emerald-300 break-all">{document.hashSha256}</span>
+              {/* Mention de bas de page réglementaire */}
+              <div className="text-center pt-2 text-[8px] text-slate-500 font-sans uppercase tracking-wider">
+                Document délivré conformément aux dispositions du Code Foncier et Domanial et du Code du Numérique de la République du Bénin
               </div>
             </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleCopyHash}
-              className="h-7 text-[10px] bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 shrink-0 cursor-pointer flex items-center gap-1"
-            >
-              {copiedHash ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedHash ? "Copié" : "Copier SHA-256"}</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Barre d'actions inférieure */}
-        <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-3 shrink-0">
-          <div className="text-[11px] text-muted-foreground hidden sm:block">
-            Document officiel conforme aux dispositions du Code Foncier et Domanial béninois.
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="text-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Imprimer</span>
-            </Button>
-
-            <Link
-              href={`/verification?code=${document.parcelleCode}`}
-              target="_blank"
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Page de Vérification</span>
-            </Link>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-xs cursor-pointer"
-            >
-              Fermer
-            </Button>
           </div>
         </div>
       </div>
